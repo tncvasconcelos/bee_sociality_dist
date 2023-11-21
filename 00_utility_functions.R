@@ -438,7 +438,7 @@ GetRanges <- function(points, species="species", lat="decimalLatitude", lon="dec
     points_for_range <- tmp_points[tmp_points$species==spp[species_index],]
     tmp_list <- try(GetOneRange(points_for_range, threshold, buffer, res, predictors))
     if(exists("tmp_list")) {
-      saveRDS(tmp_list, file=paste0("shapefile_bees_2ntry/",spp[species_index],".Rdata"))
+      saveRDS(tmp_list, file=paste0("shapefile_bees/",spp[species_index],".Rdata"))
       #list_of_ranges[[species_index]] <- tmp_list
       #names(list_of_ranges)[species_index] <- spp[species_index]
       rm(tmp_list)
@@ -579,10 +579,12 @@ RangeFromSDM_dismo <- function (thinned_points, predictors_final, bg) {
 #' @param bg bg
 #' @param predictors predictors
 ColinearityTest <- function(bg, predictors) {
-  layers <- raster::crop(predictors, raster::extent(bg))
-  v0 <- suppressWarnings(usdm::vifcor(layers, th=0.8)) # stablished threshold
-  predictors_final <- usdm::exclude(layers, v0) # excludes variables that have collinearity problems
+  predictors_final <- raster::crop(predictors, raster::extent(bg))
   predictors_final <- raster::stack(predictors_final)
+  layers1 <- as.data.frame(predictors_final)
+  v0 <- suppressWarnings(usdm::vifcor(layers1, th=0.8)) # established threshold
+  layers1 <- usdm::exclude(layers1, v0) # excludes variables that have collinearity problems
+  predictors_final <- predictors_final[[which(names(predictors_final)%in%colnames(layers1))]]
   return(predictors_final)
 }
 
