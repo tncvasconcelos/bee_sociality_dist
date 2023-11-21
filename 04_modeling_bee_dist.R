@@ -1,9 +1,9 @@
 # rm(list=ls())
 library(raster)
-library(maptools)
+#library(maptools)
 library(parallel)
 library(data.table)
-data("wrld_simpl")
+#data("wrld_simpl")
 
 source("00_utility_functions.R")
 
