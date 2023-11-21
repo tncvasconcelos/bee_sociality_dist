@@ -3,7 +3,7 @@
 
 *.gitignore folders:  
   
-Climatic layers from:
+Climate layers from:
   
 Karger, et al. (2017). Climatologies at high resolution for the earth’s land surface areas. Scientific data, 4(1), 1-20.  
   
