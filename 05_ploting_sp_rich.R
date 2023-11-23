@@ -1,5 +1,4 @@
 # rm(list=ls())
-setwd("~/Desktop/bee_angio_mismatch/")
 
 library(raster)
 library(maptools)
@@ -25,7 +24,7 @@ species_fail <- names(list_of_ranges)[which(unlist(lapply(list_of_shapes, is.nul
 write.csv(species_fail, file="species_fail.csv", row.names=F)
 list_of_shapes[which(unlist(lapply(list_of_shapes, is.null)))] <- NULL
 
-template.map <- readRDS("R/rangers/template.map.Rdata")
+template.map <- readRDS("template.map.Rdata")
 res(template.map)[] <- res(list_of_shapes[[1]])
 
 #tmp.raster.list <- list()
@@ -45,11 +44,12 @@ if(length(list_of_shapes)>1){
 }
 
 americas_raster <- crop(mean_raster, c(-140,-30,-60,60))
-saveRDS(americas_raster, file="preliminary_sprich.Rdata")
+save(mean_raster, file="preliminary_sprich.Rsave")
 
 pdf("ALL_BEES.pdf")
-plot(americas_raster)
-plot(wrld_simpl[wrld_simpl$REGION==19,], add=T)
+plot(mean_raster)
+#plot(wrld_simpl[wrld_simpl$REGION==19,], add=T)
+plot(wrld_simpl, add=T)
 dev.off()
 
 ####################################
@@ -70,7 +70,7 @@ species_fail <- names(list_of_ranges)[which(unlist(lapply(list_of_shapes, is.nul
 write.csv(species_fail, file="species_fail.csv", row.names=F)
 list_of_shapes[which(unlist(lapply(list_of_shapes, is.null)))] <- NULL
 
-template.map <- readRDS("R/rangers/template.map.Rdata")
+template.map <- readRDS("template.map.Rdata")
 res(template.map)[] <- res(list_of_shapes[[1]])
 
 
@@ -90,10 +90,15 @@ res(template.map)[] <- res(list_of_shapes[[1]])
 # write.csv(species_list_per_clade, file="species_list_per_clade.csv", row.names=F)
 #tmp.raster.list <- list()
 
-species_list_per_clade <- read.csv("species_list_per_clade.csv")
+species_list_per_clade <- read.csv("raw_data/all_tips_bee_tree.csv")
+taxon_rank="Tribe"
+
+labels <- unique(species_list_per_clade[,taxon_rank])
+
 for(label_index in 1:length(labels)) {
-  species_in_one_clade <- subset(species_list_per_clade, species_list_per_clade$clade==labels[label_index])
-  shapes_species_in_one_clade <- list_of_shapes[which(names(list_of_shapes)%in%species_in_one_clade$species)]
+  species_in_one_clade <- subset(species_list_per_clade, species_list_per_clade[,taxon_rank]==labels[label_index])
+  
+  shapes_species_in_one_clade <- list_of_shapes[which(names(list_of_shapes)%in%species_in_one_clade$tips)]
   
   if(length(shapes_species_in_one_clade)>1){
     r0 <- shapes_species_in_one_clade[[1]]
@@ -109,12 +114,12 @@ for(label_index in 1:length(labels)) {
     mean_raster <- sum_raster 
   }
   
-  americas_raster <- crop(mean_raster, c(-140,-30,-60,60))
-  saveRDS(americas_raster, file=paste0(labels[label_index],"_preliminary_sprich.Rdata"))
+  #americas_raster <- crop(mean_raster, c(-140,-30,-60,60))
+  save(mean_raster, file=paste0(labels[label_index],"_preliminary_sprich.Rsave"))
   
   pdf(paste0(labels[label_index],"_sprich.pdf"))
-  plot(americas_raster)
-  plot(wrld_simpl[wrld_simpl$REGION==19,], add=T)
+  plot(mean_raster)
+  plot(wrld_simpl, add=T)
   dev.off()
 }
 
