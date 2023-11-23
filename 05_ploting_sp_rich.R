@@ -1,4 +1,5 @@
 # rm(list=ls())
+setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 
 library(raster)
 library(maptools)
