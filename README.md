@@ -1,5 +1,78 @@
 # bee_sociality_dist
 
+Codes and datasets used in: [] (submitted)
+
+Authors:
+
+
+----
+Description of folders: 
+ 
+- ** /** 
+
+
+
+- ** /** 
+
+
+
+- ** /** 
+
+
+
+- ** /**
+
+
+
+- ** /** 
+
+
+
+- ** /** 
+
+
+
+
+----
+Scripts:
+
+> .R
+
+
+
+> .R
+
+
+
+> .R
+
+
+
+> .R
+
+
+
+> .R
+
+
+
+> .R
+
+
+
+> .R
+
+
+
+> .R
+
+
+
+----
+Other files:
+
+> .txt
+
 
 *.gitignore folders:  
   
