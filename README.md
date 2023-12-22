@@ -1,6 +1,6 @@
 # bee_sociality_dist
 
-Codes and datasets used in: [] (submitted)
+Codes and datasets used in: [] 
 
 Authors:
 
@@ -8,27 +8,30 @@ Authors:
 ----
 Description of folders: 
  
-- ** /** 
+- ** curated_data/** 
 
 
 
-- ** /** 
+- ** original_data/** 
 
 
 
-- ** /** 
+- ** environmental_layers/** 
 
 
 
-- ** /**
+- ** shapefile_bees/**
 
 
 
-- ** /** 
+- ** plots/** 
 
 
 
-- ** /** 
+- **shapefile_angiosperms/**
+
+
+- **shapefile_bees/**
 
 
 
