@@ -36,35 +36,35 @@ Description of folders:
 ----
 Scripts:
 
-> .R
+> 00_utility_functions.R
+
+A script with all functions that can be sourced in the beginning of each script.
+
+> 01_data_curation.R
 
 
 
-> .R
+> 02_getting_climate_dist.R
 
 
 
-> .R
+> 03_phylANOVA.R
 
 
 
-> .R
+> 04_modeling_bee_dist.R
 
 
 
-> .R
+> 05_ploting_bee_sp_rich.R
 
 
 
-> .R
+> 06_ploting_angio_sp_rich.R
 
 
 
-> .R
-
-
-
-> .R
+> 07_mapping_points.R
 
 
 
