@@ -8,23 +8,23 @@ Authors:
 ----
 Description of folders: 
  
-- ** curated_data/** 
+- **curated_data/** 
 
 
 
-- ** original_data/** 
+- **original_data/** 
 
 
 
-- ** environmental_layers/** 
+- **environmental_layers/** 
 
 
 
-- ** shapefile_bees/**
+- **shapefile_bees/**
 
 
 
-- ** plots/** 
+- **plots/** 
 
 
 
