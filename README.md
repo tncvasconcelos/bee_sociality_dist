@@ -17,7 +17,7 @@ Data that comes straight from source and has not been curated yet. It also inclu
 - **environmental_layers/** 
 
 All environmental layers that are used to calculate summary statistics for each species (proxy for environmental preferences for each species)
-Edit: layers are too large to commit (working on it)
+Edit: layers are too large to commit, they're on gitignore for now (working on it)
 
 - **shapefile_bees/**
 
