@@ -72,25 +72,19 @@ This script will: (1) load occurrence points from Dorey, et al. (2023); (2) filt
 
 
 ----
-Other files:
-
-> .txt
-
-
-*.gitignore folders:  
   
-Climate layers from:
+#Climate layers from:#
   
 Karger, et al. (2017). Climatologies at high resolution for the earth’s land surface areas. Scientific data, 4(1), 1-20.  
   
 Trabucco, A., & Zomer, R. (2018). Global aridity index and potential evapo- transpiration (ET0) climate database v2. CGIAR Consortium for Spatial Information (CGIAR-CSI). Published online, available from the CGIAR-CSI GeoPortal at https://cgiarcsi.community
   
   
-Filtered GBIF points from:  
+#Filtered GBIF points from:#
   
 Dorey, et al. (2023). A globally synthesised and flagged bee occurrence dataset and cleaning workflow. Scientific Data, 10(1), 747.
 
 
-Bee phylogeny from:
+#Bee phylogeny from:#
 
 Henríquez-Piskulich, et al. (2024). A supermatrix phylogeny of the world’s bees (Hymenoptera: Anthophila). Molecular Phylogenetics and Evolution, 190, 107963.
