@@ -5,33 +5,35 @@ Codes and datasets used in: []
 Authors:
 
 
+
+Note: packages rgeos, rgdal, and maptools were unfortunately retired as of October 2023. Much of the code here depends on functions from these three packages and, although the functionalities of these packages have been migrated to other packages, I still have to make changes to the code so that it works in computers that dont already have rgeos, rgdal, and maptools installed. 
+
 ----
 Description of folders: 
  
 - **curated_data/** 
 
-
+Data that has been processed by one of the pipelines below, including filtered and thinned occurrence points, pruned phylogenetic tree, simplified sociality categories and summary statistics for environmental variables.
 
 - **original_data/** 
 
-
+Data that comes straight from source and has not been curated yet.
 
 - **environmental_layers/** 
 
-
+All environmental layers that are used to calculate summary statistics for each species (proxy for environmental preferences for each species)
 
 - **shapefile_bees/**
 
-
-
-- **plots/** 
-
-
+Resulting shapefiles of geographic ranges for each sampled bee species based on binarized versions of species distribution modeling. 
 
 - **shapefile_angiosperms/**
 
+Resulting shapefiles of geographic ranges for each sampled angiosperm species based on binarized versions of species distribution modeling. Note: right now it only includes about 14,500 species for which I had data from another project. I'm using those just to test some of the pipeline, but we will need to download data again to get a more accurate picture of angiosperm diversity in the Americas if this is our focal area (which will probably sum up to closer to 120,000 species)
+ 
+- **plots/** 
 
-- **shapefile_bees/**
+A folder to organize plots for visual inspection of data and results. 
 
 
 
