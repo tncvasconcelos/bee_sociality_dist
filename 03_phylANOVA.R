@@ -10,7 +10,7 @@ tree <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv")
 
 #traits <- subset(traits, traits$sociality!="parasite")
-#traits <- subset(traits, !grepl(paste(c("Bombus"), collapse="|"), traits$tips))
+#traits <- subset(traits, grepl(paste(c("Lasioglossum"), collapse="|"), traits$tips))
 #traits <- subset(traits, traits$tribe!="Centridini")
 
 # Let's run a phylANOVA between sociality and env variables

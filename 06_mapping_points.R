@@ -8,7 +8,6 @@ data("wrld_simpl")
 #------------------------
 load("curated_data/thinned_points.Rsave")
 
-thinned_points
 species <- unique(thinned_points$species)
 species <- subset(species, species!="")
 

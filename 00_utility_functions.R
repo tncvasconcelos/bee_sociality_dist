@@ -181,7 +181,7 @@ RemoveDuplicates <- function(points, species="species", lon="decimalLongitude", 
 }
 
 
-#' Removes points with coordinates without decimal cases (probably innacurate)
+#' Removes points with coordinates without decimal cases (probably inaccurate)
 #' @param points A data.frame of distribution points 
 #' @param lat The name of the column in the data.frame with latitudes
 #' @param lon The name of the column in the data.frame with longitudes
@@ -221,7 +221,7 @@ RemoveHerbariaLocalities <- function(points, lon="decimalLongitude", lat="decima
 }
 
 
-#' Flag species that have weird distributions in the dataset
+#' Flag species that have "weird" distributions in the dataset
 #' @param points A data.frame of distribution points with at least three columns where one column represents species names and other two decimal coordinates.
 #' @param lat The name of the column in the data.frame with latitudes
 #' @param lon The name of the column in the data.frame with longitudes
@@ -291,14 +291,15 @@ UnusualDistributions <- function (points, species="species", lat="decimalLatitud
 #' @param lat A character string indicating name of column with latitudes
 #' @param lon character string indicating name of column with longitudes
 #' @param n A number indicating how many points to keep in each cell after thinning
-Thinning <- function(points, species="species", lat = "decimalLatitude", lon="decimalLongitude", n = 1) {
+Thinning <- function(points, species="scientificName", lat = "decimalLatitude", lon="decimalLongitude", n = 1) {
   tmp_points = points
   colnames(tmp_points)[colnames(tmp_points)==lon] <- "x"
   colnames(tmp_points)[colnames(tmp_points)==lat] <- "y"
-  spp <- unique(tmp_points[,species])
+  colnames(tmp_points)[colnames(tmp_points)==species] <- "tmp_sp"
+  spp <- unique(tmp_points[,tmp_sp])
   results <- list()
   for(species_index in 1:length(spp)) {
-    coords <- tmp_points[tmp_points[,species]==spp[species_index],c("y","x")]
+    coords <- tmp_points[tmp_points[,tmp_sp]==spp[species_index],c("y","x")]
     coords <- coords[!duplicated(coords[,"x"]) & !duplicated(coords[,"y"]),]
     if(nrow(coords) > 1) {
       sp::coordinates(coords) <- ~ y + x
@@ -307,17 +308,19 @@ Thinning <- function(points, species="species", lat = "decimalLatitude", lon="de
       raster::res(r0) <- 1 # cell resolution
       r0 <- raster::extend(r0, raster::extent(r0) + 5) 
       res <- cbind(spp[species_index], as.data.frame(dismo::gridSample(coords, r0, n))) # n = maximum number of points per cell
-      colnames(res) <- c("species", "lat","lon")
+      colnames(res) <- c("tmp_sp", "lat","lon")
       results[[species_index]] <- res
     } else {
       res <- cbind(spp[species_index],coords)
-      colnames(res) <- c("species", "lat","lon")
+      colnames(res) <- c("tmp_sp", "lat","lon")
       results[[species_index]] <- res
     }
   }
   results <- do.call(rbind, results)
+  colnames(results) <- c(species, lat, lon)
   return(results)
 }
+
 
 #' Get values of selected climatic variables from filtered points
 #' @param points A data.frame of three columns containing species and coordinates
@@ -753,32 +756,10 @@ LoadWcLayers <- function (res.layers) {
 #' @return A raster of species richness
 #' @importFrom raster resample calc stack mask
 #' @export
-# GetSpRichness <- function (list_of_ranges) {
-#   ranges <- unlist(lapply(list_of_ranges, "[[", "range"))
-#   #template.map=NULL
-#   #if(is.null(template.map)) {
-#   template.map <- readRDS("data/template.map.Rdata")
-#   #template.map <- raster::getData("worldclim", var="bio", download=TRUE, res=10)[[1]]
-#   #template.map[!is.na(template.map)] <- 0
-#   #} else { template.map=template.map }
-#   tmp.raster.list <- list()
-#   for (i in 1:length(ranges)) {
-#     r1 <- ranges[[i]]
-#     r1 <- raster::resample(r1, template.map)
-#     r1[is.na(r1)] <- 0
-#     tmp.raster.list[[i]] <- raster::mask(r1, template.map)
-#     print(i)
-#     sprichness_map <- raster::calc(raster::stack(tmp.raster.list), sum)
-#   }
-#   names(tmp.raster.list) <- names(ranges)
-#   sprichness_map <- raster::calc(raster::stack(tmp.raster.list), sum)
-#   # raster::plot(sprichness_map)
-#   #saveRDS(tmp.raster.list, file=paste0("~/Desktop/MiSSEgradient/MiSSEGradient/regressions_plan/Data/1_rate_rasters/all_species_stack.Rdata"))
-#   return(sprichness_map)
-# }
+
 
 GetSpRichness <- function(list_of_ranges) {
-  template.map <- readRDS("R/rangers/template.map.Rdata")
+  template.map <- readRDS("original_data/template.map.Rdata")
   res(template.map)[] <- res(list_of_ranges[[1]])
   if(length(list_of_ranges)>1){
     r0 <- list_of_ranges[[1]]
@@ -799,6 +780,7 @@ GetSpRichness <- function(list_of_ranges) {
   }
   return(sum_raster)
 }
+
 #' A function to map distribution of traits (still with no PW)
 #' @param list_of_ranges A list in the format of the output of GetRanges()
 #' @param trait_data A data.frame where the first column contain species names and the second contains trait data
@@ -920,36 +902,6 @@ FilterRanges <- function(rangers_output, label_fail="species_fail") {
 }
 
 
-###############################
-Thinning <- function(points, species="scientificName", lat = "decimalLatitude", lon="decimalLongitude", n = 1) {
-  tmp_points = points
-  colnames(tmp_points)[colnames(tmp_points)==lon] <- "x"
-  colnames(tmp_points)[colnames(tmp_points)==lat] <- "y"
-  colnames(tmp_points)[colnames(tmp_points)==species] <- "tmp_sp"
-  spp <- unique(tmp_points[,tmp_sp])
-  results <- list()
-  for(species_index in 1:length(spp)) {
-    coords <- tmp_points[tmp_points[,tmp_sp]==spp[species_index],c("y","x")]
-    coords <- coords[!duplicated(coords[,"x"]) & !duplicated(coords[,"y"]),]
-    if(nrow(coords) > 1) {
-      sp::coordinates(coords) <- ~ y + x
-      raster::crs(coords) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-      r0 <- raster::raster(coords)
-      raster::res(r0) <- 1 # cell resolution
-      r0 <- raster::extend(r0, raster::extent(r0) + 5) 
-      res <- cbind(spp[species_index], as.data.frame(dismo::gridSample(coords, r0, n))) # n = maximum number of points per cell
-      colnames(res) <- c("tmp_sp", "lat","lon")
-      results[[species_index]] <- res
-    } else {
-      res <- cbind(spp[species_index],coords)
-      colnames(res) <- c("tmp_sp", "lat","lon")
-      results[[species_index]] <- res
-    }
-  }
-  results <- do.call(rbind, results)
-  colnames(results) <- c(species, lat, lon)
-  return(results)
-}
 
 
 ###############################
@@ -1036,4 +988,24 @@ GetClimateSummStats <- function(climate_by_point, convert=TRUE){
   summ_stats <- summ_stats[match(original_species_order, summ_stats[,1]),]
   rownames(summ_stats) <- NULL
   return(summ_stats)
+}
+
+
+CalcSpRich <- function(list_of_shapes,template.map){
+  if(length(list_of_shapes)>1){
+    r0 <- list_of_shapes[[1]]
+    r0 <- raster::resample(r0, template.map)
+    cat(1, "\r")
+    sum_raster <- r0
+    for (j in 2:length(list_of_shapes)) {
+      r1 <- list_of_shapes[[j]]
+      r1 <- raster::resample(r1, template.map)
+      sum_raster <- calc(stack(list(sum_raster, r1)), sum, na.rm=T)
+      cat(j, "\r")
+    }
+    mean_raster <- sum_raster 
+  } else {
+    mean_raster <- list_of_shapes
+  }
+  return(mean_raster)
 }

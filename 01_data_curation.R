@@ -6,12 +6,14 @@ library(phytools)
 
 #--------------------------------
 # Loading trait data (sociality)
-bees <- read.csv("all_tips_bee_tree.csv")
+bees <- read.csv("original_data/all_tips_bee_tree_Dec4_2023.csv")
 # Some data curation:
 bees <- bees[,c(1,3,5,6)] 
+# head(bees)
 colnames(bees) <- c("family","tribe","tips","sociality")
 # categories <- unique(bees$sociality)
-# Lumping sociality categories into a few groups:
+
+# Lumping (simplifying) sociality categories into a few groups:
 solitary <- c("solitary","solitary?","solitary/semisocial","solitary/communal")
 social <- c("social","communal/semisocial","communal")
 drop <- c("unknown","polymorphic","")
@@ -32,7 +34,7 @@ write.csv(bees, "curated_data/bees_sociality.csv", row.names=F)
 
 #--------------------------------
 # Pruning tree so that it matches species with data:
-bee_tree <- read.tree("ML_beetree.tre")
+bee_tree <- read.tree("original_data/ML_beetree.tre")
 bee_tree <- keep.tip(bee_tree, bees$tips)
 # Saving pruned tree:
 write.tree(bee_tree, "curated_data/ML_beetree_pruned.tre")
