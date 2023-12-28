@@ -48,7 +48,7 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 OutputData/
-env_layers/
+environmental_layers/
 .DS_Store
 plots/bee_maps.pdf
 old/
