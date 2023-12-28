@@ -55,15 +55,12 @@ Runs phylANOVAS between sociality categories and environmental variables based o
 
 This script will use thinned occurrence points to perfom species distribution modeling analyses for indiviual species using the maxent algorithm from R package dismo. The function "GetRanges" wraps several other functions from the 00_utility_functions.R to automatize the many steps required to perform SDM analyses, including: (1) it will download climatic layers from worldclim based on preferred resolution and crop those to limit background point to area where points are; (2) it will check for colinearity among the 19 climatic layers and keep only those that are not strongly correlated based on the preferred threshold; (3) it will create background points and randomly separate train and test sets before analyses; (4) it will report back AUC values and it will also binarize models to calculate likely range size based on preferred threshold. Finally, the function will also automatically save individual shape files in folder shapefile_bees/.
 
-> 05_ploting_bee_sp_rich.R
+> 05_ploting_sp_rich.R
 
-Loads binarized shapefiles from shapefile_bees/ and overlays them to create species richness maps.
+Loads binarized shapefiles from shapefile_bees/ and shapefile_angiosperms/ and overlays them to create species richness maps.
 
-> 06_ploting_angio_sp_rich.R
 
-Loads binarized shapefiles from shapefile_angiosperms/ and overlays them to create species richness maps.
-
-> 07_mapping_points.R
+> 06_mapping_points.R
 
 Map filtered and thinned occurrence points for visual inspection.
 
