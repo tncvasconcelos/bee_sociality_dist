@@ -30,7 +30,10 @@ Resulting shapefiles of geographic ranges for each sampled angiosperm species ba
 
 A folder to organize plots for visual inspection of data and results. 
 
+- **results/** 
 
+Some results from mapping bee and angiosperm distributions.
+  
 
 ----
 Scripts:
