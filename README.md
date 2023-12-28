@@ -1,10 +1,5 @@
 # bee_sociality_dist
 
-Codes and datasets used in: [] 
-
-Authors:
-
-
 
 Note: packages rgeos, rgdal, and maptools were unfortunately retired as of October 2023. Much of the code here depends on functions from these three packages and, although the functionalities of these packages have been migrated to other packages, I still have to make changes to the code so that it works in computers that dont already have rgeos, rgdal, and maptools installed. 
 
@@ -17,7 +12,7 @@ Data that has been processed by one of the pipelines below, including filtered a
 
 - **original_data/** 
 
-Data that comes straight from source and has not been curated yet.
+Data that comes straight from source and has not been curated yet. It also include original data produced by this work (e.g. sociality categories, exotic species to remove, etc)
 
 - **environmental_layers/** 
 
@@ -34,7 +29,6 @@ Resulting shapefiles of geographic ranges for each sampled angiosperm species ba
 - **plots/** 
 
 A folder to organize plots for visual inspection of data and results. 
-
 
 
 
@@ -63,15 +57,15 @@ This script will use thinned occurrence points to perfom species distribution mo
 
 > 05_ploting_bee_sp_rich.R
 
-
+Loads binarized shapefiles from shapefile_bees/ and overlays them to create species richness maps.
 
 > 06_ploting_angio_sp_rich.R
 
-
+Loads binarized shapefiles from shapefile_angiosperms/ and overlays them to create species richness maps.
 
 > 07_mapping_points.R
 
-
+Map filtered and thinned occurrence points for visual inspection.
 
 ----
   
