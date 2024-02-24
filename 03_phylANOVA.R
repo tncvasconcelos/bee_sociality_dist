@@ -5,13 +5,14 @@ library(phytools)
 
 # Some exploratory analyses
 # Reloading traits, tree and climatic data:
-traits <- read.csv("curated_data/bees_sociality.csv")
+traits <- read.csv("curated_data/bees_traits.csv")
 tree <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv")
 
 #traits <- subset(traits, traits$sociality!="parasite")
 #traits <- subset(traits, grepl(paste(c("Lasioglossum"), collapse="|"), traits$tips))
-#traits <- subset(traits, traits$tribe!="Centridini")
+#traits <- subset(traits, traits$tribe=="Xylocopini")
+
 
 # Let's run a phylANOVA between sociality and env variables
 # and plot boxplots for visualization:
