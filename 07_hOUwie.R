@@ -1,6 +1,7 @@
 # rm(list=ls())
 library(corHMM)
 library(OUwie)
+#devtools::install_github("thej022214/corHMM")
 library(parallel)
 #setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 
@@ -48,7 +49,16 @@ dat <- dat[match(phy$tip.label, dat$tips),]
 # log continuous data
 dat[,3] <- log(dat[,3])
 
-# getting model structure
+#--------------------------------------
+# setting up corhmm model
+RateCat1 <- getStateMat4Dat(dat[,1:2])$rate.mat # R1 
+RateCat2 <- getStateMat4Dat(dat[,1:2])$rate.mat # R1 
+RateClassMat <- getRateCatMat(2) #
+RateClassMat <- equateStateMatPars(RateClassMat, c(1,2)) 
+StateMats <- list(RateCat1, RateCat2)
+FullMat <- getFullMat(StateMats, RateClassMat)
+
+# getting model structure for continuous trait
 # setting up both character independent and OUMV models 
 cid_oumv_model <- full_oum_model <- full_ouv_model <- full_oumv_model <- getOUParamStructure("OUMV", 3, 2, null.model = TRUE) # character independent model (i.e. all observed states have the same optima)
 
@@ -61,11 +71,12 @@ full_oum_model[3,c(1:6)] <- c(4:6)
 full_ouv_model[2,c(1:6)] <- c(2:4)
 
 # All models that were run
-model_list <- list(list(2, cid_oumv_model, "BM1"),
-                   list(2, cid_oumv_model, "OU1"),
-                   list(2, cid_oumv_model, full_ouv_model),
-                   list(2, cid_oumv_model, full_oum_model),
-                   list(2, cid_oumv_model, full_oumv_model)) # the two is for two rate classes
+model_list <- list(list(2, FullMat, "BM1"),
+                   list(2, FullMat, "OU1"),
+                   list(2, FullMat, cid_oumv_model),
+                   list(2, FullMat, full_ouv_model),
+                   list(2, FullMat, full_oum_model),
+                   list(2, FullMat, full_oumv_model)) # the two is for two rate classes
 
 names(model_list) <- c("bm1_sociality_bio1_run1", "ou1_sociality_bio1_run1", "ouv_sociality_bio1_run1",
                        "oum_sociality_bio1_run1", "oumv_sociality_bio1_run1")
@@ -76,45 +87,43 @@ quickFunc <- function(model_list, model_name){
   save(res, file=file.name)
 }
 
-mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 4)
+mclapply(1:5, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 4)
 
-
-
+# model_set <- model_list
 # all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
-# 
-# oum_bm1_res <- hOUwie(phy, dat, 1, disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+# oum_bm1_res <- hOUwie(phy, dat, 2, cid_oumv_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
 # oum_ou1_res <- hOUwie(phy, dat, 1, disc_model, "OU1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
 # oum_col_res <- hOUwie(phy, dat, 1, disc_model, oum_color, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
 # oum_frt_res <- hOUwie(phy, dat, 1, disc_model, oum_fruit, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
 # oum_ful_res <- hOUwie(phy, dat, 1, disc_model, oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
 # oum_cid_res <- hOUwie(phy, dat, 2, cid_disc_model, cid_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
-
-
-all_model_results <- list.files("houwie_results")
-all_model_results <- subset(all_model_results, grepl("_8states_run2", all_model_results))
-model_names <- gsub("_8states_run2.Rsave","",all_model_results)
-
-all_results <- list()
-for(i in 1:length(all_model_results)) {
-  load(paste0("houwie_results/",all_model_results[i]))
-  if(exists("res")) {
-    all_results[[i]] <- res
-    names(all_results)[i] <- model_names[i]
-  }
-  remove(res)
-}
-
-model_table <- getModelTable(all_results, type="AICc")
-write.csv(model_table, file="model_table_results.csv")
-
-average_pars <- getModelAvgParams(all_results, type="AICc")
-write.csv(average_pars, file="average_pars.csv")
-
-# what the tip values are expected to be when accounting for the models of evolution
-# that is a way to integrate the other parameter of the model
-boxplot(exp(average_pars$expected_mean)~average_pars$tip_state, xlab="tip state", ylab="expected mean (petal length)")
-
-
-
+# 
+# 
+# all_model_results <- list.files("houwie_results")
+# all_model_results <- subset(all_model_results, grepl("_8states_run2", all_model_results))
+# model_names <- gsub("_8states_run2.Rsave","",all_model_results)
+# 
+# all_results <- list()
+# for(i in 1:length(all_model_results)) {
+#   load(paste0("houwie_results/",all_model_results[i]))
+#   if(exists("res")) {
+#     all_results[[i]] <- res
+#     names(all_results)[i] <- model_names[i]
+#   }
+#   remove(res)
+# }
+# 
+# model_table <- getModelTable(all_results, type="AICc")
+# write.csv(model_table, file="model_table_results.csv")
+# 
+# average_pars <- getModelAvgParams(all_results, type="AICc")
+# write.csv(average_pars, file="average_pars.csv")
+# 
+# # what the tip values are expected to be when accounting for the models of evolution
+# # that is a way to integrate the other parameter of the model
+# boxplot(exp(average_pars$expected_mean)~average_pars$tip_state, xlab="tip state", ylab="expected mean (petal length)")
+# 
+# 
+# 
 
 
