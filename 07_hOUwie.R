@@ -83,12 +83,12 @@ names(model_list) <- c("bm1_sociality_bio1_run1", "ou1_sociality_bio1_run1", "ou
                        "oum_sociality_bio1_run1", "oumv_sociality_bio1_run1")
 
 quickFunc <- function(model_list, model_name){
-  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 4)
+  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
   file.name <- paste0("houwie_results/",model_name, ".Rsave")
   save(res, file=file.name)
 }
 
-mclapply(1:5, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 4)
+mclapply(1:5, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 10)
 
 # model_set <- model_list
 # all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
