@@ -34,7 +34,7 @@ trait_nest <- merged_traits[,c("tips","nest","mean_bio_1")]
 trait_sociality <- merged_traits[,c("tips","sociality","mean_bio_1")]
 
 # subset for speed
-dat <- trait_sociality[sample(1:nrow(trait_sociality),50),] 
+dat <- trait_sociality[sample(1:nrow(trait_sociality),200),] 
 
 # organize data
 shared_species <- intersect(dat$tips, phy$tip.label)
@@ -46,7 +46,8 @@ dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
 
-# log continuous data
+# log continuous data -- transform celcius to kelvin
+dat[,3] <- dat[,3]+273
 dat[,3] <- log(dat[,3])
 
 #--------------------------------------
