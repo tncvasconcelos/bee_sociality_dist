@@ -34,6 +34,11 @@ merged_traits$mean_bio_12 <- log(merged_traits$mean_bio_12)
 merged_traits$mean_bio_15 <- log(merged_traits$mean_bio_15)
 merged_traits$mean_bio_4 <- log(merged_traits$mean_bio_4)
 
+merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_1))
+merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_12))
+merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_15))
+merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_4))
+
 #--------------------------------------
 # LIFE HISTORY TRAITS VS. MEAN ANNUAL TEMPERATURE (BIO1)
 one.full.houwie.run(dat=merged_traits[,c("tips","sociality","mean_bio_1")], phy=phy, model_names="sociality_bio1_run1")
