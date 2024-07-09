@@ -1009,3 +1009,66 @@ CalcSpRich <- function(list_of_shapes,template.map){
   }
   return(mean_raster)
 }
+
+# setting up corhmm model
+corhmm.model.setup <- function(dataset) {
+  RateCat1 <- getStateMat4Dat(dataset)$rate.mat # R1 
+  RateCat2 <- getStateMat4Dat(dataset)$rate.mat # R1 
+  RateClassMat <- getRateCatMat(2) #
+  RateClassMat <- equateStateMatPars(RateClassMat, c(1,2)) 
+  StateMats <- list(RateCat1, RateCat2)
+  FullMat <- getFullMat(StateMats, RateClassMat)  
+  return(FullMat)
+}
+
+# setting up houwie
+houwie.model.setup <- function(corhmm_set, model_names="") {
+  # getting model structure for continuous trait
+  # setting up both character independent and OUMV models 
+  cid_oumv_model <- full_oum_model <- full_ouv_model <- full_oumv_model <- getOUParamStructure("OUMV", 3, 2, null.model = TRUE) # character independent model (i.e. all observed states have the same optima)
+  
+  # manually adjusting full OUMV model matrix (i.e. variable theta and sigma2 between observed characters)
+  full_oumv_model[2,c(1:6)] <- c(2:4)
+  full_oumv_model[3,c(1:6)] <- c(5:7)
+  # manually adjusting OUM model matrix
+  full_oum_model[3,c(1:6)] <- c(4:6)
+  # manually adjusting OUV model matrix
+  full_ouv_model[2,c(1:6)] <- c(2:4)
+  
+  # All models that were run
+  model_list <- list(list(2, corhmm_set, "BM1"),
+                     list(2, corhmm_set, "OU1"),
+                     list(2, corhmm_set, cid_oumv_model),
+                     list(2, corhmm_set, full_ouv_model),
+                     list(2, corhmm_set, full_oum_model),
+                     list(2, corhmm_set, full_oumv_model)) # the two is for two rate classes
+  
+  names(model_list) <- c(paste0("bm1_",model_names), paste0("ou1_",model_names), 
+                         paste0("cid_oumv_",model_names), paste0("ouv_",model_names), 
+                         paste0("oum_",model_names), paste0("oumv_",model_names))
+  return(model_list)
+}
+
+
+#  full houwie run
+one.full.houwie.run <- function(dat, phy, model_names="", ncores=10){
+  # organize data
+  shared_species <- intersect(dat$tips, phy$tip.label)
+  dat <- dat[match(shared_species, dat$tips),]
+  phy <- keep.tip(phy, shared_species)
+  dat <- dat[match(phy$tip.label, dat$tips),]
+  # model structure
+  corhmm_set <- corhmm.model.setup(dat[,c(1,2)])
+  model_list <- houwie.model.setup(corhmm_set, model_names)
+  # setting up parallel
+  quickFunc <- function(model_list, model_name){
+    res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
+    file.name <- paste0("houwie_results/",model_name, ".Rsave")
+    save(res, file=file.name)
+  }
+  mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 10)
+}
+
+
+
+
