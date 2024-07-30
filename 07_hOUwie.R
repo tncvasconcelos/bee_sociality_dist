@@ -28,6 +28,10 @@ merged_climatic_vars <- merged_climatic_vars[,c(1, grep("mean", colnames(merged_
 # And finally merge to the trait data
 merged_traits <- merge(traits, merged_climatic_vars, by.x="tips",by.y="species")
 
+while(length(unique(merged_traits$sociality))<3) {
+  merged_traits <- merged_traits[sample(1:nrow(merged_traits), 100),]
+}
+
 # log all continuous variables:
 merged_traits$mean_bio_1 <- log((merged_traits$mean_bio_1)+273) # transform celcius to kelvin for temperature
 merged_traits$mean_bio_4 <- log(merged_traits$mean_bio_4)
@@ -56,11 +60,12 @@ phy <- keep.tip(phy, which(phy$tip.label %in% merged_traits$tips))
 load("corhmm_dredge_sociality.Rsave")
 corhmm_tbl_sociality <- read.csv("corhmm_tbl_sociality.csv")
 disc_model_soc <- dredge_sociality[[which.min(corhmm_tbl_sociality$AIC)]]$index.mat
+
 one.full.houwie.run(dat=merged_traits[,c("tips","sociality","mean_bio_1")], 
                     phy=phy, disc_model = disc_model_soc, model_names="sociality_bio1_run3")
 
-load("corhmm_dredge_nesting.Rsave")
-corhmm_tbl_sociality <- read.csv("corhmm_tbl_nesting.csv")
-disc_model_nest <- dredge_nesting[[which.min(corhmm_tbl_nesting$AIC)]]$index.mat
-one.full.houwie.run(dat=merged_traits[,c("tips","nest","mean_bio_1")],
-                    phy=phy, disc_model = disc_model_nest, model_names="nest_bio1_run1")
+# load("corhmm_dredge_nesting.Rsave")
+# corhmm_tbl_sociality <- read.csv("corhmm_tbl_nesting.csv")
+# disc_model_nest <- dredge_nesting[[which.min(corhmm_tbl_nesting$AIC)]]$index.mat
+# one.full.houwie.run(dat=merged_traits[,c("tips","nest","mean_bio_1")],
+#                     phy=phy, disc_model = disc_model_nest, model_names="nest_bio1_run1")
