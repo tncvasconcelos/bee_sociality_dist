@@ -61,8 +61,32 @@ load("corhmm_dredge_sociality.Rsave")
 corhmm_tbl_sociality <- read.csv("corhmm_tbl_sociality.csv")
 disc_model_soc <- dredge_sociality[[which.min(corhmm_tbl_sociality$AIC)]]$index.mat
 
-one.full.houwie.run(dat=merged_traits[,c("tips","sociality","mean_bio_1")], 
-                    phy=phy, disc_model = disc_model_soc, model_names="sociality_bio1_run3")
+dat=merged_traits[,c("tips","sociality","mean_bio_1")]
+phy=phy 
+disc_model = disc_model_soc 
+model_names="sociality_bio1_run3"
+
+# organize data
+shared_species <- intersect(dat$tips, phy$tip.label)
+dat <- dat[match(shared_species, dat$tips),]
+phy <- keep.tip(phy, shared_species)
+dat <- dat[match(phy$tip.label, dat$tips),]
+# model structure
+#corhmm_set <- corhmm.model.setup(dat[,c(1,2)])
+corhmm_set <- disc_model 
+
+model_list <- houwie.model.setup(corhmm_set, model_names)
+# setting up parallel
+
+quickFunc <- function(model_list, model_name){
+  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
+  file.name <- paste0("houwie_results/",model_name, ".Rsave")
+  save(res, file=file.name)
+}
+
+mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 10)
+
+
 
 # load("corhmm_dredge_nesting.Rsave")
 # corhmm_tbl_sociality <- read.csv("corhmm_tbl_nesting.csv")
