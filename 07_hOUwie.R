@@ -29,11 +29,11 @@ merged_climatic_vars <- merged_climatic_vars[,c(1, grep("mean", colnames(merged_
 # And finally merge to the trait data
 merged_traits <- merge(traits, merged_climatic_vars, by.x="tips",by.y="species")
 
-merged_traits0 <- merged_traits[1,]
-while(length(unique(merged_traits0$sociality))<3) {
-  merged_traits0 <- merged_traits[sample(1:nrow(merged_traits), 100),]
-}
-merged_traits <- merged_traits0
+# merged_traits0 <- merged_traits[1,]
+# while(length(unique(merged_traits0$sociality))<3) {
+#   merged_traits0 <- merged_traits[sample(1:nrow(merged_traits), 100),]
+# }
+# merged_traits <- merged_traits0
 
 # log all continuous variables:
 merged_traits$mean_bio_1 <- log((merged_traits$mean_bio_1)+273) # transform celcius to kelvin for temperature
@@ -67,7 +67,7 @@ disc_model_soc <- dredge_sociality[[which.min(corhmm_tbl_sociality$AIC)]]$index.
 dat=merged_traits[,c("tips","sociality","mean_bio_1")]
 phy=phy 
 disc_model = disc_model_soc 
-model_names="sociality_bio1_run3"
+model_names="sociality_bio1_run4"
 
 # organize data
 shared_species <- intersect(dat$tips, phy$tip.label)
@@ -82,12 +82,12 @@ model_list <- houwie.model.setup(corhmm_set, model_names)
 # setting up parallel
 
 quickFunc <- function(model_list, model_name){
-  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 10, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10, root.p="maddfitz")
+  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10, root.p="maddfitz")
   file.name <- paste0("houwie_results/",model_name, ".Rsave")
   save(res, file=file.name)
 }
 
-mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 10)
+mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 15)
 
 
 # load("corhmm_dredge_nesting.Rsave")
