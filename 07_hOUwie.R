@@ -67,7 +67,7 @@ disc_model_soc <- dredge_sociality[[which.min(corhmm_tbl_sociality$AIC)]]$index.
 dat=merged_traits[,c("tips","sociality","mean_bio_1")]
 phy=phy 
 disc_model = disc_model_soc 
-model_names="sociality_bio1_run4"
+model_names="sociality_bio1_run5"
 
 # organize data
 shared_species <- intersect(dat$tips, phy$tip.label)
@@ -87,7 +87,7 @@ quickFunc <- function(model_list, model_name){
   save(res, file=file.name)
 }
 
-mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 15)
+mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 20)
 
 
 # load("corhmm_dredge_nesting.Rsave")

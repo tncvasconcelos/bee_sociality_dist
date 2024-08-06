@@ -4,7 +4,6 @@ library(OUwie)
 library(parallel)
 #setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 source("00_utility_functions.R")
-
 #--------------------------------------
 # First organizing dataset:
 # Reloading traits, tree and climatic data
@@ -92,4 +91,4 @@ load("corhmm_dredge_nesting.Rsave")
 corhmm_tbl_nesting <- read.csv("corhmm_tbl_nesting.csv")
 disc_model_nest <- dredge_nesting[[which.min(corhmm_tbl_nesting$AIC)]]$index.mat
 one.full.houwie.run(dat=merged_traits[,c("tips","nest","mean_bio_1")],
-                    phy=phy, disc_model = disc_model_nest, model_names="nest_bio1_run1")
+                    phy=phy, disc_model = disc_model_nest, model_names="nest_bio1_run2")

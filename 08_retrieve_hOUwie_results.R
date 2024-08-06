@@ -6,8 +6,9 @@ library(parallel)
 #setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 
 all_model_results <- list.files("houwie_results")
-all_model_results <- subset(all_model_results, grepl("_sociality_bio1_run3", all_model_results))
-model_names <- gsub("_sociality_bio1_run3.Rsave","",all_model_results)
+all_model_results <- subset(all_model_results, grepl("nest", all_model_results))
+model_names <- gsub("_.*","",all_model_results)
+
 
 all_results <- list()
 for(i in 1:length(all_model_results)) {

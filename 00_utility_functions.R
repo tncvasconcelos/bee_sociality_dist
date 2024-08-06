@@ -1051,7 +1051,7 @@ houwie.model.setup <- function(corhmm_set, model_names="") {
 
 
 #  full houwie run
-one.full.houwie.run <- function(dat, phy, disc_model, model_names="", ncores=10){
+one.full.houwie.run <- function(dat, phy, disc_model, model_names="", ncores=20){
   # organize data
   shared_species <- intersect(dat$tips, phy$tip.label)
   dat <- dat[match(shared_species, dat$tips),]
