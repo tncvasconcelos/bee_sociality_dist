@@ -13,7 +13,8 @@ phy <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv", full.names = T)
 
 # Let's take bio1 and bio12 (temperature and precipitation) and seasonalities (bio4 and bio15)
-all_climatic_vars <- all_climatic_vars[grep(paste(c("bio_1_","bio_4_","ai"),collapse="|"), all_climatic_vars)]
+all_climatic_vars <- all_climatic_vars[grep(paste(c("bio_1_","bio_12_","bio_4_",
+                                                    "bio_15_","ai"),collapse="|"), all_climatic_vars)]
 climatic_list <- lapply(all_climatic_vars, read.csv)
 
 # Now merge everything in one table

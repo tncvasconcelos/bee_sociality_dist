@@ -6,7 +6,7 @@ library(parallel)
 #setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 
 all_model_results <- list.files("houwie_results")
-all_model_results <- subset(all_model_results, grepl("nest", all_model_results))
+all_model_results <- subset(all_model_results, grepl("nest_bio1_run2", all_model_results))
 model_names <- gsub("_.*","",all_model_results)
 
 
@@ -21,11 +21,11 @@ for(i in 1:length(all_model_results)) {
 }
 
 model_table <- getModelTable(all_results, type="AICc")
-write.csv(model_table, file="model_table_results.csv")
+write.csv(model_table, file="model_table_results_bio1_run2_nest.csv")
 
 average_pars <- getModelAvgParams(all_results, type="AICc")
 
-write.csv(average_pars, file="average_pars.csv")
+write.csv(average_pars, file="average_pars_bio1_run2_nest.csv")
 
 # what the tip values are expected to be when accounting for the models of evolution
 # that is a way to integrate the other parameter of the model
