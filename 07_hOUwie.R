@@ -38,6 +38,8 @@ merged_traits <- merge(traits, merged_climatic_vars, by.x="tips",by.y="species")
 
 # log all continuous variables:
 merged_traits$mean_bio_1 <- log((merged_traits$mean_bio_1)+273) # transform celcius to kelvin for temperature
+merged_traits$mean_bio_12 <- log(merged_traits$mean_bio_12)
+merged_traits$mean_bio_15 <- log(merged_traits$mean_bio_15)
 merged_traits$mean_bio_4 <- log(merged_traits$mean_bio_4)
 merged_traits$mean_awi_pm_sr_yr <- log(merged_traits$mean_awi_pm_sr_yr)
 
@@ -46,23 +48,11 @@ merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_4))
 merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_awi_pm_sr_yr))
 
 phy <- keep.tip(phy, which(phy$tip.label %in% merged_traits$tips))
-
-#------------------------------------
-# determining corHMM models with corhmm dredge
-# dredge_sociality <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","sociality")],max.rate.cat=3)
-# save(dredge_sociality, file="corhmm_dredge_sociality.Rsave")
-# corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
-# write.csv(corhmm_tbl_sociality, file="corhmm_tbl_sociality.csv")
-# 
-# dredge_nesting <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","nest")],max.rate.cat=3)
-# save(dredge_nesting, file="corhmm_dredge_nesting.Rsave")
-# corhmm_tbl_nesting <- corHMM:::getModelTable(dredge_nesting)
-# write.csv(corhmm_tbl_nesting, file="corhmm_tbl_nesting.csv")
 #--------------------------------------
 # LIFE HISTORY TRAITS VS. MEAN ANNUAL TEMPERATURE (BIO1)
 
-load("corhmm_dredge_sociality.Rsave")
-corhmm_tbl_sociality <- read.csv("corhmm_tbl_sociality.csv")
+load("corhmm_dredge_sociality_binary.Rsave")
+corhmm_tbl_sociality <- read.csv("corhmm_tbl_sociality_binary.csv")
 disc_model_soc <- dredge_sociality[[which.min(corhmm_tbl_sociality$AIC)]]$index.mat
 
 dat=merged_traits[,c("tips","sociality","mean_bio_1")]
