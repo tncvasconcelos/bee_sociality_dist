@@ -52,3 +52,7 @@ environmental_layers/
 .DS_Store
 plots/bee_maps.pdf
 old/
+
+proportion_heatmaps/data/
+proportion_heatmaps/bee_species_not_in_tree.csv
+proportion_heatmaps/subset_all_bees.csv
