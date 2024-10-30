@@ -1,118 +1,140 @@
-# rm(list=ls())
-setwd("/Users/tvasc/Desktop/bee_sociality_dist")
+#rm(list=ls())
+setwd("/Users/lenarh/Desktop/bee_sociality_dist")
 
 library(phytools)
 
-# Some exploratory analyses
-# Reloading traits, tree and climatic data:
+# Loading traits, tree and climatic data:
 traits <- read.csv("curated_data/bees_traits.csv")
 tree <- read.tree("curated_data/ML_beetree_pruned.tre")
-all_climatic_vars <- list.files("curated_data", "summstats.csv")
+all_climatic_vars <- list.files("curated_data", "summstats.csv") # Selects summstats.csv files from curated_data
 
 #traits <- subset(traits, traits$sociality!="parasite")
 #traits <- subset(traits, grepl(paste(c("Lasioglossum"), collapse="|"), traits$tips))
 #traits <- subset(traits, traits$tribe=="Xylocopini")
 
-# Let's run a phylANOVA between sociality and env variables
+# ------------------------------------------------------------------------------
+
+# Let's run a phylANOVA between sociality and envt variables using sociality_binary
 # and plot boxplots for visualization:
 
-climate_index <- 1
 pdf("plots/sociality_boxplots_all_vars.pdf")
-sink("sociality_result_phyloANOVA.txt")
+sink("sociality_result_phyloANOVA.txt") # prints results from console into text file 
+
+# Loop that iterates over each environmental variable in the all_climatic_vars vector
 for(climate_index in 1:length(all_climatic_vars)) {
-  climate <- read.csv(paste0("curated_data/",all_climatic_vars[climate_index]))
+  climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index])) # reading climate data corresponding to current index
   climate <- subset(climate, !is.na(climate[,3])) # removing species with NA means (should remove these points before this step)
-  sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label)
+  sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label) # find species that are present in the trait data, climate data, and tree
   
-  # making sure every dataset include the same species
+  # Create subsets of traits, climate data, and the tree that include only the sampled species
   subset_traits <- subset(traits, traits$tips %in% sampled_species)
   subset_climate <- subset(climate, climate$species %in% sampled_species)
   subset_tree <- keep.tip(tree, tree$tip.label[tree$tip.label %in% sampled_species])
   
+  # Create merged dataset
   merged_table <- merge(subset_traits, subset_climate, by.x="tips",by.y="species")
-  #if(length(unique(merged_table$nest)) > 1) {
-    boxplot(merged_table[,7]~merged_table$sociality, xlab="nest", ylab="env var")
-    title(gsub("_climate_summstats.csv","",all_climatic_vars[climate_index]))
+ 
+   #if(length(unique(merged_table$nest)) > 1) {
+    # Create boxplot
+    boxplot(merged_table[,9]~merged_table$sociality_binary, xlab="nest", ylab="env var") 
+    title(gsub("_climate_summstats.csv","",all_climatic_vars[climate_index])) # formatting title
     
-    sociality <- merged_table$sociality
-    names(sociality) <- merged_table$tips
+    # Prepare data for phylANOVA
+    sociality <- merged_table$sociality_binary 
+    names(sociality) <- merged_table$tips # making named vector for phylANOVA
     
-    one_clim_var <- merged_table[,7]
-    names(one_clim_var) <- merged_table$tips
+    one_clim_var <- merged_table[,9] # column 9 is the mean climate value for that variable across all variables
+    names(one_clim_var) <- merged_table$tips 
+    # sociality holds sociality states; one_clim_var holds the corresponding envt variable means, indexed by spp. names
     
-    label <- gsub("_climate_summstats.csv","",all_climatic_vars[climate_index])
-    print(paste0("sociality ~ ",label))
-    results <- phylANOVA(subset_tree, sociality, one_clim_var, p.adj="bonferroni") 
+    label <- gsub("_climate_summstats.csv","", all_climatic_vars[climate_index]) # removing character string from names of envt variables
+    print(paste0("sociality ~ ",label)) # print description of analysis being performed in each loop iteration
+    results <- phylANOVA(subset_tree, sociality, one_clim_var, p.adj="bonferroni") # run phylANOVA and save to results object
     print(results)
   #}
 }
+
 sink()
 dev.off()
 
-# nests
+# ------------------------------------------------------------------------------
+
+# phylANOVA between nesting and envt variables using nesting_binary
+
 pdf("plots/nesting_boxplots_all_vars.pdf")
 sink("nesting_result_phyloANOVA.txt")
+
+#climate_index <- 1
 for(climate_index in 1:length(all_climatic_vars)) {
   climate <- read.csv(paste0("curated_data/",all_climatic_vars[climate_index]))
-  climate <- subset(climate, !is.na(climate[,3])) # removing species with NA means (should remove these points before this step)
+  climate <- subset(climate, !is.na(climate[,3]))
   sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label)
   
-  # making sure every dataset include the same species
   subset_traits <- subset(traits, traits$tips %in% sampled_species)
   subset_climate <- subset(climate, climate$species %in% sampled_species)
   subset_tree <- keep.tip(tree, tree$tip.label[tree$tip.label %in% sampled_species])
   
   merged_table <- merge(subset_traits, subset_climate, by.x="tips",by.y="species")
-  #if(length(unique(merged_table$nest)) > 1) {
-  boxplot(merged_table[,7]~merged_table$nest, xlab="nest", ylab="env var")
-  title(gsub("_climate_summstats.csv","",all_climatic_vars[climate_index]))
+  colnames(merged_table)
   
-  nests <- merged_table$nest
+  #if(length(unique(merged_table$nest)) > 1) {
+  boxplot(merged_table[,9]~merged_table$nest_binary, xlab="nest", ylab="env var")
+  title(gsub("_climate_summstats.csv","", all_climatic_vars[climate_index]))
+  
+  nests <- merged_table$nest_binary
   names(nests) <- merged_table$tips
   
-  one_clim_var <- merged_table[,7]
+  one_clim_var <- merged_table[,9]
   names(one_clim_var) <- merged_table$tips
   
-  label <- gsub("_climate_summstats.csv","",all_climatic_vars[climate_index])
+  label <- gsub("_climate_summstats.csv","", all_climatic_vars[climate_index])
   print(paste0("nesting type ~ ",label))
   results <- phylANOVA(subset_tree, nests, one_clim_var, p.adj="bonferroni") 
   print(results)
   #}
 }
+
 sink()
 dev.off()
 
-# combination of nests and sociality
-#pdf("plots/nesting_boxplots_all_vars.pdf")
-#sink("nesting_result_phyloANOVA.txt")
-traits$comb_nest_soc <- paste(traits$sociality, traits$nest, sep="_")
-#table(traits$comb_nest_soc)
+# ------------------------------------------------------------------------------
+
+# phylANOVA for the combination of nests and sociality
+
+pdf("plots/nesting_boxplots_all_vars.pdf")
+sink("nesting_result_phyloANOVA.txt")
+
+traits$comb_nest_soc <- paste(traits$sociality_binary, traits$nest_binary, sep="_")
+table(traits$comb_nest_soc)
+
 for(climate_index in 1:length(all_climatic_vars)) {
-  climate <- read.csv(paste0("curated_data/",all_climatic_vars[climate_index]))
-  climate <- subset(climate, !is.na(climate[,3])) # removing species with NA means (should remove these points before this step)
+  climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index]))
+  climate <- subset(climate, !is.na(climate[,3]))
   sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label)
   
-  # making sure every dataset include the same species
   subset_traits <- subset(traits, traits$tips %in% sampled_species)
   subset_climate <- subset(climate, climate$species %in% sampled_species)
   subset_tree <- keep.tip(tree, tree$tip.label[tree$tip.label %in% sampled_species])
   
   merged_table <- merge(subset_traits, subset_climate, by.x="tips",by.y="species")
+  colnames(merged_table)
+  
   #if(length(unique(merged_table$nest)) > 1) {
-  boxplot(merged_table[,7]~merged_table$comb_nest_soc, xlab="nest", ylab="env var")
-  title(gsub("_climate_summstats.csv","",all_climatic_vars[climate_index]))
+  boxplot(merged_table[,9]~merged_table$comb_nest_soc, xlab="nest", ylab="env var")
+  title(gsub("_climate_summstats.csv","", all_climatic_vars[climate_index]))
   
   nests <- merged_table$comb_nest_soc
   names(nests) <- merged_table$tips
   
-  one_clim_var <- merged_table[,7]
+  one_clim_var <- merged_table[,9]
   names(one_clim_var) <- merged_table$tips
   
-  label <- gsub("_climate_summstats.csv","",all_climatic_vars[climate_index])
+  label <- gsub("_climate_summstats.csv","", all_climatic_vars[climate_index])
   print(paste0("nesting type ~ ",label))
   results <- phylANOVA(subset_tree, nests, one_clim_var, p.adj="bonferroni") 
   print(results)
   #}
 }
+
 sink()
 dev.off()
