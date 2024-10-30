@@ -18,13 +18,12 @@ tree <- read.tree("curated_data/ML_beetree_pruned.tre")
 climate <- list.files("curated_data", "summstats.csv", full.names = TRUE) # Selects summstats.csv files from curated_data
 
 # Merge climate data to prepare for phyloGLM
-climate_data <- NULL # Initialize empty dataframe
-
+traits_tmp <- traits 
 # Loop through each file, read in the data, and extract the 'mean_bio_x' column
-for (file in climate) {
-  temp_data <- read.csv(file)
-  var_name <- gsub(".*bio_(\\d+)_climate_summstats\\.csv", "mean_bio_\\1", file)
-  climate_data[[var_name]] <- temp_data[[var_name]]
+for (file_index in 1:length(climate)) {
+  temp_data <- read.csv(climate[file_index])
+  temp_data <- temp_data[,c(1, grep("mean",colnames(temp_data)))]
+  traits_tmp <- merge(traits_tmp, temp_data, by.x="tips", by.y="species", all=F)
 }
 
 climate <- subset(climate, !is.na(climate[,3])) # removing species with NA means
