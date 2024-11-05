@@ -13,18 +13,25 @@ library(maptools)
 library(dplyr)
 library(rnaturalearth)
 
-# Directories:
+# Directories
 getwd()                                       
-wd <- "/Users/lenarh/Desktop/Sociality Heatmaps"
+wd <- "/Users/lenarh/Desktop/bee_sociality_dist/proportion_heatmaps"
 setwd(wd)
 data_wd <- paste0(wd, "/data")
 data_wd
 
+# Source code
+functions_path <- file.path(wd, "example code", "00_utility_functions_synthesis.R") 
+source(functions_path)
+
 # Load and check data
-tree_data <- read.csv(file.path(data_wd, "bees_sociality_nest.csv")) 
+tree_data <- read.csv(file.path(data_wd, "bees_traits.csv")) 
 head(tree_data)
+colnames(tree_data)[3] <- "species" # to be consistent with all_bees_data
 colnames(tree_data) 
 nrow(tree_data)
+
+# tree_data contains trait information (sociality, nesting) for phylogeny tip species
 
 library(data.table)
 all_bees_data <- fread(file.path(data_wd, "05_cleaned_database.csv")) # fast read; relies on data.table package
@@ -32,13 +39,11 @@ head(all_bees_data)
 colnames(all_bees_data)
 nrow(all_bees_data)
 
-# Source code
-functions_path <- file.path(wd, "example code", "00_utility_functions_synthesis.R") 
-source(functions_path)
+# all_bees_data contains distribution data for all bees with data in GBIF
 
 # Make species columns and names consistent between tree_data and all_bees_data
 tree_data$tips <- gsub("_", " ", tree_data$tips) # remove underscores so species names match
-colnames(tree_data) <- c("family","tribe","species","sociality","nesting") # rename "tips" column to "species" (consistent with all_bees_data)
+#colnames(tree_data) <- c("family","tribe","species","sociality","nesting") # rename "tips" column to "species" (consistent with all_bees_data)
 head(tree_data)
 colnames(tree_data)
 nrow(tree_data)
@@ -99,16 +104,17 @@ colnames(subset_all_bees) <- c("species", "lat", "lon")
 colnames(subset_all_bees)
 nrow(subset_all_bees)
 head(subset_all_bees)
+# this contains occurrence (lat, lon) information for phylogeny tip species
 
 # Save CSV to working directory 
-write.csv(subset_all_bees, "subset_all_bees.csv", row.names = FALSE)
+write.csv(subset_all_bees, file.path(data_wd, "subset_all_bees.csv"), row.names = FALSE)
 
 length(unique(subset_all_bees$species)) # 3952 species, so some species in tree_data aren't in all_bees_data
 # Or their species names are formatted inconsistently. 
-
-# This dataframe is lat and long observations from all_bees_data but just for our tip species
+# re-ran this on 10/30/24: now 3748 species
 
 length(unique(tree_data$species)) # 4538 species... so not all of our tip species have GBIF observations in all_bees data.
+# re-ran on 10/30/24: now 4293 species
 length(unique(all_bees_data$species)) # was originally 11,607
 
 # Now to use this subset to make plots.
@@ -183,16 +189,16 @@ proj4string(twgd_data) # NA
 # Load in bee occurrence points
 load("thinned_points_res1.Rsave") # Use thinned points instead of all from GBIF
 colnames(thinned_points) <- c("species", "lat","lon")
-head(thinned_points)
+head(thinned_points). # ASK THAIS ABOUT THIS
 
 # Generate species richness per area 
-richness_per_area <- organize.bubble.plot2(points = thinned_points, twgd_data) 
-write.csv(richness_per_area, file = "richness_per_area.csv", row.names = FALSE) # Write to CSV so you don't have to run every time
+richness_per_area <- organize.bubble.plot2(points = thinned_points, twgd_data) # 369
+write.csv(richness_per_area, file.path(data_wd, "richness_per_area.csv"), row.names = FALSE) # Write to CSV so you don't have to run every time
 
 # Prepare data for mapping
 twgd_data_sf <- sf::st_as_sf(twgd_data) # convert twgd_data into sf object
 colnames(twgd_data_sf) 
-colnames(results) 
+#colnames(results)
 twgd_data_bees <- merge(twgd_data_sf, richness_per_area, by.x="LEVEL3_COD", by.y="one_area")
 twgd_data_bees <- subset(twgd_data_bees , twgd_data_bees$LEVEL1_COD%in%c(7,8)) # Just the Americas (7,8)
 colnames(twgd_data_bees)
@@ -210,7 +216,7 @@ spp_rich_heatmap
 #-----------------------PLOTTING: PROPORTION SOCIAL-----------------------------
 
 # For this, we'll use subset_all_bees and tree_data
-#   subset_all_bees is latitude and longitude observations for tip species
+#   subset_all_bees is latitude and longitude observations for tip species we have scored
 #   tree_data is trait scoring for tip species
 
 # First, we need to calculate proportion social species for each region in TWGD level 3
@@ -234,7 +240,8 @@ twgd_data <- as(twgd_data, "Spatial") # convert map data to sp object to prepare
 class(twgd_data) # SpatialPolygonsDataFrame
 proj4string(twgd_data) <- CRS("") # set CRS to NA to be consistent with points in subset_all_bees
 proj4string(twgd_data) # NA
-results_total_richness <- organize.bubble.plot2(points = subset_all_bees, twgd_data, colname = "spp_rich") # generate species richness per area 
+results_total_richness <- organize.bubble.plot2(points = subset_all_bees, twgd_data = twgd_data, colnames = "spp_rich") # generate species richness per area 
+
 head(results_total_richness) 
 nrow(results_total_richness) # 314
 summary(results_total_richness$spp_rich)
@@ -242,13 +249,13 @@ summary(results_total_richness$spp_rich)
 # Merge datasets into one that contains both occurrences + sociality scoring
 merged_data <- merge(subset_all_bees, tree_data, by = "species") 
 sociality_occurrence <- merged_data[ , c("species", "sociality", "lat", "lon")] # select relevant columns from merged dataset
-#sociality_occurrence <- st_as_sf(sociality_occurrence, coords = c("lon", "lat")) # convert into sf object
+# sociality_occurrence <- st_as_sf(sociality_occurrence, coords = c("lon", "lat")) # convert into sf object
 head(sociality_occurrence)
 
 # Subset sociality_occurrence to include only social species
 #   then re-run organize.bubble.plot2() to get species richness per polygon
 #   but just for social species
-just_social_spp <- sociality_occurrence[sociality_occurrence$sociality == "social" , ]
+just_social_spp <- sociality_occurrence[sociality_occurrence$sociality == "social", ]
 head(just_social_spp)
 results_social_richness <- organize.bubble.plot2(points = just_social_spp, twgd_data, colname = "social_rich") 
 head(results_social_richness)

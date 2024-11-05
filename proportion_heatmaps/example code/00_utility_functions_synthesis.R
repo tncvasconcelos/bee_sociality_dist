@@ -108,7 +108,7 @@ simplify.names.taxize <- function(names) {
 # Example of arguments usage: 
 #   organize.bubble.plot2(points = subset_social_bees, twgd_data, colname = "social_richness")
 
-organize.bubble.plot2 <- function(points, twgd_data, colname = "n_points", file = "list_result1.Rsave") {
+organize.bubble.plot2 <- function(points, twgd_data, colnames = "n_points", file = "list_result1.Rsave") {
   focal_areas <- as.character(twgd_data$LEVEL3_COD)  # Names of areas in global map shapefile
   species <- points[,1] # Vector of species names
   points <- points[,c("lon","lat")] # Vector of lat and long
