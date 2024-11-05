@@ -189,11 +189,8 @@ proj4string(twgd_data) # NA
 # Load in bee occurrence points
 load("thinned_points_res1.Rsave") # Use thinned points instead of all from GBIF
 colnames(thinned_points) <- c("species", "lat","lon")
-<<<<<<< HEAD
 head(thinned_points) # GBIF data for phylogeny tip species but filtered (only one occurrence point per cell, remove exotic species)
-=======
-head(thinned_points) # ASK THAIS ABOUT THIS
->>>>>>> b1e5964c4d7eba67d445a8d4f15b2f0203b771b7
+
 
 # Generate species richness per area 
 richness_per_area <- organize.bubble.plot2(points = thinned_points, twgd_data) # 369
