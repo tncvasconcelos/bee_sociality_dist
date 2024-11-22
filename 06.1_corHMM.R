@@ -2,7 +2,7 @@
 library(corHMM)
 library(OUwie)
 library(parallel)
-#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
+# setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 
 source("00_utility_functions.R")
 #--------------------------------------
@@ -59,13 +59,16 @@ all(shared_species %in% phy$tip.label)
 dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
-dat <- dat[,c("tips","sociality","nest")]
+dat <- dat[,c("tips","sociality_binary","nest_binary")]
 
 corhmm_fits <- corHMM:::fitCorrelationTest(phy, dat) 
 save(corhmm_fits, file = "corhmm_fits_cortest.Rsave")
 #load("corhmm_fits.Rsave")
 corhmm_tbl <- corHMM:::getModelTable(corhmm_fits)
-corhmm_fits[[4]]
+
+# LIKELIHOOD RATIO TEST
+teststat <- -2 * (corhmm_tbl$lnLik[2] - corhmm_tbl$lnLik[4])
+p.val <- pchisq(teststat, df = 8, lower.tail = FALSE)
 
 # determining corHMM models with corhmm dredge
 #dredge_sociality <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","sociality")],max.rate.cat=3)
@@ -73,7 +76,7 @@ corhmm_fits[[4]]
 #corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
 #write.csv(corhmm_tbl_sociality, file="corhmm_tbl_sociality_binary.csv")
 # 
-dredge_nesting <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","nest")],max.rate.cat=3)
+#dredge_nesting <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","nest")],max.rate.cat=3)
 # save(dredge_nesting, file="corhmm_dredge_nesting.Rsave")
 # corhmm_tbl_nesting <- corHMM:::getModelTable(dredge_nesting)
 # write.csv(corhmm_tbl_nesting, file="corhmm_tbl_nesting.csv")
