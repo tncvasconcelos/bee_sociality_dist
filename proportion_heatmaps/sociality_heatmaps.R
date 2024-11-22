@@ -1,17 +1,16 @@
 
 #-------------------------------------------------------------------------------
 #------------------------------------SETUP--------------------------------------
-rm(list=ls())
+#rm(list=ls())
 
 # Libraries
 library(sp)
 library(sf)
-library(raster)
 library(ggplot2)
 library(gridExtra)
-library(maptools)
 library(dplyr)
-library(rnaturalearth)
+library(data.table)
+library(patchwork)
 
 # Directories
 getwd()      
@@ -22,58 +21,52 @@ data_wd <- paste0(wd, "/data")
 data_wd
 
 # Source code
-functions_path <- file.path(wd, "example code", "00_utility_functions_synthesis.R") 
-source(functions_path)
+#functions_path <- file.path(wd, "example code", "00_utility_functions_synthesis.R") 
+#source(functions_path)
+# Note 11/6/24 - function that is in this document works, but one in 00_utility_functions_synthesis.R doesn't
 
 # Load and check data
-tree_data <- read.csv(file.path(data_wd, "bees_traits.csv")) 
-colnames(tree_data)[3] <- "species" # to be consistent with all_bees_data
-colnames(tree_data) 
-nrow(tree_data)
+tree_spp_traits <- read.csv(file.path(data_wd, "bees_traits.csv")) 
+colnames(tree_spp_traits)[3] <- "species" # to be consistent with gbif_occurrence_data
+colnames(tree_spp_traits) 
+nrow(tree_spp_traits) # 4293
 
-# tree_data contains trait information (sociality, nesting) for phylogeny tip species
+# tree_spp_traits contains trait information (sociality, nesting) for phylogeny tip species
 
-library(data.table)
-all_bees_data <- fread(file.path(data_wd, "05_cleaned_database.csv")) # fast read; relies on data.table package
-head(all_bees_data)
-colnames(all_bees_data)
-nrow(all_bees_data)
+gbif_occurrence_data <- fread(file.path(data_wd, "05_cleaned_database.csv")) # fast read; relies on data.table package
+head(gbif_occurrence_data)
+colnames(gbif_occurrence_data)
+nrow(gbif_occurrence_data) # 6890148
 
-# all_bees_data contains distribution data for all bees with data in GBIF
-tree_data$species
-# Make species columns and names consistent between tree_data and all_bees_data
-tree_data$species <- gsub("_", " ", tree_data$species) # remove underscores so species names match
-#colnames(tree_data) <- c("family","tribe","species","sociality","nesting") # rename "tips" column to "species" (consistent with all_bees_data)
-head(tree_data)
-colnames(tree_data)
-nrow(tree_data)
+# gbif_occurrence_data contains distribution data for all bees with data in GBIF
+
+tree_spp_traits$species
+
+# Make species columns and names consistent between tree_spp_traits and gbif_occurrence_data
+tree_spp_traits$species <- gsub("_", " ", tree_spp_traits$species) # remove underscores so species names match
+tree_spp_traits$species
 
 
 #-------------------------------------------------------------------------------
 #-----------------MAKE DATAFRAME OF SPECIES STILL TO SCORE----------------------
 
-# Will use dplyr to find species in all_bees_data that aren't in tree_data
-library(dplyr)
+# Find species in gbif_occurrence_data that aren't in tree_spp_traits
 
 # Perform anti-join
-bee_species_not_in_tree <- anti_join(all_bees_data, tree_data, by = "species")
-head(bee_species_not_in_tree) # contains rows of all_bees_data where "species" column doesn't have a match in tree_data
+bee_species_not_in_tree <- anti_join(gbif_occurrence_data, tree_spp_traits, by = "species")
+head(bee_species_not_in_tree) # contains rows of gbif_occurrence_data where "species" column doesn't have a match in tree_spp_traits
 
 # Investigate species not in tree
 nrow(bee_species_not_in_tree) # 761200 rows
 head(bee_species_not_in_tree$species) # There are multiple observations per species
-length(unique(bee_species_not_in_tree$species)) # 7655 unique species (in all_bees_data, but not tree_data) - this is what we want
+length(unique(bee_species_not_in_tree$species)) # 7655 unique species (in gbif_occurrence_data, but not tree_spp_traits) - this is what we want
 
 # Select unique species, keeping family and subfamily columns
 unique_species_not_in_tree <- unique(bee_species_not_in_tree[c("family", "subfamily", "species")])
+unique(unique_species_not_in_tree$family) # Unique species from all 7 families
 
 # Write unique species names to a CSV file
 write.csv(unique_species_not_in_tree, "unique_species_not_in_tree.csv", row.names = FALSE)
-
-# Load in that data
-unique_df <- read.csv("unique_species_not_in_tree.csv")
-head(unique_df)
-unique(unique_df$family) # Unique species from all 7 families
 
 # Let's see how many species there are per family that I need to score
 unique_families <- unique(unique_species_not_in_tree$family)
@@ -96,36 +89,35 @@ for (family in unique_families) {
 #-------------------------------------------------------------------------------
 #---------------------------------SUBSET DATAFRAME------------------------------
 
-# Try using a subset of all_bees_data for heatmaps; finish scoring sociality later
-# Note: make sure to transform "tips" column in tree_data to "species" before creating this subset
-subset_all_bees <- all_bees_data[all_bees_data$species %in% tree_data$species, 
+# Try using a subset of gbif_occurrence_data for heatmaps; finish scoring sociality later
+# Note: make sure to transform "tips" column in tree_spp_traits to "species" before creating this subset
+gbif_subset <- gbif_occurrence_data[gbif_occurrence_data$species %in% tree_spp_traits$species, 
                                  c("species", "decimalLatitude", "decimalLongitude")]
-colnames(subset_all_bees) <- c("species", "lat", "lon")
-colnames(subset_all_bees)
-nrow(subset_all_bees)
-head(subset_all_bees)
-# this contains occurrence (lat, lon) information for phylogeny tip species
+colnames(gbif_subset) <- c("species", "lat", "lon")
+colnames(gbif_subset)
+nrow(gbif_subset) # 6063857
+head(gbif_subset)
+
+# gbif_subset contains occurrence (lat, lon) information for phylogeny tip species
 
 # Save CSV to working directory 
-write.csv(subset_all_bees, file.path(data_wd, "subset_all_bees.csv"), row.names = FALSE)
+write.csv(gbif_subset, file.path(data_wd, "gbif_subset.csv"), row.names = FALSE) # ran 11/6/24
 
-length(unique(subset_all_bees$species)) # 3952 species, so some species in tree_data aren't in all_bees_data
-# Or their species names are formatted inconsistently. 
-# re-ran this on 10/30/24: now 3748 species
+length(unique(gbif_subset$species)) # 3748 species (compared to 4293 in tree_spp_traits), 
+# so some phylogeny tip species aren't in gbif_occurrence_data/lack occurrence points
 
-length(unique(tree_data$species)) # 4538 species... so not all of our tip species have GBIF observations in all_bees data.
-# re-ran on 10/30/24: now 4293 species
-length(unique(all_bees_data$species)) # was originally 11,607
+length(unique(gbif_occurrence_data$species)) # was originally 11,607
+
+# Once we finish scoring all bees from the Dorey et al. 2023 dataset, we can use gbif_occurrence_data instead
 
 # Now to use this subset to make plots.
-# Once we finish scoring, we can use all_bees_data instead.
 
 
 #-------------------------------------------------------------------------------
-#-------------------------SPECIES RICHNESS PER AREA-----------------------------
+#---------------------SPECIES RICHNESS PER AREA FUNCTION------------------------
 
-# First, we have to generate the total species richness for each area (i.e., count # of species within each area from global map)
-# DON'T RUN THIS FUNCTION unless you need to re-make species lists - results are loaded below
+# First, we have to generate the total species richness for each area 
+# (i.e., count # of species within each area from global map)
 organize.bubble.plot2 <- function(points, twgd_data) {
   focal_areas <- as.character(twgd_data$LEVEL3_COD)  # Names of areas in global map shapefile
   species <- points[,1] # Vector of species names
@@ -164,16 +156,18 @@ organize.bubble.plot2 <- function(points, twgd_data) {
 
 load("list_results_bees.Rsave") # Result of running the above function
 list_result1 # Loading the data - list of species present in each country shapefile 
-# Includes species not in tree_data that we haven't scored yet
-# And also the names are formatted differently than tree_data
+# Includes species not in tree_spp_traits that we haven't scored yet
+# And also the names are formatted differently than tree_spp_traits
 # Will have to harmonize the names 
 
 
 #-------------------------------------------------------------------------------
 #------------------------PLOTTING: SPECIES RICHNESS-----------------------------
-# Here, we're using ALL bees (not just the subset we scored for sociality and nesting)
 
-twgd_path = "TWDG/wgsrpd-master/level3/level3.shp"
+# Here, we're using ALL bees (not just the subset we scored for sociality and nesting)
+# Since we're interested in overall bee species richness patterns
+
+twgd_path <- "TWDG/wgsrpd-master/level3/level3.shp"
 
 # Load in map data
 twgd_data <- st_read(twgd_path)
@@ -183,24 +177,25 @@ class(twgd_data) # sf dataframe
 # and set CRS to NA so it is consistent with points
 twgd_data <- as(twgd_data, "Spatial")
 class(twgd_data) # SpatialPolygonsDataFrame
-proj4string(twgd_data) <- CRS("") # set CRS to NA
-proj4string(twgd_data) # NA
+proj4string(twgd_data) <- CRS("") 
+proj4string(twgd_data) 
 
 # Load in bee occurrence points
-load("thinned_points_res1.Rsave") # Use thinned points instead of all from GBIF
+load("thinned_points_res1.Rsave") # Use thinned points instead of all from GBIF (i.e., gbif_occurrence_data)
 colnames(thinned_points) <- c("species", "lat","lon")
-head(thinned_points) # GBIF data for phylogeny tip species but filtered (only one occurrence point per cell, remove exotic species)
-
+head(thinned_points) # filtered GBIF data for phylogeny tip species 
+# (only one occurrence point per cell, exotic species removed)
 
 # Generate species richness per area 
 richness_per_area <- organize.bubble.plot2(points = thinned_points, twgd_data) # 369
+colnames(richness_per_area)[1] <- "spp_rich"
+head(richness_per_area)
 write.csv(richness_per_area, file.path(data_wd, "richness_per_area.csv"), row.names = FALSE) # Write to CSV so you don't have to run every time
 # richness_per_area <- read.csv(file.path(data_wd, "richness_per_area.csv"))
 
 # Prepare data for mapping
 twgd_data_sf <- sf::st_as_sf(twgd_data) # convert twgd_data into sf object
 colnames(twgd_data_sf) 
-#colnames(results)
 twgd_data_bees <- merge(twgd_data_sf, richness_per_area, by.x="LEVEL3_COD", by.y="one_area")
 twgd_data_bees <- subset(twgd_data_bees , twgd_data_bees$LEVEL1_COD%in%c(7,8)) # Just the Americas (7,8)
 colnames(twgd_data_bees)
@@ -208,8 +203,8 @@ head(twgd_data_bees) # contains polygons with # of bee species per polygon
 
 # Mapping
 spp_rich_heatmap <- ggplot(data = twgd_data_bees) +
-  geom_sf(aes(fill = n_points)) +
-  scale_fill_viridis_c(option = "viridis") +
+  geom_sf(aes(fill = spp_rich)) +
+  scale_fill_viridis_c() +
   theme_classic()
 
 spp_rich_heatmap
@@ -218,203 +213,241 @@ spp_rich_heatmap
 #-------------------------------------------------------------------------------
 #-----------------------PLOTTING: PROPORTION SOCIAL-----------------------------
 
-# For this, we'll use subset_all_bees and tree_data
-#   subset_all_bees is latitude and longitude observations for tip species we have scored
-#   tree_data is trait scoring for tip species
+# For this, we'll use the thinned GBIF points and tree_spp_traits
+#   thinned_points is latitude and longitude observations for tip species we have scored, with additional filtering
+#   tree_spp_traits is trait scoring for tip species
 
 # First, we need to calculate proportion social species for each region in TWGD level 3
 # And ultimately get a dataset that has one row per TWGD level 3 region, 
 #   the geometry that describes that region in MULTIPOLYGON format,
 #   and proportion of species in that region which are social.
 
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-#-------- WORKED ON THIS ON NOVEMBER 5TH-----------------[BEGIN]
+thinned_points$species <- gsub("_"," ", thinned_points$species) # Make species name formatting consistent
 
-thinned_points$species <- gsub("_"," ",thinned_points$species)
-solitary_subset <- subset(thinned_points, thinned_points$species%in%tree_data$species[which(tree_data$sociality_binary=="solitary")])
-richness_solitary_per_area <- organize.bubble.plot2(points = solitary_subset, twgd_data) # 369
+# Create subset of thinned points that contains just species that are 1) in the tree and 2) social
+social_subset <- subset(thinned_points, thinned_points$species%in%tree_spp_traits$species[which(tree_spp_traits$sociality_binary=="social")])
 
-# Join results_social_richness and results_total_richness
-all_rich <- merge(richness_solitary_per_area, richness_per_area, by = "one_area")
+# Generate richness of social bees per TWGD area
+richness_social_per_area <- organize.bubble.plot2(points = social_subset, twgd_data) # 369
+head(richness_social_per_area)
+colnames(richness_social_per_area)[1] <- "social_rich"
+head(richness_social_per_area)
+
+# Join results_social_richness and richness_per_area
+all_rich <- merge(richness_social_per_area, richness_per_area, by = "one_area")
 head(all_rich)
-nrow(all_rich)
-
-# Calculate proportion social social_rich/spp_rich
-#   If social_rich/spp_rich is Inf or NA, make it 0
-all_rich$prop_social <- all_rich$n_points.x / all_rich$n_points.y
+all_rich <- all_rich[, -c(6, 7)] # Remove the last two columns
+colnames(all_rich)[3:4] <- c("lon", "lat") # Rename columns 3 and 4 to "lon" and "lat"
+all_rich <- all_rich[, c("one_area", "lat", "lon", "social_rich", "spp_rich")] # Reorder columns
 head(all_rich)
-all_rich <- all_rich[ , c("one_area", "prop_social")]
-head(all_rich) 
+nrow(all_rich) # 306... why?
 
-bee_twgd_sociality <- merge(twgd_data, all_rich, by.x = "LEVEL3_COD", by.y = "one_area")
-bee_twgd_sociality <- subset(bee_twgd_sociality, bee_twgd_sociality$LEVEL1_COD%in%c(7,8)) # subset to Americas
-bee_twgd_sociality <- st_as_sf(bee_twgd_sociality)
-
-# Mapping
-spp_rich_heatmap <- ggplot(data = bee_twgd_sociality) +
-  geom_sf(aes(fill = prop_social)) +
-  scale_fill_viridis_c(option = "viridis") +
-  theme_classic()
-
-spp_rich_heatmap
-
-#-------- WORKED ON THIS ON NOVEMBER 5TH-----------------[END]
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-
-# Join proportion sociality data with polygon coordinates that correspond to one_area codes
-
-bee_twgd_sociality <- bee_twgd_sociality[ , c("LEVEL3_NAM","LEVEL3_COD","prop_social","geometry")]
-write.csv(bee_twgd_sociality, "bee_twgd_sociality.csv", row.names = FALSE) # write to CSV so we don't have to run it all again
-head(bee_twgd_sociality)
-
-# Plot
-sociality_heatmap <- ggplot(data = bee_twgd_sociality) +
-  geom_sf(aes(fill = prop_social)) + 
-  scale_fill_viridis_c(option = "C",alpha = 0.9,  name = "Proportion Social Bee Species") +
-  theme_classic() +
-  coord_sf(ylim = c(-60, 90), xlim = c(-170, 0), expand = FALSE)
-
-sociality_heatmap
-
-# Loading in bee occurrence data
-subset_all_bees <- read.csv(file.path(data_wd, "subset_all_bees.csv"))
-head(subset_all_bees)
-
-# Load in map data
-twgd_path <- "TWDG/wgsrpd-master/level3/level3.shp"
-twgd_data <- st_read(twgd_path)
-class(twgd_data) # sf dataframe
-st_geometry_type(twgd_data) # MULTIPOLYGON geometry
-st_is_valid(twgd_data) # contains invalid geometries...
-
-# Running subset_all_bees through organize.bubble.plot2() to generate total species richness
-twgd_data <- as(twgd_data, "Spatial") # convert map data to sp object to prepare for organize.bubble.plot2 function
-class(twgd_data) # SpatialPolygonsDataFrame
-proj4string(twgd_data) <- CRS("") # set CRS to NA to be consistent with points in subset_all_bees
-proj4string(twgd_data) # NA
-results_total_richness <- organize.bubble.plot2(points = subset_all_bees, twgd_data = twgd_data, colnames = "spp_rich") # generate species richness per area 
-richness_per_area <- organize.bubble.plot2(points = thinned_points, twgd_data) # 369
-
-head(results_total_richness) 
-nrow(results_total_richness) # 314
-summary(results_total_richness$spp_rich)
-
-# Merge datasets into one that contains both occurrences + sociality scoring
-merged_data <- merge(subset_all_bees, tree_data, by = "species") 
-sociality_occurrence <- merged_data[ , c("species", "sociality", "lat", "lon")] # select relevant columns from merged dataset
-# sociality_occurrence <- st_as_sf(sociality_occurrence, coords = c("lon", "lat")) # convert into sf object
-head(sociality_occurrence)
-
-# Subset sociality_occurrence to include only social species
-#   then re-run organize.bubble.plot2() to get species richness per polygon
-#   but just for social species
-just_social_spp <- sociality_occurrence[sociality_occurrence$sociality == "social", ]
-head(just_social_spp)
-results_social_richness <- organize.bubble.plot2(points = just_social_spp, twgd_data, colname = "social_rich") 
-head(results_social_richness)
-nrow(results_social_richness) # 309 - why less than results_total_richness?
-
-# Join results_social_richness and results_total_richness
-all_rich <- merge(results_social_richness, results_total_richness, by = "one_area")
-head(all_rich)
-nrow(all_rich)
-
-# Calculate proportion social social_rich/spp_rich
+# Calculate proportion social using social_rich/spp_rich
 #   If social_rich/spp_rich is Inf or NA, make it 0
 all_rich$prop_social <- all_rich$social_rich / all_rich$spp_rich
 head(all_rich)
 all_rich <- all_rich[ , c("one_area", "prop_social")]
-head(all_rich) 
+head(all_rich) # now all_rich just contains the area code and proportion social species
 
-# Join proportion sociality data with polygon coordinates that correspond to one_area codes
+# Add polygon information from TWGD
 bee_twgd_sociality <- merge(twgd_data, all_rich, by.x = "LEVEL3_COD", by.y = "one_area")
 bee_twgd_sociality <- subset(bee_twgd_sociality, bee_twgd_sociality$LEVEL1_COD%in%c(7,8)) # subset to Americas
-bee_twgd_sociality <- bee_twgd_sociality[ , c("LEVEL3_NAM","LEVEL3_COD","prop_social","geometry")]
-write.csv(bee_twgd_sociality, "bee_twgd_sociality.csv", row.names = FALSE) # write to CSV so we don't have to run it all again
-head(bee_twgd_sociality)
+bee_twgd_sociality <- st_as_sf(bee_twgd_sociality)
+bee_twgd_sociality
 
-# Plot
-sociality_heatmap <- ggplot(data = bee_twgd_sociality) +
-  geom_sf(aes(fill = prop_social)) + 
-  scale_fill_viridis_c(option = "C",alpha = 0.9,  name = "Proportion Social Bee Species") +
-  theme_classic() +
-  coord_sf(ylim = c(-60, 90), xlim = c(-170, 0), expand = FALSE)
+# Save final dataset which contains area codes, polygons, and proportion social species
+write.csv(bee_twgd_sociality, file.path(data_wd, "bee_twgd_sociality.csv"), row.names = FALSE)
 
-sociality_heatmap
+# Mapping
+prop_social_heatmap <- ggplot(data = bee_twgd_sociality) +
+  geom_sf(aes(fill = prop_social)) +
+  labs(x = "Latitude", y = "Longitude", fill = "Proportion Social") +  # Relabel axes and legend
+  scale_fill_viridis_c(option = "viridis") +
+  xlim(-175, 0) +
+  theme_classic()
+
+prop_social_heatmap
+
 
 #-------------------------------------------------------------------------------
 #----------------PLOTTING: PROPORTION ABOVE-GROUND NESTING----------------------
 
-# Merge datasets into one that contains both occurrences + nesting scoring
-merged_data <- merge(subset_all_bees, tree_data, by = "species") 
-nesting_occurrence <- merged_data[ , c("species","nesting","lat","lon")] # select relevant columns from merged dataset
-#sociality_occurrence <- st_as_sf(sociality_occurrence, coords = c("lon", "lat")) # convert into sf object
-head(nesting_occurrence)
+thinned_points$species <- gsub("_"," ", thinned_points$species) # Make species name formatting consistent
 
-# Generate subset of nesting_occurrence dataset that only contains above-ground nesting species
-just_above_ground <- nesting_occurrence[nesting_occurrence$nesting == "above-ground", ]
-head(just_above_ground)
+# Create subset of thinned points that contains just species that are 1) in the tree and 2) above-ground nesters
+abvgrnd_subset <- subset(thinned_points, thinned_points$species%in%tree_spp_traits$species[which(tree_spp_traits$nest_binary=="aboveground")])
 
-# Run above-ground nesting subset through function to get richness of above-ground nesting species per area
-twgd_data <- as(twgd_data, "Spatial") # convert map data to sp object to prepare for organize.bubble.plot2 function
-class(twgd_data) # SpatialPolygonsDataFrame
-proj4string(twgd_data) <- CRS("") # set CRS to NA to be consistent with points in subset_all_bees
-proj4string(twgd_data) # NA
-results_nesting_richness <- organize.bubble.plot2(points = just_above_ground, twgd_data, colname = "above_ground_rich") 
-head(results_nesting_richness)
-nrow(results_nesting_richness) # 310
-write.csv(results_nesting_richness, "results_nesting_richness.csv", row.names = FALSE)
+# Generate richness of social bees per TWGD area
+richness_abvgrnd_per_area <- organize.bubble.plot2(points = abvgrnd_subset, twgd_data) # 369
+head(richness_abvgrnd_per_area)
+colnames(richness_abvgrnd_per_area)[1] <- "aboveground_rich"
+head(richness_abvgrnd_per_area)
 
-# Join results_nesting_richness and results_total_richness
-all_rich2 <- merge(results_nesting_richness, results_total_richness, by = "one_area")
+# Join results_abvgrnd_richness and richness_per_area
+all_rich2 <- merge(richness_abvgrnd_per_area, richness_per_area, by = "one_area")
 head(all_rich2)
-nrow(all_rich2)
-
-# Calculate proportion above-ground nesters
-all_rich2$prop_nest <- all_rich2$above_ground_rich / all_rich2$spp_rich
+all_rich2 <- all_rich2[, -c(6, 7)] # Remove the last two columns
+colnames(all_rich2)[3:4] <- c("lon", "lat") # Rename columns 3 and 4 to "lon" and "lat"
+all_rich2 <- all_rich2[, c("one_area", "lat", "lon", "aboveground_rich", "spp_rich")] # Reorder columns
 head(all_rich2)
-all_rich2 <- all_rich2[ , c("one_area", "prop_nest")]
-head(all_rich2) 
+nrow(all_rich2) # 309... why?
 
-# Join proportion nesting data with polygon coordinates that correspond to one_area codes
+# Calculate proportion social using aboveground_rich/spp_rich
+#   If aboveground_rich/spp_rich is Inf or NA, make it 0
+all_rich2$prop_aboveground <- all_rich2$aboveground_rich / all_rich2$spp_rich
+head(all_rich2)
+all_rich2 <- all_rich2[ , c("one_area", "prop_aboveground")]
+head(all_rich2) # now all_rich2 just contains the area code and proportion above-ground nesting species
+
+# Add polygon information from TWGD
 bee_twgd_nest <- merge(twgd_data, all_rich2, by.x = "LEVEL3_COD", by.y = "one_area")
 bee_twgd_nest <- subset(bee_twgd_nest, bee_twgd_nest$LEVEL1_COD%in%c(7,8)) # subset to Americas
-bee_twgd_nest <- bee_twgd_nest[ , c("LEVEL3_NAM","LEVEL3_COD","prop_nest","geometry")]
-write.csv(bee_twgd_nest, "bee_twgd_nest.csv", row.names = FALSE) # write to CSV so we don't have to run it all again
-head(bee_twgd_nest)
+bee_twgd_nest <- st_as_sf(bee_twgd_nest)
+bee_twgd_nest
 
-# Plot
-nesting_heatmap <- ggplot(data = bee_twgd_nest) +
-  geom_sf(aes(fill = prop_nest)) + 
-  scale_fill_viridis_c(option = "C", alpha = 0.9,  name = "Proportion Above-Ground Nesting Bee Species") +
-  theme_classic() +
-  coord_sf(ylim = c(-60, 90), xlim = c(-170, 0), expand = FALSE)
+# Save final dataset which contains area codes, polygons, and proportion above-ground nesting species
+write.csv(bee_twgd_nest, file.path(data_wd, "bee_twgd_nest.csv"), row.names = FALSE)
 
-nesting_heatmap
+# Mapping
+prop_aboveground_heatmap <- ggplot(data = bee_twgd_nest) +
+  geom_sf(aes(fill = prop_aboveground)) +
+  labs(x = "Latitude", y = "Longitude", fill = "Proportion Above-Ground Nesting") +  # Relabel axes and legend
+  scale_fill_viridis_c(option = "viridis") +
+  xlim(-175, 0) +
+  theme_classic()
+
+prop_aboveground_heatmap
 
 
 #-------------------------------------------------------------------------------
 #-----------------------------PLOTTING: TOGETHER--------------------------------
-# First, we need a merged dataset that includes the columns one_area, geometry, prop_social, and prop_nest
-#     Since we saved these datasets separately as CSVs, we will load them, join them, then create the faceted plot
-#     With a proportion social heatmap as A, and a proportion above-ground nesting heatmap as B
 
-# Load libraries
-library(dplyr)
-library(ggplot2)
-library(sf)
-library(gridExtra)
+# Combine the two plots side-by-side
+combined_plot <- prop_aboveground_heatmap + prop_social_heatmap +
+  plot_annotation(tag_levels = 'A') # This will add "A" and "B" labels automatically
 
-# Load datasets required for heatmaps
-bee_twgd_sociality <- read.csv("bee_twgd_sociality.csv", header = TRUE) 
-bee_twgd_nest <- read.csv("bee_twgd_nest.csv", header = TRUE)
+combined_plot # Display combined plot
 
-# Convert to sf objects
-bee_twgd_sociality <- st_as_sf(bee_twgd_sociality) 
-bee_twgd_nest <- st_as_sf(bee_twgd_nest)
+# Save plot
+ggsave("/Users/lenarh/Desktop/bee_sociality_dist/proportion_heatmaps/plots/combined_plot.pdf", 
+       plot = combined_plot, width = 8, height = 6)
 
-# Arrange plots side by side using grid.arrange from gridExtra
-grid.arrange(sociality_heatmap, nesting_heatmap, ncol = 2)
 
+#-------------------------------------------------------------------------------
+#---------------------RE-RUN HEATMAPS EXCLUDING BOMBUS--------------------------
+
+# Check how many Bombus are in datasets
+sum(grepl("Bombus", tree_spp_traits$species)) # 243
+sum(grepl("Bombus", thinned_points$species)) # 33283
+
+# Remove Bombus from trait and GBIF datasets
+tree_spp_traits_bombus <- tree_spp_traits[!grepl("^Bombus", tree_spp_traits$species), ]
+thinned_points_bombus <- thinned_points[!grepl("^Bombus", thinned_points$species), ]
+
+# Confirm Bombus removed
+sum(grepl("Bombus", tree_spp_traits_bombus$species)) # 0 
+sum(grepl("Bombus", thinned_points_bombus$species)) # 0
+
+# OVERALL SPECIES RICHNESS
+twgd_path <- "TWDG/wgsrpd-master/level3/level3.shp"
+twgd_data <- st_read(twgd_path)
+twgd_data <- as(twgd_data, "Spatial")
+class(twgd_data) 
+proj4string(twgd_data) <- CRS("") 
+proj4string(twgd_data) 
+
+richness_per_area_bombus <- organize.bubble.plot2(points = thinned_points_bombus, twgd_data) # 369
+colnames(richness_per_area_bombus)[1] <- "spp_rich"
+head(richness_per_area_bombus)
+write.csv(richness_per_area_bombus, file.path(data_wd, "richness_per_area_bombus.csv"), row.names = FALSE)
+
+twgd_data_sf <- sf::st_as_sf(twgd_data)
+colnames(twgd_data_sf) 
+twgd_data_bees_bombus <- merge(twgd_data_sf, richness_per_area_bombus, by.x="LEVEL3_COD", by.y="one_area")
+twgd_data_bees_bombus <- subset(twgd_data_bees_bombus, twgd_data_bees_bombus$LEVEL1_COD%in%c(7,8))
+colnames(twgd_data_bees_bombus)
+head(twgd_data_bees_bombus) 
+
+spp_rich_heatmap_bombus <- ggplot(data = twgd_data_bees_bombus) +
+  geom_sf(aes(fill = spp_rich)) +
+  scale_fill_viridis_c() +
+  theme_classic()
+
+spp_rich_heatmap_bombus
+
+# ABOVE-GROUND RICHNESS
+abvgrnd_subset_bombus <- subset(thinned_points_bombus, thinned_points_bombus$species%in%tree_spp_traits_bombus$species[which(tree_spp_traits_bombus$nest_binary=="aboveground")])
+richness_abvgrnd_per_area_bombus <- organize.bubble.plot2(points = abvgrnd_subset_bombus, twgd_data) # 369
+head(richness_abvgrnd_per_area_bombus)
+colnames(richness_abvgrnd_per_area_bombus)[1] <- "aboveground_rich"
+head(richness_abvgrnd_per_area_bombus)
+
+all_rich2_bombus <- merge(richness_abvgrnd_per_area_bombus, richness_per_area_bombus, by = "one_area")
+head(all_rich2_bombus)
+all_rich2_bombus <- all_rich2_bombus[, -c(6, 7)] 
+colnames(all_rich2_bombus)[3:4] <- c("lon", "lat") 
+all_rich2_bombus <- all_rich2_bombus[, c("one_area", "lat", "lon", "aboveground_rich", "spp_rich")] 
+head(all_rich2_bombus)
+nrow(all_rich2_bombus) # 305
+
+all_rich2_bombus$prop_aboveground <- all_rich2_bombus$aboveground_rich / all_rich2_bombus$spp_rich
+head(all_rich2_bombus)
+all_rich2_bombus <- all_rich2_bombus[ , c("one_area", "prop_aboveground")]
+head(all_rich2_bombus)
+
+bee_twgd_nest_bombus <- merge(twgd_data, all_rich2_bombus, by.x = "LEVEL3_COD", by.y = "one_area")
+bee_twgd_nest_bombus <- subset(bee_twgd_nest_bombus, bee_twgd_nest_bombus$LEVEL1_COD%in%c(7,8)) 
+bee_twgd_nest_bombus <- st_as_sf(bee_twgd_nest_bombus)
+bee_twgd_nest_bombus
+
+write.csv(bee_twgd_nest_bombus, file.path(data_wd, "bee_twgd_nest_bombus.csv"), row.names = FALSE)
+
+prop_aboveground_heatmap_bombus <- ggplot(data = bee_twgd_nest_bombus) +
+  geom_sf(aes(fill = prop_aboveground)) +
+  labs(x = "Latitude", y = "Longitude", fill = "Proportion Above-Ground Nesting") +  
+  scale_fill_viridis_c(option = "viridis") +
+  xlim(-175, 0) +
+  theme_classic()
+
+prop_aboveground_heatmap_bombus # Greenland is still showing up as 1.0 proportion above-ground nesting.
+
+# SOCIAL RICHNESS
+social_subset_bombus <- subset(thinned_points_bombus, thinned_points_bombus$species%in%tree_spp_traits_bombus$species[which(tree_spp_traits_bombus$sociality_binary=="social")])
+richness_social_per_area_bombus <- organize.bubble.plot2(points = social_subset_bombus, twgd_data) # 369
+head(richness_social_per_area_bombus)
+colnames(richness_social_per_area_bombus)[1] <- "social_rich"
+head(richness_social_per_area_bombus)
+all_rich_bombus <- merge(richness_social_per_area_bombus, richness_per_area_bombus, by = "one_area")
+head(all_rich_bombus)
+all_rich_bombus <- all_rich_bombus[, -c(6, 7)] 
+colnames(all_rich_bombus)[3:4] <- c("lon", "lat") 
+all_rich_bombus <- all_rich_bombus[, c("one_area", "lat", "lon", "social_rich", "spp_rich")] 
+head(all_rich_bombus)
+nrow(all_rich_bombus) # 298
+
+all_rich_bombus$prop_social <- all_rich_bombus$social_rich / all_rich_bombus$spp_rich
+head(all_rich_bombus)
+all_rich_bombus <- all_rich_bombus[ , c("one_area", "prop_social")]
+head(all_rich_bombus) 
+
+bee_twgd_sociality_bombus <- merge(twgd_data, all_rich_bombus, by.x = "LEVEL3_COD", by.y = "one_area")
+bee_twgd_sociality_bombus <- subset(bee_twgd_sociality_bombus, bee_twgd_sociality_bombus$LEVEL1_COD%in%c(7,8)) # subset to Americas
+bee_twgd_sociality_bombus <- st_as_sf(bee_twgd_sociality_bombus)
+bee_twgd_sociality_bombus
+
+write.csv(bee_twgd_sociality_bombus, file.path(data_wd, "bee_twgd_sociality_bombus.csv"), row.names = FALSE)
+
+prop_social_heatmap_bombus <- ggplot(data = bee_twgd_sociality_bombus) +
+  geom_sf(aes(fill = prop_social)) +
+  labs(x = "Latitude", y = "Longitude", fill = "Proportion Social") +  # Relabel axes and legend
+  scale_fill_viridis_c(option = "viridis") +
+  xlim(-175, 0) +
+  theme_classic()
+
+prop_social_heatmap_bombus # Greenland is still showing up as 1.0 proportion social.
+
+# COMBINED PLOT
+combined_plot_bombus <- prop_aboveground_heatmap_bombus + prop_social_heatmap_bombus +
+  plot_annotation(tag_levels = 'A') # This will add "A" and "B" labels automatically
+
+combined_plot_bombus # Display combined plot

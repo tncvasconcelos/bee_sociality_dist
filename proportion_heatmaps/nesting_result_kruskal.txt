@@ -1,0 +1,11 @@
+RStudioGD 
+        2 
+
+	Kruskal-Wallis rank sum test
+
+data:  one_clim_var by nests
+Kruskal-Wallis chi-squared = 126.73, df =
+1, p-value < 2.2e-16
+
+pdf 
+  4 
