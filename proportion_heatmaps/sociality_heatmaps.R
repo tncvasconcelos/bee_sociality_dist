@@ -1,7 +1,7 @@
 
 #-------------------------------------------------------------------------------
 #------------------------------------SETUP--------------------------------------
-#rm(list=ls())
+rm(list=ls())
 
 # Libraries
 library(sp)
@@ -101,7 +101,7 @@ head(gbif_subset)
 # gbif_subset contains occurrence (lat, lon) information for phylogeny tip species
 
 # Save CSV to working directory 
-write.csv(gbif_subset, file.path(data_wd, "gbif_subset.csv"), row.names = FALSE) # ran 11/6/24
+write.csv(gbif_subset, file.path(data_wd, "gbif_subset.csv"), row.names = FALSE) # ran 1/10/25
 
 length(unique(gbif_subset$species)) # 3748 species (compared to 4293 in tree_spp_traits), 
 # so some phylogeny tip species aren't in gbif_occurrence_data/lack occurrence points
@@ -165,7 +165,8 @@ list_result1 # Loading the data - list of species present in each country shapef
 #------------------------PLOTTING: SPECIES RICHNESS-----------------------------
 
 # Here, we're using ALL bees (not just the subset we scored for sociality and nesting)
-# Since we're interested in overall bee species richness patterns
+# To look at overall species richness patterns
+# Skip to loading the richness_per_area csv (below) which was already created, unless you need to re-run this
 
 twgd_path <- "TWDG/wgsrpd-master/level3/level3.shp"
 
@@ -191,7 +192,7 @@ richness_per_area <- organize.bubble.plot2(points = thinned_points, twgd_data) #
 colnames(richness_per_area)[1] <- "spp_rich"
 head(richness_per_area)
 write.csv(richness_per_area, file.path(data_wd, "richness_per_area.csv"), row.names = FALSE) # Write to CSV so you don't have to run every time
-# richness_per_area <- read.csv(file.path(data_wd, "richness_per_area.csv"))
+#richness_per_area <- read.csv(file.path(data_wd, "richness_per_area.csv"))
 
 # Prepare data for mapping
 twgd_data_sf <- sf::st_as_sf(twgd_data) # convert twgd_data into sf object
@@ -254,9 +255,11 @@ bee_twgd_sociality <- merge(twgd_data, all_rich, by.x = "LEVEL3_COD", by.y = "on
 bee_twgd_sociality <- subset(bee_twgd_sociality, bee_twgd_sociality$LEVEL1_COD%in%c(7,8)) # subset to Americas
 bee_twgd_sociality <- st_as_sf(bee_twgd_sociality)
 bee_twgd_sociality
+head(bee_twgd_sociality)
 
 # Save final dataset which contains area codes, polygons, and proportion social species
-write.csv(bee_twgd_sociality, file.path(data_wd, "bee_twgd_sociality.csv"), row.names = FALSE)
+write.csv(bee_twgd_sociality, file.path(data_wd, "bee_twgd_sociality.csv"), row.names = FALSE) # ran 1/10/25
+bee_twgd_sociality <- read.csv(file.path(data_wd, "bee_twgd_sociality.csv")) # error: "more columns than column names"
 
 # Mapping
 prop_social_heatmap <- ggplot(data = bee_twgd_sociality) +
@@ -306,7 +309,7 @@ bee_twgd_nest <- st_as_sf(bee_twgd_nest)
 bee_twgd_nest
 
 # Save final dataset which contains area codes, polygons, and proportion above-ground nesting species
-write.csv(bee_twgd_nest, file.path(data_wd, "bee_twgd_nest.csv"), row.names = FALSE)
+write.csv(bee_twgd_nest, file.path(data_wd, "bee_twgd_nest.csv"), row.names = FALSE) # ran 1/10/25
 
 # Mapping
 prop_aboveground_heatmap <- ggplot(data = bee_twgd_nest) +
@@ -322,8 +325,9 @@ prop_aboveground_heatmap
 #-------------------------------------------------------------------------------
 #-----------------------------PLOTTING: TOGETHER--------------------------------
 
-# Combine the two plots side-by-side
+# Combine the two plots
 combined_plot <- prop_aboveground_heatmap + prop_social_heatmap +
+  plot_layout(ncol = 1) + # Arrange the plots in one column
   plot_annotation(tag_levels = 'A') # This will add "A" and "B" labels automatically
 
 combined_plot # Display combined plot
