@@ -48,41 +48,65 @@ merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_4))
 merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_awi_pm_sr_yr))
 
 phy <- keep.tip(phy, which(phy$tip.label %in% merged_traits$tips))
-#--------------------------------------
-# LIFE HISTORY TRAITS VS. MEAN ANNUAL TEMPERATURE (BIO1)
 
-load("corhmm_dredge_sociality_binary.Rsave")
-corhmm_tbl_sociality <- read.csv("corhmm_tbl_sociality_binary.csv")
-disc_model_soc <- dredge_sociality[[which.min(corhmm_tbl_sociality$AIC)]]$index.mat
-
-dat=merged_traits[,c("tips","sociality","mean_bio_1")]
-phy=phy 
-disc_model = disc_model_soc 
-model_names="sociality_bio1_run5"
-
-# organize data
+#------------------------------------
+dat <- merged_traits
 shared_species <- intersect(dat$tips, phy$tip.label)
+
+all(shared_species %in% dat$tips)
+all(shared_species %in% phy$tip.label)
+
 dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
-# model structure
-#corhmm_set <- corhmm.model.setup(dat[,c(1,2)])
-corhmm_set <- disc_model 
+dat <- dat[,c("tips","sociality_binary","nest_binary","mean_awi_pm_sr_yr")]
+#--------------------------------------
+# LIFE HISTORY TRAITS VS. ARIDITY INDEX
 
-model_list <- houwie.model.setup(corhmm_set, model_names)
-# setting up parallel
+load("corhmm_dredge_binary.Rsave")
+corhmm_tbl <- read.csv("corhmm_tbl_dredge.csv")
+cid_disc_model <- dredge_sociality[[which.min(corhmm_tbl$AIC)]]$index.mat
+
+# now setting up OU part
+# Pure rate heterogeneity model for continuous and discrete
+cid_oum_model <- nest_oum_model <- soc_oum_model<- full_oum_model<- getOUParamStructure("OUM", 4, 2, null.model = TRUE) # character independent model (i.e. all observed states have the same optima)
+#               1                2                3                4 
+#   [1]"social|aboveground"   "solitary|aboveground" "social|ground"        "solitary|ground"    
+
+soc_oum_model[3,c(1,3,5,7)] <- 3
+soc_oum_model[3,c(2,4,6,8)] <- 4
+nest_oum_model[3,c(1,2,5,6)] <- 3
+nest_oum_model[3,c(3,4,7,8)] <- 4
+full_oum_model[3,c(1:8)] <- c(3:6)
+
+# All models that were run
+model_list <- list(list(2, cid_disc_model, "BM1"),
+                   list(2, cid_disc_model, "OU1"),
+                   list(2, cid_disc_model, soc_oum_model),
+                   list(2, cid_disc_model, nest_oum_model),
+                   list(2, cid_disc_model, full_oum_model),
+                   list(2, cid_disc_model, cid_oum_model)) # the two is for two rate classes
+
+names(model_list) <- c("bm1_8states_run2", "ou1_8states_run2", "oum_soc_8states_run2", "oum_nest_8states_run2", "oum_full_8states_run2", "oum_cid_8states_run2")
+
+# model_list <- list(list(1, disc_model, oum_color),
+#                   list(1, disc_model, oum_model))
+# names(model_list) <- c("oum_col", "oum_full")
+
 
 quickFunc <- function(model_list, model_name){
-  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10, root.p="maddfitz")
+  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
   file.name <- paste0("houwie_results/",model_name, ".Rsave")
   save(res, file=file.name)
 }
 
-mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 20)
+mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 6)
 
-
-# load("corhmm_dredge_nesting.Rsave")
-# corhmm_tbl_sociality <- read.csv("corhmm_tbl_nesting.csv")
-# disc_model_nest <- dredge_nesting[[which.min(corhmm_tbl_nesting$AIC)]]$index.mat
-# one.full.houwie.run(dat=merged_traits[,c("tips","nest","mean_bio_1")],
-#                     phy=phy, disc_model = disc_model_nest, model_names="nest_bio1_run1")
+# all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
+# 
+# oum_bm1_res <- hOUwie(phy, dat, 1, disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+# oum_ou1_res <- hOUwie(phy, dat, 1, disc_model, "OU1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+# oum_col_res <- hOUwie(phy, dat, 1, disc_model, oum_color, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+# oum_frt_res <- hOUwie(phy, dat, 1, disc_model, oum_fruit, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+# oum_ful_res <- hOUwie(phy, dat, 1, disc_model, oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+# oum_cid_res <- hOUwie(phy, dat, 2, cid_disc_model, cid_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
