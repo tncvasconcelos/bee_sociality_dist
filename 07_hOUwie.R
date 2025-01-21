@@ -98,7 +98,7 @@ names(model_list) <- c("bm1_8states_run2", "ou1_8states_run2", "oum_soc_8states_
 
 
 quickFunc <- function(model_list, model_name){
-  res <- hOUwie(phy, dat, 2, model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 1)
+  res <- hOUwie(phy, dat, 2, model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
   file.name <- paste0("houwie_results/",model_name, ".Rsave")
   save(res, file=file.name)
 }
