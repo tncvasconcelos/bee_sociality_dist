@@ -60,6 +60,9 @@ dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
 dat <- dat[,c("tips","sociality_binary","nest_binary","mean_awi_pm_sr_yr")]
+dat <- dat[!dat$mean_awi_pm_sr_yr == -Inf,]
+
+phy <- keep.tip(phy, dat$tips)
 #--------------------------------------
 # LIFE HISTORY TRAITS VS. ARIDITY INDEX
 
@@ -94,19 +97,26 @@ names(model_list) <- c("bm1_8states_run2", "ou1_8states_run2", "oum_soc_8states_
 # names(model_list) <- c("oum_col", "oum_full")
 
 
-quickFunc <- function(model_list, model_name){
-  res <- hOUwie(phy, dat, model_list[[1]], model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
-  file.name <- paste0("houwie_results/",model_name, ".Rsave")
-  save(res, file=file.name)
-}
+# quickFunc <- function(model_list, model_name){
+#   res <- hOUwie(phy, dat, 2, model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 1)
+#   file.name <- paste0("houwie_results/",model_name, ".Rsave")
+#   save(res, file=file.name)
+# }
+# 
+# mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 6)
 
-mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 6)
 
 # all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
 # 
-# oum_bm1_res <- hOUwie(phy, dat, 1, disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
-# oum_ou1_res <- hOUwie(phy, dat, 1, disc_model, "OU1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
-# oum_col_res <- hOUwie(phy, dat, 1, disc_model, oum_color, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
-# oum_frt_res <- hOUwie(phy, dat, 1, disc_model, oum_fruit, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
-# oum_ful_res <- hOUwie(phy, dat, 1, disc_model, oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
-# oum_cid_res <- hOUwie(phy, dat, 2, cid_disc_model, cid_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE)
+oum_bm1_res <- hOUwie(phy, dat, 2, cid_disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 50)
+save(oum_bm1_res, file="houwie_results/BM1.Rsave")
+oum_ou1_res <- hOUwie(phy, dat, 2, cid_disc_model, "OU1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 50)
+save(oum_ou1_res, file="houwie_results/OU1.Rsave")
+oum_soc_res <- hOUwie(phy, dat, 2, cid_disc_model, soc_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 50)
+save(oum_soc_res, file="houwie_results/oum_soc.Rsave")
+oum_nest_res <- hOUwie(phy, dat, 2, cid_disc_model, nest_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 50)
+save(oum_nest_res, file="houwie_results/oum_nest.Rsave")
+oum_ful_res <- hOUwie(phy, dat, 2, cid_disc_model, full_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 50)
+save(oum_ful_res, file="houwie_results/oum_full.Rsave")
+oum_cid_res <- hOUwie(phy, dat, 2, cid_disc_model, cid_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 50)
+save(oum_cid_res, file="houwie_results/oum_cid.Rsave")
