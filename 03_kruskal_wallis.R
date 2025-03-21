@@ -10,7 +10,9 @@
 
 #rm(list=ls())
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
+#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 library(phytools)
+library(ggplot2)
 
 # Loading traits, tree and climatic data
 traits <- read.csv("curated_data/bees_traits.csv")
@@ -77,12 +79,22 @@ for(climate_index in 1:length(all_climatic_vars)) {
   
   # Change levels so that ground displays as first box in boxplot
   merged_table$nest_binary <- factor(merged_table$nest_binary, levels = c("ground", "aboveground"))
-  
+
   # Boxplot for the current climate variable with significance level in title
-  boxplot(merged_table[, 9] ~ merged_table$nest_binary, 
-          xlab=" ", ylab="Env. Var", 
-          main=paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance),
-          names = c("Ground","Above-ground"))
+  # boxplot(merged_table[, 9] ~ merged_table$nest_binary,
+  #         xlab=" ", ylab="Env. Var",
+  #         main=paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance),
+  #         names = c("Ground","Above-ground"))
+
+  colnames(merged_table)[9] <- "value"
+  # Plot
+  ggplot(merged_table, aes(x = nest_binary, y = value, fill = nest_binary)) +
+    geom_violin(width = 0.3, position = position_nudge(x = -0.15)) +  # Half-width boxplot
+    geom_jitter(width = 0.15, alpha = 0.7, size = 0.1, color = "black") +  # Jittered points
+    scale_fill_brewer(palette = "Set3") +  # Nice color palette
+    theme_minimal() +
+    labs(x = "Nest Binary", y = "", title = "") +
+    theme(legend.position = "none")
   
   # Print the label for the current climate variable
   label <- gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index])
