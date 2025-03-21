@@ -108,7 +108,8 @@ names(model_list) <- c("bm1_8states_run2", "ou1_8states_run2", "oum_soc_8states_
 # 
 # # all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
 # # 
-oum_bm1_res <- hOUwie(phy, dat, 2, cid_disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
+rownames(dat) <- dat$tips
+oum_bm1_res <- hOUwie(phy, dat, 2, cid_disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 1)
 save(oum_bm1_res, file="houwie_results/BM1.Rsave")
 # oum_ou1_res <- hOUwie(phy, dat, 2, cid_disc_model, "OU1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
 # save(oum_ou1_res, file="houwie_results/OU1.Rsave")
