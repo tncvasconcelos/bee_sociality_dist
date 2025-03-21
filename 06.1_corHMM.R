@@ -63,7 +63,7 @@ dat <- dat[,c("tips","sociality_binary","nest_binary")]
 
 corhmm_fits <- corHMM:::fitCorrelationTest(phy, dat) 
 save(corhmm_fits, file = "corhmm_fits_cortest.Rsave")
-#load("corhmm_fits.Rsave")
+#load("corhmm_fits_cortest.Rsave")
 corhmm_tbl <- corHMM:::getModelTable(corhmm_fits)
 
 # LIKELIHOOD RATIO TEST
@@ -71,12 +71,109 @@ teststat <- -2 * (corhmm_tbl$lnLik[2] - corhmm_tbl$lnLik[4])
 p.val <- pchisq(teststat, df = 8, lower.tail = FALSE)
 
 # determining corHMM models with corhmm dredge
-#dredge_sociality <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","sociality")],max.rate.cat=3)
-#save(dredge_sociality, file="corhmm_dredge_sociality_binary.Rsave")
-#corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
-#write.csv(corhmm_tbl_sociality, file="corhmm_tbl_sociality_binary.csv")
+dredge_sociality <- corHMM:::corHMMDredge(phy, dat, max.rate.cat=2)
+?corHMM
+#dredge_sociality[[8]]
+save(dredge_sociality, file="corhmm_dredge_binary.Rsave")
+load("corhmm_dredge_binary.Rsave")
+corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
+write.csv(corhmm_tbl_sociality, file="corhmm_tbl_dredge.csv")
 # 
-#dredge_nesting <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","nest")],max.rate.cat=3)
+# dredge_nesting <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","nest")],max.rate.cat=3)
 # save(dredge_nesting, file="corhmm_dredge_nesting.Rsave")
 # corhmm_tbl_nesting <- corHMM:::getModelTable(dredge_nesting)
 # write.csv(corhmm_tbl_nesting, file="corhmm_tbl_nesting.csv")
+
+
+# Ancestral state plot
+
+# this script will reconstruc the ancestral state based on our model averaged corHMM models
+
+## functions 
+WtQ <- function(Q, Weights){
+  Weights <- Weights[!is.na(Q)]/sum(Weights[!is.na(Q)])
+  AvgQ <- sum(Q[!is.na(Q)] * Weights)
+  return(AvgQ)
+}
+
+
+# model average rates from corHMM
+getModelAvgRate <- function(file){
+  load(file)
+  rate.mat <- obj$res_ARD.ARD.2$index.mat
+  AICc <- unlist(lapply(obj, function(x) x$AICc))
+  AICwt <- exp(-0.5 * AICc - min(AICc))/sum(exp(-0.5 * AICc - min(AICc)))
+  # Solutions <- lapply(obj, function(x) x$solution)
+  Solutions <- lapply(obj, function(x) c(na.omit(c(x$solution))))
+  Solutions[[1]] <-  c(Solutions[[1]][1], NA, Solutions[[1]][2], NA,
+                       NA, Solutions[[1]][1], NA, Solutions[[1]][2])
+  Solutions[[2]] <-  c(Solutions[[2]][1], NA, Solutions[[2]][2], NA,
+                       NA, Solutions[[2]][1], NA, Solutions[[2]][2])
+  Rates <- do.call(rbind, Solutions)
+  p.wt <- apply(Rates, 2, function(x) WtQ(x, AICwt))
+  rate.mat[!is.na(rate.mat)] <- p.wt 
+  return(rate.mat)
+}
+
+
+getTipRecon <- function(file){
+  load(file)
+  phy <- obj$res_ER$phy
+  data <- obj$res_ER$data
+  root.p <- obj$res_ARD$root.p
+  index.mat <- obj$res_ARD.ARD.2$index.mat
+  p <- getModelAvgRate(file)[sapply(1:max(index.mat, na.rm = TRUE), function(x) match(x, index.mat))]
+  res <- corHMM(phy = phy, data = data, rate.cat = 2, rate.mat = index.mat, node.states = "marginal", p = p, root.p = root.p, get.tip.states = TRUE)
+  return(res)
+}
+
+getTipRecon()
+
+getModelAvgRate(corhmm_fits$hidden_Markov_correlated_model_fit)
+
+anc_recon <- corhmm_fits$hidden_Markov_correlated_model_fit$states
+
+boxplot(corhmm_fits$hidden_Markov_correlated_model_fit$states)
+
+dev.off()
+
+plotRECON <- function(phy, likelihoods, piecolors=NULL, cex=0.5, pie.cex=0.25, file=NULL, height=11, width=8.5, show.tip.label=TRUE, title=NULL, ...){
+  if(is.null(piecolors)){
+    piecolors=c("pink","black","red","yellow","forestgreen","blue","coral","aquamarine","darkorchid","gold","grey","yellow","#3288BD","#E31A1C")
+  }
+  if(!is.null(file)){
+    pdf(file, height=height, width=width,useDingbats=FALSE)
+  }
+  plot(phy, cex=cex, show.tip.label=show.tip.label, ...)
+  
+  if(!is.null(title)){
+    title(main=title)
+  }
+  nodelabels(pie=likelihoods,piecol=piecolors, cex=pie.cex)
+  states <- colnames(likelihoods)
+  #legend(x="topleft", states, cex=0.8, pt.bg=piecolors,col="black",pch=21);
+  
+  if(!is.null(file)){
+    dev.off()
+  }
+}
+
+pal1 <- hcl.colors(8, palette = "Viridis", alpha = 0.7)
+# pal2 <- hcl.colors(4, palette = "Inferno", alpha = 0.7)
+# 
+# custom_colors <- c(pal1, pal2)
+# names(custom_colors) <- colnames(anc_recon)
+
+pdf("corhmm_recon_test_no_dredge.pdf", height=45, width=10)
+plotRECON(
+  phy = phy,
+  likelihoods = anc_recon,
+  pie.cex = 0.3,  # Size of pie charts
+  show.tip.label = T,
+  cex=0.1
+)
+axisPhylo()
+dev.off()
+
+
+?plotRECON
