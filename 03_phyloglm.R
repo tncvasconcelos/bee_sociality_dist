@@ -144,7 +144,7 @@ colSums(is.na(traits_tmp)) # No NAs in any columns
 
 # phyloGLM for sociality
 sociality_results <- list()
-sink("results/sociality_result_phyloGLM.txt") # prints sociality results to text file
+sink("results/phyloGLM_sociality_result.txt") # prints sociality results to text file
 
 for (climate_var in climate_vars) {
   
@@ -156,16 +156,23 @@ for (climate_var in climate_vars) {
   
   # Store model summary in the sociality results list
   sociality_results[[climate_var]] <- summary(model)
+  
+  print(summary(model))
 }
 
 print(sociality_results)
 # none significant
 
+# bio_2 p = 0.9884
+# bio_4 p = 0.2007
+# bio_12 p = 0.5928
+# bio_15 p = 0.1941
+
 sink()
 
 # phyloGLM for nesting
 nesting_results <- list()
-sink("results/nesting_result_phyloGLM.txt") # prints nesting results to text file
+sink("results/phyloGLM_nesting_result.txt") # prints nesting results to text file
 
 for (climate_var in climate_vars) {
   
@@ -176,12 +183,20 @@ for (climate_var in climate_vars) {
   
   # Store model summary in the nesting results list
   nesting_results[[climate_var]] <- summary(model)
+  
+  print(summary(model))
 }
 
 print(nesting_results)
 # two marginally significant: mean_bio_13 and mean_bio_16, p = 0.09
 
 sink()
+
+# bio_1 p = 0.4253
+# bio_4 p = 0.2193
+# bio_12 p = 0.2016
+# bio_15 p = 0.7411
+
 
 ################################################################################
 
@@ -195,22 +210,78 @@ sink()
 
 # Visualizing results:
 
-# Boxplots for sociality
-pdf("plots/sociality_boxplots_phyloGLM.pdf")
+# Open a PDF for sociality boxplots
+pdf("plots/phyloGLM_sociality_boxplots.pdf", width = 10, height = 25)
+
+# Set up the plotting area for a multi-panel plot
+n_vars <- length(climate_vars)
+ncols <- 3  # Number of columns
+nrows <- ceiling(n_vars / ncols)  # Number of rows
+
+# Adjust margins
+par(mfrow = c(nrows, ncols), mar = c(5, 5, 3, 1)) 
+
+# Loop through the climate variables for sociality data
 for (climate_var in climate_vars) {
+  
+  # Extract p-value from the phyloGLM results
+  p_value <- sociality_results[[climate_var]]$coefficients[2, 4]  # p-value for the climate variable
+  
+  # Determine significance symbol
+  if (p_value < 0.0001) {
+    significance <- "****"
+  } else if (p_value < 0.001) {
+    significance <- "***"
+  } else if (p_value < 0.01) {
+    significance <- "**"
+  } else if (p_value < 0.05) {
+    significance <- "*"
+  } else {
+    significance <- ""  # No significance symbol if p >= 0.05
+  }
+  
+  # Boxplot for sociality
   boxplot(traits_tmp[[climate_var]] ~ traits_tmp$sociality_binary, 
-          xlab = "Sociality (0 = Solitary, 1 = Social)", ylab = climate_var, 
-          main = paste("Boxplot for", climate_var))
+          xlab = " ", ylab = "Env. Var", 
+          main = paste(climate_var, significance),  # Add significance symbol to title
+          names = c("Solitary", "Social"))
 }
 
+# Close PDF
 dev.off()
 
-# Boxplots for nesting
-pdf("plots/nesting_boxplots_phyloGLM.pdf")
+
+# Open a PDF for nesting boxplots
+pdf("plots/phyloGLM_nesting_boxplots.pdf", width = 10, height = 25)
+
+# Set up the plotting area for a multi-panel plot
+par(mfrow = c(nrows, ncols), mar = c(5, 5, 3, 1))  # Adjusted for better spacing
+
+# Loop through the climate variables for nesting data
 for (climate_var in climate_vars) {
+  
+  # Extract p-value from the phyloGLM results
+  p_value <- nesting_results[[climate_var]]$coefficients[2, 4]  # p-value for the climate variable
+  
+  # Determine significance symbol
+  if (p_value < 0.0001) {
+    significance <- "****"
+  } else if (p_value < 0.001) {
+    significance <- "***"
+  } else if (p_value < 0.01) {
+    significance <- "**"
+  } else if (p_value < 0.05) {
+    significance <- "*"
+  } else {
+    significance <- ""  # No significance symbol if p >= 0.05
+  }
+  
+  # Boxplot for nesting
   boxplot(traits_tmp[[climate_var]] ~ traits_tmp$nest_binary, 
-          xlab = "Nesting (0 = Ground, 1 = Aboveground)", ylab = climate_var, 
-          main = paste("Boxplot for", climate_var))
+          xlab = " ", ylab = "Env. Var", 
+          main = paste(climate_var, significance), # Add significance symbol to title
+          names = c("Ground", "Above-ground"))
 }
 
+# Close PDF
 dev.off()
