@@ -10,7 +10,6 @@
 
 #rm(list=ls())
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
-#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 library(phytools)
 library(ggplot2)
 
@@ -21,25 +20,18 @@ all_climatic_vars <- list.files("curated_data", "summstats.csv") # Selects summs
 
 
 ################################################################################
-# Kruskal-Wallis test (ignoring phylogeny) for nesting:
 
-# Testing nesting type ~ all is significant
-# Chi-squared = 3.8552, p-value = 0.04959 
+# Kruskal-Wallis test for nesting:
 
-# Open a PDF for saving the plots and sink for results
-pdf("plots/kruskal_nesting_boxplots_all.pdf", width = 10, height = 25)
-sink("results/kruskal_nesting_result_all.txt")
+# Open a sink for results
+sink("results/kruskal_nesting_results_all.txt")
 
-# Set up the plotting area for a multi-panel plot
-n_vars <- length(all_climatic_vars)
-ncols <- 3  # Set the number of columns
-nrows <- ceiling(n_vars / ncols)  # Calculate the number of rows
+# Initialize an empty list to store the ggplot objects
+plot_list <- list()
 
-# Adjust the size of the plotting area to fit all plots
-par(mfrow = c(nrows, ncols), mar = c(5, 5, 3, 1))  # Increase the top margin for space
-
-# Loop through the climatic variables for the nesting data
+# Loop through the climatic variables
 for(climate_index in 1:length(all_climatic_vars)) {
+  
   # Read the climate data for the current variable
   climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index]))
   climate <- subset(climate, !is.na(climate[, 3]))  # Remove rows with NA in the third column
@@ -53,17 +45,17 @@ for(climate_index in 1:length(all_climatic_vars)) {
   # Create merged dataset
   merged_table <- merge(subset_traits, subset_climate, by.x="tips", by.y="species")
   
-  # Prepare data for Kruskal-Wallis test
+  # Prepare data for Kruskal-Wallis
   nests <- merged_table$nest_binary
   names(nests) <- merged_table$tips
   
   one_clim_var <- merged_table[, 9]
   names(one_clim_var) <- merged_table$tips
   
-  # Kruskal-Wallis Test
+  # Kruskal-Wallis test
   kruskal_result <- kruskal.test(one_clim_var ~ nests)
   p_value <- kruskal_result$p.value
-  
+
   # Determine significance symbol
   if (p_value < 0.0001) {
     significance <- "****"
@@ -79,75 +71,98 @@ for(climate_index in 1:length(all_climatic_vars)) {
   
   # Change levels so that ground displays as first box in boxplot
   merged_table$nest_binary <- factor(merged_table$nest_binary, levels = c("ground", "aboveground"))
-
-  # Boxplot for the current climate variable with significance level in title
-  # boxplot(merged_table[, 9] ~ merged_table$nest_binary,
-  #         xlab=" ", ylab="Env. Var",
-  #         main=paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance),
-  #         names = c("Ground","Above-ground"))
-
-  colnames(merged_table)[9] <- "value"
-  # Plot
-  ggplot(merged_table, aes(x = nest_binary, y = value, fill = nest_binary)) +
-    geom_violin(width = 0.3, position = position_nudge(x = -0.15)) +  # Half-width boxplot
-    geom_jitter(width = 0.15, alpha = 0.7, size = 0.1, color = "black") +  # Jittered points
-    scale_fill_brewer(palette = "Set3") +  # Nice color palette
+  
+  # Create violin plot
+  colnames(merged_table)[9] <- "value" # Rename the variable to match with ggplot syntax
+  
+  plot <- ggplot(merged_table, aes(x = nest_binary, y = value, fill = nest_binary)) +
+    geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
+    geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +  # Jittered points
+    scale_fill_brewer(palette = "Set3") +
+    labs(x = "", y = "Climatic Variable Value", 
+         title = paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance)) +
+    scale_x_discrete(labels = c("ground" = "Ground", "aboveground" = "Above-ground")) +
     theme_minimal() +
-    labs(x = "Nest Binary", y = "", title = "") +
-    theme(legend.position = "none")
+    theme(
+      axis.line = element_line(color = "black"),
+      panel.grid = element_blank(),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      legend.position = "none", # Remove the legend
+      axis.ticks.y = element_line(color = "black", size = 0.5)
+    ) +
+    scale_y_continuous(
+      breaks = pretty(one_clim_var, n = 6),  # Get 6 nice breaks that are whole numbers
+      limits = range(one_clim_var, na.rm = TRUE)  # Set y-axis limits to match the data range
+    )
+  
+  # Print the plot
+  print(plot)
+  
+  # Add the plot to the list
+  plot_list[[climate_index]] <- plot
   
   # Print the label for the current climate variable
   label <- gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index])
   print(paste0("Testing nesting type ~ ", label))  # Print description of analysis being performed
   
-  # Print Kruskal-Wallis Test result to file
+  # Print Kruskal-Wallis test result to file
   print(kruskal_result)
 }
 
-# Reset plotting layout to a single panel
-par(mfrow = c(1, 1))
+# Dynamically calculate number of rows and columns based on the number of plots
+n_plots <- length(plot_list)
+ncols <- 3
+nrows <- ceiling(n_plots / ncols)  # Calculate the required number of rows to fit all plots
 
-# Close the sink and PDF for all variables
+# Arrange the plots into a grid
+grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+
+# Save the plot grid to a file
+ggsave("plots/kruskal_nesting_boxplots_all.pdf", 
+       plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
+       width = 15, height = 35)  # Change dimensions to un-scrunch plots
+
+# Close the sink
 sink()
-dev.off()
 
 ################################################################################
 
 # Now, create a separate PDF for bio_1, bio_4, bio_12, and bio_15
+
+# Summary of p-values:
+# Kruskal-Wallis
 # bio_1 p < 2.2e-16
 # bio_4 p < 2.2e-16
 # bio_12 p < 2.2e-16
 # bio_15 p = 0.0001512
 
-# vs. phyloGLM:
+# vs. phyloGLM
 # bio_1 p = 0.4253
 # bio_4 p = 0.2193
 # bio_12 p = 0.2016
 # bio_15 p = 0.7411
 
-# Open a PDF for saving the plots and sink for results for selected variables
-pdf("plots/kruskal_nesting_boxplots_selected.pdf", width = 15, height = 15)
-sink("results/kruskal_nesting_result_selected.txt")
+# Open sink for results
+sink("results/kruskal_nesting_results_selected.txt")
 
-# Set up the plotting area for a multi-panel plot
+# Select variables
 selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
                    "bio_12_climate_summstats.csv", "bio_15_climate_summstats.csv")
 
-# Mapping of selected variable names to descriptive labels
+# Rename variables
 variable_labels <- c("bio_1_climate_summstats.csv" = "Mean annual temperature",
                      "bio_4_climate_summstats.csv" = "Temperature seasonality",
                      "bio_12_climate_summstats.csv" = "Annual precipitation",
                      "bio_15_climate_summstats.csv" = "Precipitation seasonality")
 
-n_vars_selected <- length(selected_vars)
-ncols <- 2  # Set the number of columns
-nrows <- ceiling(n_vars_selected / ncols)  # Calculate the number of rows
+# Initialize an empty list to store the ggplot objects
+plot_list <- list()
 
-# Adjust the size of the plotting area to fit all plots (same aspect ratio as before)
-par(mfrow = c(nrows, ncols), mar = c(5, 5, 3, 1))  # Increase the top margin for space
-
-# Loop through the selected climate variables for the nesting data
+# Loop through the selected climate variables
 for(climate_index in 1:length(selected_vars)) {
+  
   # Read the climate data for the current variable
   climate <- read.csv(paste0("curated_data/", selected_vars[climate_index]))
   climate <- subset(climate, !is.na(climate[, 3]))  # Remove rows with NA in the third column
@@ -168,7 +183,7 @@ for(climate_index in 1:length(selected_vars)) {
   one_clim_var <- merged_table[, 9]
   names(one_clim_var) <- merged_table$tips
   
-  # Kruskal-Wallis Test
+  # Kruskal-Wallis test
   kruskal_result <- kruskal.test(one_clim_var ~ nests)
   p_value <- kruskal_result$p.value
   
@@ -188,52 +203,75 @@ for(climate_index in 1:length(selected_vars)) {
   # Set levels so box for ground nesters displays first
   merged_table$nest_binary <- factor(merged_table$nest_binary, levels = c("ground", "aboveground"))
   
-  # Create a color vector based on the levels of 'nest_binary'
-  box_colors <- ifelse(merged_table$nest_binary == "ground", "darkgreen", "lightgreen")
+  # Create violin plot
+  colnames(merged_table)[9] <- "value"
   
-  # Boxplot for the current climate variable with significance level in title
-  boxplot(merged_table[, 9] ~ merged_table$nest_binary, 
-          xlab=" ", ylab=variable_labels[selected_vars[climate_index]], 
-          main=paste(variable_labels[selected_vars[climate_index]], significance),
-          names = c("Ground", "Above-ground"), col = box_colors)
+  plot <- ggplot(merged_table, aes(x = nest_binary, y = value, fill = nest_binary)) +
+    geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
+    geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +  # Jittered points
+    scale_fill_brewer(palette = "Set3") +
+    labs(x = "", y = "Climatic Variable Value", 
+         title = paste(variable_labels[selected_vars[climate_index]], significance)) +
+    scale_x_discrete(labels = c("ground" = "Ground", "aboveground" = "Above-ground")) +
+    theme_minimal() +
+    theme(
+      axis.line = element_line(color = "black"),
+      panel.grid = element_blank(),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      legend.position = "none",  # Remove the legend
+      axis.ticks.y = element_line(color = "black", size = 0.5)
+    ) +
+    scale_y_continuous(
+      breaks = pretty(one_clim_var, n = 6),  # Get 6 nice breaks that are whole numbers
+      limits = range(one_clim_var, na.rm = TRUE)  # Set y-axis limits to match the data range
+    )
+  
+  # Print the plot
+  print(plot)
+  
+  # Add the plot to the list
+  plot_list[[climate_index]] <- plot
   
   # Print the label for the current climate variable
   label <- gsub("_climate_summstats.csv", "", selected_vars[climate_index])
   print(paste0("Testing nesting type ~ ", label))  # Print description of analysis being performed
   
-  # Print Kruskal-Wallis Test result to file
+  # Print Kruskal-Wallis result to file
   print(kruskal_result)
 }
 
-# Reset plotting layout to a single panel
-par(mfrow = c(1, 1))
+# Dynamically calculate the number of rows and columns based on the number of plots
+n_vars_selected <- length(selected_vars)
+ncols <- 2  # Set the number of columns
+nrows <- ceiling(n_vars_selected / ncols)  # Calculate the required number of rows
 
-# Close the sink and PDF
+# Arrange the plots into a grid
+grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+
+# Save the plot grid to a file
+ggsave("plots/kruskal_nesting_boxplots_selected.pdf", 
+       plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
+       width = 10, height = 10)  # Adjust dimensions to un-scrunch plots
+
+# Close the sink
 sink()
-dev.off()
 
 
 ################################################################################
 
-# Kruskal-Wallis test (ignoring phylogeny) for sociality:
+# Kruskal-Wallis test for sociality:
 
-# Testing sociality ~ all is significant
-# Chi-squared = 14.431, p-value = 0.0001454
+# Open a sink for results
+sink("results/kruskal_sociality_results_all.txt")
 
-# Open a PDF for saving the plots and sink for results
-pdf("plots/kruskal_sociality_boxplots.pdf", width = 10, height = 25)
-sink("results/kruskal_sociality_result.txt")
-
-# Set up the plotting area for a multi-panel plot
-n_vars <- length(all_climatic_vars)
-ncols <- 3  # Set the number of columns
-nrows <- ceiling(n_vars / ncols)  # Calculate the number of rows
-
-# Adjust the size of the plotting area to fit all plots
-par(mfrow = c(nrows, ncols), mar = c(5, 5, 3, 1))  # Increase the top margin for space
+# Initialize an empty list to store the ggplot objects
+plot_list <- list()
 
 # Loop through the climatic variables
 for(climate_index in 1:length(all_climatic_vars)) {
+  
   # Read the climate data for the current variable
   climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index]))
   climate <- subset(climate, !is.na(climate[,3]))  # Remove rows with NA in the third column
@@ -254,7 +292,7 @@ for(climate_index in 1:length(all_climatic_vars)) {
   one_clim_var <- merged_table[, 9]
   names(one_clim_var) <- merged_table$tips
   
-  # Kruskal-Wallis Test
+  # Kruskal-Wallis test
   kruskal_result <- kruskal.test(one_clim_var ~ sociality)
   p_value <- kruskal_result$p.value
   
@@ -274,12 +312,36 @@ for(climate_index in 1:length(all_climatic_vars)) {
   # Change levels so that solitary displays as first box in boxplot
   merged_table$sociality_binary <- factor(merged_table$sociality_binary, levels = c("solitary", "social"))
   
-  # Boxplot for the current climate variable with significance level in title
-  # Note: boxplot is generated within loop, which means contents of column 9 change with each new loop through to a new climate variable
-  boxplot(merged_table[, 9] ~ merged_table$sociality_binary, 
-          xlab=" ", ylab="Env. Var", 
-          main=paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance),
-          names = c("Solitary", "Social"))
+  # Create a violin plot
+  colnames(merged_table)[9] <- "value"
+  
+  plot <- ggplot(merged_table, aes(x = sociality_binary, y = value, fill = sociality_binary)) +
+    geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
+    geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +  # Jittered points
+    scale_fill_brewer(palette = "Set3") +
+    labs(x = "", y = "Climatic Variable Value", 
+         title = paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance)) +
+    scale_x_discrete(labels = c("solitary" = "Solitary", "social" = "Social")) +
+    theme_minimal() +
+    theme(
+      axis.line = element_line(color = "black"),
+      panel.grid = element_blank(),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      legend.position = "none",  # Remove the legend
+      axis.ticks.y = element_line(color = "black", size = 0.5)
+    ) +
+    scale_y_continuous(
+      breaks = pretty(one_clim_var, n = 6),  # Get 6 nice breaks that are whole numbers
+      limits = range(one_clim_var, na.rm = TRUE)  # Set y-axis limits to match the data range
+    )
+  
+  # Print the plot
+  print(plot)
+  
+  # Add the plot to the list
+  plot_list[[climate_index]] <- plot
   
   # Print the label for the current climate variable
   label <- gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index])
@@ -289,50 +351,58 @@ for(climate_index in 1:length(all_climatic_vars)) {
   print(kruskal_result) 
 }
 
-# Reset plotting layout to a single panel
-par(mfrow = c(1, 1))
+# Dynamically calculate the number of rows and columns based on the number of plots
+n_plots <- length(plot_list)
+ncols <- 3
+nrows <- ceiling(n_plots / ncols)  # Calculate the required number of rows to fit all plots
 
-# Close the sink and PDF
+# Arrange the plots into a grid
+grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+
+# Save the plot grid to a file
+ggsave("plots/kruskal_sociality_boxplots_all.pdf", 
+       plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
+       width = 15, height = 35)  # Adjust dimensions to un-scrunch plots
+
+# Close the sink
 sink()
-dev.off()
 
 ################################################################################
 
 # Now, create a separate PDF for bio_1, bio_4, bio_12, and bio_15 for sociality
+
+# Summary of p-values:
+# Kruskal-Wallis
 # bio_1 p = 0.05596
 # bio_4 p = 5.498e-06
 # bio_12 p < 2.2e-16
 # bio_15 p = 4.943e-07
 
-# vs. phyloGLM:
+# vs. phyloGLM
 # bio_2 p = 0.9884
 # bio_4 p = 0.2007
 # bio_12 p = 0.5928
 # bio_15 p = 0.1941
 
-# Open a PDF for saving the plots and sink for results for selected variables
-pdf("plots/kruskal_sociality_boxplots_selected.pdf", width = 15, height = 15)
-sink("results/kruskal_sociality_result_selected.txt")
+# Open a sink for results
+sink("results/kruskal_sociality_results_selected.txt")
 
-# Set up the plotting area for a multi-panel plot
+# Select variables
 selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
                    "bio_12_climate_summstats.csv", "bio_15_climate_summstats.csv")
 
-# Mapping of selected variable names to descriptive labels
+# Adjust variable names
 variable_labels <- c("bio_1_climate_summstats.csv" = "Mean annual temperature",
                      "bio_4_climate_summstats.csv" = "Temperature seasonality",
                      "bio_12_climate_summstats.csv" = "Annual precipitation",
                      "bio_15_climate_summstats.csv" = "Precipitation seasonality")
 
-n_vars_selected <- length(selected_vars)
-ncols <- 2  # Set the number of columns
-nrows <- ceiling(n_vars_selected / ncols)  # Calculate the number of rows
+# Initialize an empty list to store the ggplot objects
+plot_list <- list()
 
-# Adjust the size of the plotting area to fit all plots
-par(mfrow = c(nrows, ncols), mar = c(5, 5, 3, 1))  # Increase the top margin for space
-
-# Loop through the selected climate variables for sociality data
+# Loop through the selected climate variables
 for(climate_index in 1:length(selected_vars)) {
+  
   # Read the climate data for the current variable
   climate <- read.csv(paste0("curated_data/", selected_vars[climate_index]))
   climate <- subset(climate, !is.na(climate[, 3]))  # Remove rows with NA in the third column
@@ -353,7 +423,7 @@ for(climate_index in 1:length(selected_vars)) {
   one_clim_var <- merged_table[, 9]
   names(one_clim_var) <- merged_table$tips
   
-  # Kruskal-Wallis Test
+  # Kruskal-Wallis test
   kruskal_result <- kruskal.test(one_clim_var ~ sociality)
   p_value <- kruskal_result$p.value
   
@@ -373,27 +443,62 @@ for(climate_index in 1:length(selected_vars)) {
   # Set levels so box for solitary displays first
   merged_table$sociality_binary <- factor(merged_table$sociality_binary, levels = c("solitary", "social"))
   
-  # Create a color vector based on the levels of 'sociality_binary'
-  box_colors <- ifelse(merged_table$sociality_binary == "solitary", "darkgreen", "lightgreen")
+  # Create violin plot
+  colnames(merged_table)[9] <- "value"
   
-  # Boxplot for the current climate variable with significance level in title
-  boxplot(merged_table[, 9] ~ merged_table$sociality_binary, 
-          xlab=" ", ylab=variable_labels[selected_vars[climate_index]], 
-          main=paste(variable_labels[selected_vars[climate_index]], significance),
-          names = c("Solitary", "Social"), col = box_colors)
+  plot <- ggplot(merged_table, aes(x = sociality_binary, y = value, fill = sociality_binary)) +
+    geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
+    geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +  # Jittered points
+    scale_fill_brewer(palette = "Set3") +
+    labs(x = "", y = "Climatic Variable Value", 
+         title = paste(variable_labels[selected_vars[climate_index]], significance)) +
+    scale_x_discrete(labels = c("solitary" = "Solitary", "social" = "Social")) +
+    theme_minimal() +
+    theme(
+      axis.line = element_line(color = "black"),
+      panel.grid = element_blank(),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14),
+      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+      legend.position = "none",  # Remove the legend
+      axis.ticks.y = element_line(color = "black", size = 0.5)
+    ) +
+    scale_y_continuous(
+      breaks = pretty(one_clim_var, n = 6),  # Get 6 nice breaks that are whole numbers
+      limits = range(one_clim_var, na.rm = TRUE)  # Set y-axis limits to match the data range
+    )
+  
+  # Print the plot
+  print(plot)
+  
+  # Add the plot to the list
+  plot_list[[climate_index]] <- plot
   
   # Print the label for the current climate variable
   label <- gsub("_climate_summstats.csv", "", selected_vars[climate_index])
   print(paste0("sociality ~ ", label))  # Print description of analysis being performed
   
-  # Print Kruskal-Wallis Test result to file
+  # Print Kruskal-Wallis test result to file
   print(kruskal_result)
 }
+
+# Dynamically calculate the number of rows and columns based on the number of plots
+n_vars_selected <- length(selected_vars)
+ncols <- 2  # Set the number of columns
+nrows <- ceiling(n_vars_selected / ncols)  # Calculate the number of rows
+
+# Arrange the plots into a grid
+grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+
+# Save the plot grid to a file
+ggsave("plots/kruskal_sociality_boxplots_selected.pdf", 
+       plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
+       width = 10, height = 10)  # Adjust dimensions to un-scrunch plots
 
 # Reset plotting layout to a single panel
 par(mfrow = c(1, 1))
 
-# Close the sink and PDF for selected variables
+# Close the sink
 sink()
-dev.off()
+
 

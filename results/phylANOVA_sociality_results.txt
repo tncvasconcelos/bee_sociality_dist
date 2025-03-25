@@ -1,0 +1,594 @@
+[1] "sociality ~ all"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+               Sum Sq  Mean Sq
+x            369706.7 369706.7
+Residual 1322741316.7 356341.9
+          F value Pr(>F)
+x        1.037505  0.944
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+          social solitary
+social   0.00000 -1.01858
+solitary 1.01858  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.944
+solitary  0.944    1.000
+---------
+
+[1] "sociality ~ bio_1"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+               Sum Sq  Mean Sq
+x            30.55511 30.55511
+Residual 137447.23217 37.02781
+          F value Pr(>F)
+x        0.825193  0.956
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 0.908402
+solitary -0.908402 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.956
+solitary  0.956    1.000
+---------
+
+[1] "sociality ~ bio_10"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq   Mean Sq
+x          20950.03 20950.031
+Residual 6219672.26  1675.558
+           F value Pr(>F)
+x        12.503314  0.807
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social  solitary
+social   0.000000 -3.536003
+solitary 3.536003  0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.807
+solitary  0.807    1.000
+---------
+
+[1] "sociality ~ bio_11"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+              Sum Sq   Mean Sq
+x           45592.89 45592.891
+Residual 29740969.19  8012.115
+          F value Pr(>F)
+x        5.690494  0.875
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 2.385476
+solitary -2.385476 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.875
+solitary  0.875    1.000
+---------
+
+[1] "sociality ~ bio_12"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq  Mean Sq
+x          69872808 69872808
+Residual 1535643212   413697
+            F value Pr(>F)
+x        168.898519  0.364
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social solitary
+social     0.0000  12.9961
+solitary -12.9961   0.0000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.364
+solitary  0.364    1.000
+---------
+
+[1] "sociality ~ bio_13"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+           Sum Sq    Mean Sq
+x         1527099 1527099.50
+Residual 37567645   10120.59
+            F value Pr(>F)
+x        150.890302  0.406
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social     0.00000 12.28374
+solitary -12.28374  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.406
+solitary  0.406    1.000
+---------
+
+[1] "sociality ~ bio_14"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          87557.14 87557.1419
+Residual 2837427.56   764.3932
+            F value Pr(>F)
+x        114.544637  0.475
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social     0.00000 10.70255
+solitary -10.70255  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.475
+solitary  0.475    1.000
+---------
+
+[1] "sociality ~ bio_15"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          27003.61 27003.6128
+Residual 2861973.53   771.0058
+           F value Pr(>F)
+x        35.023878  0.669
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social  solitary
+social   0.000000 -5.918097
+solitary 5.918097  0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.669
+solitary  0.669    1.000
+---------
+
+[1] "sociality ~ bio_16"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq    Mean Sq
+x         12464706 12464705.9
+Residual 304931907    82147.6
+            F value Pr(>F)
+x        151.735476   0.41
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social solitary
+social     0.0000  12.3181
+solitary -12.3181   0.0000
+
+Pairwise corrected P-values:
+         social solitary
+social     1.00     0.41
+solitary   0.41     1.00
+---------
+
+[1] "sociality ~ bio_17"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          854882.2 854882.175
+Residual 28290702.3   7621.418
+            F value Pr(>F)
+x        112.168393  0.457
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social     0.00000 10.59096
+solitary -10.59096  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.457
+solitary  0.457    1.000
+---------
+
+[1] "sociality ~ bio_18"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq    Mean Sq
+x          7972229 7972228.87
+Residual 139007975   37448.27
+            F value Pr(>F)
+x        212.886445   0.32
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social     0.00000 14.59063
+solitary -14.59063  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social     1.00     0.32
+solitary   0.32     1.00
+---------
+
+[1] "sociality ~ bio_19"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+              Sum Sq   Mean Sq
+x           653515.5 653515.55
+Residual 119786212.7  32269.99
+           F value Pr(>F)
+x        20.251494  0.777
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 4.500166
+solitary -4.500166 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.777
+solitary  0.777    1.000
+---------
+
+[1] "sociality ~ bio_2"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          72206.44 72206.4396
+Residual 2310703.03   622.4954
+            F value Pr(>F)
+x        115.995132  0.468
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+          social solitary
+social    0.0000 -10.7701
+solitary 10.7701   0.0000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.468
+solitary  0.468    1.000
+---------
+
+[1] "sociality ~ bio_3"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq   Mean Sq
+x          2501.702 2501.7020
+Residual 582195.053  156.8413
+           F value Pr(>F)
+x        15.950527  0.782
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 3.993811
+solitary -3.993811 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.782
+solitary  0.782    1.000
+---------
+
+[1] "sociality ~ bio_4"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq    Mean Sq
+x          1761684 1761683.99
+Residual 263385760   70955.22
+           F value Pr(>F)
+x        24.828111  0.742
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social  solitary
+social   0.000000 -4.982781
+solitary 4.982781  0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.742
+solitary  0.742    1.000
+---------
+
+[1] "sociality ~ bio_5"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq   Mean Sq  F value
+x          950.4389 950.43889 49.44278
+Residual 71355.8012  19.22301         
+         Pr(>F)
+x         0.644
+Residual       
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social  solitary
+social   0.000000 -7.031556
+solitary 7.031556  0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.644
+solitary  0.644    1.000
+---------
+
+[1] "sociality ~ bio_6"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+              Sum Sq   Mean Sq
+x           862.5437 862.54371
+Residual 315059.0539  84.87582
+           F value Pr(>F)
+x        10.162419  0.834
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 3.187855
+solitary -3.187855 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.834
+solitary  0.834    1.000
+---------
+
+[1] "sociality ~ bio_7"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          362917.2 362917.187
+Residual 28210636.3   7599.848
+           F value Pr(>F)
+x        47.753216  0.629
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+          social solitary
+social   0.00000 -6.91037
+solitary 6.91037  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.629
+solitary  0.629    1.000
+---------
+
+[1] "sociality ~ bio_8"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          224961.1 224961.126
+Residual 15246347.8   4107.314
+           F value Pr(>F)
+x        54.770868  0.626
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 7.400734
+solitary -7.400734 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.626
+solitary  0.626    1.000
+---------
+
+[1] "sociality ~ bio_9"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          285966.1 285966.136
+Residual 26750318.5   7206.444
+           F value Pr(>F)
+x        39.682006   0.65
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+           social  solitary
+social   0.000000 -6.299366
+solitary 6.299366  0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social     1.00     0.65
+solitary   0.65     1.00
+---------
+
+[1] "sociality ~ bio_ai"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+              Sum Sq    Mean Sq
+x         5150632702 5150632702
+Residual 87666220740   23610617
+            F value Pr(>F)
+x        218.149009  0.321
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social     0.00000 14.76987
+solitary -14.76987  0.00000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.321
+solitary  0.321    1.000
+---------
+
+[1] "sociality ~ LAI"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+               Sum Sq  Mean Sq
+x            2053.773 2053.773
+Residual 12107544.558 3272.309
+          F value Pr(>F)
+x        0.627622  0.949
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            social solitary
+social    0.000000 0.792226
+solitary -0.792226 0.000000
+
+Pairwise corrected P-values:
+         social solitary
+social    1.000    0.949
+solitary  0.949    1.000
+---------
+

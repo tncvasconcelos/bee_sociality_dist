@@ -1,0 +1,1213 @@
+                           tips
+1    Acamptopoeum_submetallicum
+2           Acanthopus_palmatus
+3      Actenosigynes_fulvoniger
+4         Agapostemon_angelicus
+5         Agapostemon_femoratus
+6         Agapostemon_leunculus
+7      Agapostemon_melliventris
+8           Agapostemon_nasutus
+9       Agapostemon_semimelleus
+10         Agapostemon_sericeus
+11        Agapostemon_splendens
+12          Agapostemon_texanus
+13           Agapostemon_tyleri
+14     Agapostemon_viequesensis
+15        Agapostemon_virescens
+16       Agapostemonoides_hurdi
+17               Aglae_caerulea
+18          Aglaomelissa_duckei
+19      Alepidosceles_mamillata
+20             Allodape_exoloma
+21             Allodape_friesei
+22           Allodape_mucronata
+23            Allodape_punctata
+24          Allodape_skaifeorum
+25         Allodapula_acutigera
+26           Allodapula_dichroa
+27            Allodapula_empeyi
+28         Allodapula_melanopus
+29         Allodapula_variegata
+30       Alloscirtetica_chilena
+31          Alloscirtetica_gayi
+32        Alloscirtetica_gelida
+33        Alloscirtetica_lanosa
+34 Alloscirtetica_paraguayensis
+35       Alloscirtetica_porteri
+36    Alloscirtetica_rufitarsis
+37   Alloscirtetica_tristrigata
+38     Alloscirtetica_vagabunda
+39 Alloscirtetica_valparadisaea
+40          Alocandrena_porteri
+41           Amegilla_adelaidae
+42          Amegilla_aeruginosa
+43            Amegilla_albiceps
+44            Amegilla_albigena
+45         Amegilla_albigenella
+46               Amegilla_alpha
+47             Amegilla_asserta
+48         Amegilla_bombiformis
+49          Amegilla_calceifera
+50              Amegilla_calens
+51               Amegilla_calva
+52        Amegilla_chlorocyanea
+53           Amegilla_cingulata
+54             Amegilla_dawsoni
+55           Amegilla_dulcifera
+56         Amegilla_indistincta
+57              Amegilla_karlba
+58         Amegilla_murrayensis
+59              Amegilla_nubica
+60         Amegilla_paeninsulae
+61             Amegilla_pulchra
+62      Amegilla_quadrifasciata
+63         Amegilla_rhodoscymna
+64              Amegilla_scymna
+65          Amegilla_thorogoodi
+66     Amegilla_viridicingulata
+67             Amegilla_walkeri
+68         Ammobates_biastoides
+69         Ammobates_oraniensis
+70          Ammobates_punctatus
+71     Ammobatoides_abdominalis
+72   Ammobatoides_radoszkowskii
+73           Amphylaeus_morosus
+74       Amphylaeus_obscuriceps
+75              Ancyla_asiatica
+76                Ancyla_holtzi
+77       Ancylandrena_atoposoma
+78        Ancylandrena_koebelei
+79         Ancylandrena_larreae
+80     Ancylandrena_timberlakei
+81       Ancyloscelis_apiformis
+82       Ancyloscelis_sejunctus
+83         Ancyloscelis_ursinus
+        family          tribe
+1   Andrenidae    Calliopsini
+2       Apidae   Ericrocidini
+3   Colletidae               
+4  Halicitidae Caenohalictini
+5  Halicitidae Caenohalictini
+6  Halicitidae Caenohalictini
+7  Halicitidae Caenohalictini
+8  Halicitidae Caenohalictini
+9  Halicitidae Caenohalictini
+10 Halicitidae Caenohalictini
+11 Halicitidae Caenohalictini
+12 Halicitidae Caenohalictini
+13 Halicitidae Caenohalictini
+14 Halicitidae Caenohalictini
+15 Halicitidae Caenohalictini
+16 Halicitidae Caenohalictini
+17      Apidae     Euglossini
+18      Apidae   Ericrocidini
+19      Apidae      Emphorini
+20      Apidae     Allodapini
+21      Apidae     Allodapini
+22      Apidae     Allodapini
+23      Apidae     Allodapini
+24      Apidae     Allodapini
+25      Apidae     Allodapini
+26      Apidae     Allodapini
+27      Apidae     Allodapini
+28      Apidae     Allodapini
+29      Apidae     Allodapini
+30      Apidae       Eucerini
+31      Apidae       Eucerini
+32      Apidae       Eucerini
+33      Apidae       Eucerini
+34      Apidae       Eucerini
+35      Apidae       Eucerini
+36      Apidae       Eucerini
+37      Apidae       Eucerini
+38      Apidae       Eucerini
+39      Apidae       Eucerini
+40  Andrenidae    Andreninini
+41      Apidae   Anthophorini
+42      Apidae   Anthophorini
+43      Apidae   Anthophorini
+44      Apidae   Anthophorini
+45      Apidae   Anthophorini
+46      Apidae   Anthophorini
+47      Apidae   Anthophorini
+48      Apidae   Anthophorini
+49      Apidae   Anthophorini
+50      Apidae   Anthophorini
+51      Apidae   Anthophorini
+52      Apidae   Anthophorini
+53      Apidae   Anthophorini
+54      Apidae   Anthophorini
+55      Apidae   Anthophorini
+56      Apidae   Anthophorini
+57      Apidae   Anthophorini
+58      Apidae   Anthophorini
+59      Apidae   Anthophorini
+60      Apidae   Anthophorini
+61      Apidae   Anthophorini
+62      Apidae   Anthophorini
+63      Apidae   Anthophorini
+64      Apidae   Anthophorini
+65      Apidae   Anthophorini
+66      Apidae   Anthophorini
+67      Apidae   Anthophorini
+68      Apidae     Ammobatini
+69      Apidae     Ammobatini
+70      Apidae     Ammobatini
+71      Apidae  Ammobatoidini
+72      Apidae  Ammobatoidini
+73  Colletidae               
+74  Colletidae               
+75      Apidae       Ancylini
+76      Apidae       Ancylini
+77  Andrenidae    Andreninini
+78  Andrenidae    Andreninini
+79  Andrenidae    Andreninini
+80  Andrenidae    Andreninini
+81      Apidae      Emphorini
+82      Apidae      Emphorini
+83      Apidae      Emphorini
+   sociality_binary
+1          solitary
+2          solitary
+3          solitary
+4          solitary
+5          solitary
+6          solitary
+7          solitary
+8          solitary
+9          solitary
+10         solitary
+11         solitary
+12         solitary
+13         solitary
+14         solitary
+15         solitary
+16         solitary
+17         solitary
+18         solitary
+19         solitary
+20           social
+21           social
+22           social
+23           social
+24           social
+25           social
+26           social
+27           social
+28           social
+29           social
+30         solitary
+31         solitary
+32         solitary
+33         solitary
+34         solitary
+35         solitary
+36         solitary
+37         solitary
+38         solitary
+39         solitary
+40         solitary
+41         solitary
+42         solitary
+43         solitary
+44         solitary
+45         solitary
+46         solitary
+47         solitary
+48         solitary
+49         solitary
+50         solitary
+51         solitary
+52         solitary
+53         solitary
+54         solitary
+55         solitary
+56         solitary
+57         solitary
+58         solitary
+59         solitary
+60         solitary
+61         solitary
+62         solitary
+63         solitary
+64         solitary
+65         solitary
+66         solitary
+67         solitary
+68         solitary
+69         solitary
+70         solitary
+71         solitary
+72         solitary
+73           social
+74         solitary
+75         solitary
+76         solitary
+77         solitary
+78         solitary
+79         solitary
+80         solitary
+81         solitary
+82         solitary
+83         solitary
+   sociality_three_states
+1                solitary
+2                parasite
+3                solitary
+4                solitary
+5                solitary
+6                solitary
+7                solitary
+8                solitary
+9                solitary
+10               solitary
+11               solitary
+12               solitary
+13               solitary
+14               solitary
+15               solitary
+16               solitary
+17               parasite
+18               parasite
+19               solitary
+20                 social
+21                 social
+22                 social
+23                 social
+24                 social
+25                 social
+26                 social
+27                 social
+28                 social
+29                 social
+30               solitary
+31               solitary
+32               solitary
+33               solitary
+34               solitary
+35               solitary
+36               solitary
+37               solitary
+38               solitary
+39               solitary
+40               solitary
+41               solitary
+42               solitary
+43               solitary
+44               solitary
+45               solitary
+46               solitary
+47               solitary
+48               solitary
+49               solitary
+50               solitary
+51               solitary
+52               solitary
+53               solitary
+54               solitary
+55               solitary
+56               solitary
+57               solitary
+58               solitary
+59               solitary
+60               solitary
+61               solitary
+62               solitary
+63               solitary
+64               solitary
+65               solitary
+66               solitary
+67               solitary
+68               parasite
+69               parasite
+70               parasite
+71               parasite
+72               parasite
+73                 social
+74               solitary
+75               solitary
+76               solitary
+77               solitary
+78               solitary
+79               solitary
+80               solitary
+81               solitary
+82               solitary
+83               solitary
+   nest_three_states nest_binary
+1             ground      ground
+2           parasite      ground
+3             ground      ground
+4             ground      ground
+5             ground      ground
+6             ground      ground
+7             ground      ground
+8             ground      ground
+9             ground      ground
+10            ground      ground
+11            ground      ground
+12            ground      ground
+13            ground      ground
+14            ground      ground
+15            ground      ground
+16            ground      ground
+17          parasite aboveground
+18          parasite aboveground
+19            ground      ground
+20       aboveground aboveground
+21       aboveground aboveground
+22       aboveground aboveground
+23       aboveground aboveground
+24       aboveground aboveground
+25       aboveground aboveground
+26       aboveground aboveground
+27       aboveground aboveground
+28       aboveground aboveground
+29       aboveground aboveground
+30            ground      ground
+31            ground      ground
+32            ground      ground
+33            ground      ground
+34            ground      ground
+35            ground      ground
+36            ground      ground
+37            ground      ground
+38            ground      ground
+39            ground      ground
+40            ground      ground
+41            ground      ground
+42            ground      ground
+43            ground      ground
+44            ground      ground
+45            ground      ground
+46            ground      ground
+47            ground      ground
+48            ground      ground
+49            ground      ground
+50            ground      ground
+51            ground      ground
+52            ground      ground
+53            ground      ground
+54            ground      ground
+55            ground      ground
+56            ground      ground
+57            ground      ground
+58            ground      ground
+59            ground      ground
+60            ground      ground
+61            ground      ground
+62            ground      ground
+63            ground      ground
+64            ground      ground
+65            ground      ground
+66            ground      ground
+67            ground      ground
+68          parasite      ground
+69          parasite      ground
+70          parasite      ground
+71          parasite      ground
+72          parasite      ground
+73       aboveground aboveground
+74       aboveground aboveground
+75            ground      ground
+76            ground      ground
+77            ground      ground
+78            ground      ground
+79            ground      ground
+80            ground      ground
+81            ground      ground
+82            ground      ground
+83            ground      ground
+   n_bio_1 mean_bio_1 sd_bio_1
+1       47  13.385106 3.464602
+2       18  23.766667 2.351470
+3        2  21.050000 0.919239
+4      378  13.899206 5.339679
+5      177  11.161017 4.892853
+6       40  19.610000 3.566065
+7      219  18.033333 4.685703
+8      150  23.252667 3.472823
+9       37  20.816216 3.384566
+10     233  11.254506 3.247889
+11     292  14.007877 5.480704
+12     468  13.016453 5.565519
+13      43  18.518605 3.380987
+14       2  26.700000 0.424264
+15     430  10.792791 3.660705
+16       6  22.833333 0.913601
+17       7  25.385714 1.288964
+18       2  23.400000 2.121320
+19       2  21.450000 0.353553
+20      17  16.770588 3.481157
+21       8  17.025000 2.768574
+22       4  15.100000 2.981051
+23       9  18.011111 1.263373
+24      17  17.500000 1.528480
+25       7  15.257143 1.392668
+26      15  16.980000 2.198116
+27       3  18.166667 0.416333
+28      22  16.831818 2.222265
+29      35  18.017143 2.341629
+30       7  18.342857 3.522242
+31      17  13.817647 3.470993
+32       1   8.300000       NA
+33       8  18.475000 1.817966
+34       1  22.200000       NA
+35       7  19.528571 2.460836
+36      16  13.237500 5.863887
+37      18  14.583333 4.165863
+38       2  14.350000 3.889087
+39       9  16.311111 2.084733
+40       8  18.000000 4.740404
+41      26  25.600000 1.968553
+42      62  26.117742 2.029982
+43      12  16.250000 2.767506
+44     106  14.886792 4.446573
+45       5  22.480000 2.899483
+46       2  27.700000 0.565685
+47      61  17.445902 3.393453
+48      34  18.447059 3.160287
+49      10  21.120000 3.361481
+50      66  20.389394 2.423864
+51      14  23.057143 3.071135
+52     224  19.927679 3.762685
+53      46  19.589130 3.806733
+54      21  23.733333 2.155072
+55       4  23.475000 0.618466
+56       4  23.100000 2.925748
+57       4  27.475000 0.434933
+58      38  21.444737 4.969240
+59      50  20.920000 2.516557
+60       2  26.000000 0.424264
+61      48  21.279167 4.557386
+62     221  14.872398 4.200347
+63      13  23.261538 3.468318
+64       1  18.800000       NA
+65      18  23.600000 2.470532
+66       1  25.500000       NA
+67       8  27.450000 0.417475
+68       1  20.800000       NA
+69       4  17.825000 1.804393
+70      32  11.278125 2.706949
+71      24   7.945833 3.975138
+72       1   6.400000       NA
+73      24  13.837500 3.041426
+74      21  17.009524 2.985784
+75       2  15.950000 5.586144
+76       3  15.566667 4.565450
+77      19  17.815789 4.021368
+78       8  20.087500 3.602554
+79      36  20.044444 3.245343
+80      26  18.696154 4.156776
+81      78  23.707692 3.504571
+82      12  18.100000 3.892884
+83       3  22.433333 2.837840
+   se_bio_1 within_sp_var_bio_1
+1  0.505364            0.291784
+2  0.554247            0.761880
+3  0.650000            6.856918
+4  0.274643            0.036280
+5  0.367769            0.077479
+6  0.563844            0.342846
+7  0.316630            0.062620
+8  0.283555            0.091426
+9  0.556419            0.370644
+10 0.212776            0.058858
+11 0.320734            0.046965
+12 0.257266            0.029303
+13 0.515596            0.318926
+14 0.300000            6.856918
+15 0.176535            0.031893
+16 0.372976            2.285639
+17 0.487183            1.959120
+18 1.500000            6.856918
+19 0.250000            6.856918
+20 0.844305            0.806696
+21 0.978839            1.714230
+22 1.490525            3.428459
+23 0.421124            1.523760
+24 0.370711            0.806696
+25 0.526379            1.959120
+26 0.567551            0.914256
+27 0.240370            4.571279
+28 0.473788            0.623356
+29 0.395808            0.391824
+30 1.331282            1.959120
+31 0.841839            0.806696
+32       NA           13.713837
+33 0.642748            1.714230
+34       NA           13.713837
+35 0.930109            1.959120
+36 1.465972            0.857115
+37 0.981903            0.761880
+38 2.750000            6.856918
+39 0.694911            1.523760
+40 1.675986            1.714230
+41 0.386065            0.527455
+42 0.257808            0.221191
+43 0.798910            1.142820
+44 0.431889            0.129376
+45 1.296688            2.742767
+46 0.400000            6.856918
+47 0.434487            0.224817
+48 0.541985            0.403348
+49 1.062994            1.371384
+50 0.298357            0.207785
+51 0.820795            0.979560
+52 0.251405            0.061222
+53 0.561272            0.298127
+54 0.470275            0.653040
+55 0.309233            3.428459
+56 1.462874            3.428459
+57 0.217467            3.428459
+58 0.806117            0.360890
+59 0.355895            0.274277
+60 0.300000            6.856918
+61 0.657802            0.285705
+62 0.282546            0.062054
+63 0.961938            1.054911
+64       NA           13.713837
+65 0.582310            0.761880
+66       NA           13.713837
+67 0.147600            1.714230
+68       NA           13.713837
+69 0.902196            3.428459
+70 0.478525            0.428557
+71 0.811422            0.571410
+72       NA           13.713837
+73 0.620828            0.571410
+74 0.651551            0.653040
+75 3.950000            6.856918
+76 2.635864            4.571279
+77 0.922565            0.721781
+78 1.273695            1.714230
+79 0.540891            0.380940
+80 0.815211            0.527455
+81 0.396815            0.175818
+82 1.123779            1.142820
+83 1.638428            4.571279
+ [ reached 'max' / getOption("max.print") -- omitted 3631 rows ]
+                           tips
+1    Acamptopoeum_submetallicum
+2           Acanthopus_palmatus
+3      Actenosigynes_fulvoniger
+4         Agapostemon_angelicus
+5         Agapostemon_femoratus
+6         Agapostemon_leunculus
+7      Agapostemon_melliventris
+8           Agapostemon_nasutus
+9       Agapostemon_semimelleus
+10         Agapostemon_sericeus
+11        Agapostemon_splendens
+12          Agapostemon_texanus
+13           Agapostemon_tyleri
+14     Agapostemon_viequesensis
+15        Agapostemon_virescens
+16       Agapostemonoides_hurdi
+17               Aglae_caerulea
+18          Aglaomelissa_duckei
+19      Alepidosceles_mamillata
+20             Allodape_exoloma
+21             Allodape_friesei
+22           Allodape_mucronata
+23            Allodape_punctata
+24          Allodape_skaifeorum
+25         Allodapula_acutigera
+26           Allodapula_dichroa
+27            Allodapula_empeyi
+28         Allodapula_melanopus
+29         Allodapula_variegata
+30       Alloscirtetica_chilena
+31          Alloscirtetica_gayi
+32        Alloscirtetica_gelida
+33        Alloscirtetica_lanosa
+34 Alloscirtetica_paraguayensis
+35       Alloscirtetica_porteri
+36    Alloscirtetica_rufitarsis
+37   Alloscirtetica_tristrigata
+38     Alloscirtetica_vagabunda
+39 Alloscirtetica_valparadisaea
+40          Alocandrena_porteri
+41           Amegilla_adelaidae
+42          Amegilla_aeruginosa
+43            Amegilla_albiceps
+44            Amegilla_albigena
+45         Amegilla_albigenella
+46               Amegilla_alpha
+47             Amegilla_asserta
+48         Amegilla_bombiformis
+49          Amegilla_calceifera
+50              Amegilla_calens
+51               Amegilla_calva
+52        Amegilla_chlorocyanea
+53           Amegilla_cingulata
+54             Amegilla_dawsoni
+55           Amegilla_dulcifera
+56         Amegilla_indistincta
+57              Amegilla_karlba
+58         Amegilla_murrayensis
+59              Amegilla_nubica
+60         Amegilla_paeninsulae
+61             Amegilla_pulchra
+62      Amegilla_quadrifasciata
+63         Amegilla_rhodoscymna
+64              Amegilla_scymna
+65          Amegilla_thorogoodi
+66     Amegilla_viridicingulata
+67             Amegilla_walkeri
+68         Ammobates_biastoides
+69         Ammobates_oraniensis
+70          Ammobates_punctatus
+71     Ammobatoides_abdominalis
+72   Ammobatoides_radoszkowskii
+73           Amphylaeus_morosus
+74       Amphylaeus_obscuriceps
+75              Ancyla_asiatica
+76                Ancyla_holtzi
+77       Ancylandrena_atoposoma
+78        Ancylandrena_koebelei
+79         Ancylandrena_larreae
+80     Ancylandrena_timberlakei
+81       Ancyloscelis_apiformis
+82       Ancyloscelis_sejunctus
+83         Ancyloscelis_ursinus
+        family          tribe
+1   Andrenidae    Calliopsini
+2       Apidae   Ericrocidini
+3   Colletidae               
+4  Halicitidae Caenohalictini
+5  Halicitidae Caenohalictini
+6  Halicitidae Caenohalictini
+7  Halicitidae Caenohalictini
+8  Halicitidae Caenohalictini
+9  Halicitidae Caenohalictini
+10 Halicitidae Caenohalictini
+11 Halicitidae Caenohalictini
+12 Halicitidae Caenohalictini
+13 Halicitidae Caenohalictini
+14 Halicitidae Caenohalictini
+15 Halicitidae Caenohalictini
+16 Halicitidae Caenohalictini
+17      Apidae     Euglossini
+18      Apidae   Ericrocidini
+19      Apidae      Emphorini
+20      Apidae     Allodapini
+21      Apidae     Allodapini
+22      Apidae     Allodapini
+23      Apidae     Allodapini
+24      Apidae     Allodapini
+25      Apidae     Allodapini
+26      Apidae     Allodapini
+27      Apidae     Allodapini
+28      Apidae     Allodapini
+29      Apidae     Allodapini
+30      Apidae       Eucerini
+31      Apidae       Eucerini
+32      Apidae       Eucerini
+33      Apidae       Eucerini
+34      Apidae       Eucerini
+35      Apidae       Eucerini
+36      Apidae       Eucerini
+37      Apidae       Eucerini
+38      Apidae       Eucerini
+39      Apidae       Eucerini
+40  Andrenidae    Andreninini
+41      Apidae   Anthophorini
+42      Apidae   Anthophorini
+43      Apidae   Anthophorini
+44      Apidae   Anthophorini
+45      Apidae   Anthophorini
+46      Apidae   Anthophorini
+47      Apidae   Anthophorini
+48      Apidae   Anthophorini
+49      Apidae   Anthophorini
+50      Apidae   Anthophorini
+51      Apidae   Anthophorini
+52      Apidae   Anthophorini
+53      Apidae   Anthophorini
+54      Apidae   Anthophorini
+55      Apidae   Anthophorini
+56      Apidae   Anthophorini
+57      Apidae   Anthophorini
+58      Apidae   Anthophorini
+59      Apidae   Anthophorini
+60      Apidae   Anthophorini
+61      Apidae   Anthophorini
+62      Apidae   Anthophorini
+63      Apidae   Anthophorini
+64      Apidae   Anthophorini
+65      Apidae   Anthophorini
+66      Apidae   Anthophorini
+67      Apidae   Anthophorini
+68      Apidae     Ammobatini
+69      Apidae     Ammobatini
+70      Apidae     Ammobatini
+71      Apidae  Ammobatoidini
+72      Apidae  Ammobatoidini
+73  Colletidae               
+74  Colletidae               
+75      Apidae       Ancylini
+76      Apidae       Ancylini
+77  Andrenidae    Andreninini
+78  Andrenidae    Andreninini
+79  Andrenidae    Andreninini
+80  Andrenidae    Andreninini
+81      Apidae      Emphorini
+82      Apidae      Emphorini
+83      Apidae      Emphorini
+   sociality_binary
+1          solitary
+2          solitary
+3          solitary
+4          solitary
+5          solitary
+6          solitary
+7          solitary
+8          solitary
+9          solitary
+10         solitary
+11         solitary
+12         solitary
+13         solitary
+14         solitary
+15         solitary
+16         solitary
+17         solitary
+18         solitary
+19         solitary
+20           social
+21           social
+22           social
+23           social
+24           social
+25           social
+26           social
+27           social
+28           social
+29           social
+30         solitary
+31         solitary
+32         solitary
+33         solitary
+34         solitary
+35         solitary
+36         solitary
+37         solitary
+38         solitary
+39         solitary
+40         solitary
+41         solitary
+42         solitary
+43         solitary
+44         solitary
+45         solitary
+46         solitary
+47         solitary
+48         solitary
+49         solitary
+50         solitary
+51         solitary
+52         solitary
+53         solitary
+54         solitary
+55         solitary
+56         solitary
+57         solitary
+58         solitary
+59         solitary
+60         solitary
+61         solitary
+62         solitary
+63         solitary
+64         solitary
+65         solitary
+66         solitary
+67         solitary
+68         solitary
+69         solitary
+70         solitary
+71         solitary
+72         solitary
+73           social
+74         solitary
+75         solitary
+76         solitary
+77         solitary
+78         solitary
+79         solitary
+80         solitary
+81         solitary
+82         solitary
+83         solitary
+   sociality_three_states
+1                solitary
+2                parasite
+3                solitary
+4                solitary
+5                solitary
+6                solitary
+7                solitary
+8                solitary
+9                solitary
+10               solitary
+11               solitary
+12               solitary
+13               solitary
+14               solitary
+15               solitary
+16               solitary
+17               parasite
+18               parasite
+19               solitary
+20                 social
+21                 social
+22                 social
+23                 social
+24                 social
+25                 social
+26                 social
+27                 social
+28                 social
+29                 social
+30               solitary
+31               solitary
+32               solitary
+33               solitary
+34               solitary
+35               solitary
+36               solitary
+37               solitary
+38               solitary
+39               solitary
+40               solitary
+41               solitary
+42               solitary
+43               solitary
+44               solitary
+45               solitary
+46               solitary
+47               solitary
+48               solitary
+49               solitary
+50               solitary
+51               solitary
+52               solitary
+53               solitary
+54               solitary
+55               solitary
+56               solitary
+57               solitary
+58               solitary
+59               solitary
+60               solitary
+61               solitary
+62               solitary
+63               solitary
+64               solitary
+65               solitary
+66               solitary
+67               solitary
+68               parasite
+69               parasite
+70               parasite
+71               parasite
+72               parasite
+73                 social
+74               solitary
+75               solitary
+76               solitary
+77               solitary
+78               solitary
+79               solitary
+80               solitary
+81               solitary
+82               solitary
+83               solitary
+   nest_three_states nest_binary
+1             ground      ground
+2           parasite      ground
+3             ground      ground
+4             ground      ground
+5             ground      ground
+6             ground      ground
+7             ground      ground
+8             ground      ground
+9             ground      ground
+10            ground      ground
+11            ground      ground
+12            ground      ground
+13            ground      ground
+14            ground      ground
+15            ground      ground
+16            ground      ground
+17          parasite aboveground
+18          parasite aboveground
+19            ground      ground
+20       aboveground aboveground
+21       aboveground aboveground
+22       aboveground aboveground
+23       aboveground aboveground
+24       aboveground aboveground
+25       aboveground aboveground
+26       aboveground aboveground
+27       aboveground aboveground
+28       aboveground aboveground
+29       aboveground aboveground
+30            ground      ground
+31            ground      ground
+32            ground      ground
+33            ground      ground
+34            ground      ground
+35            ground      ground
+36            ground      ground
+37            ground      ground
+38            ground      ground
+39            ground      ground
+40            ground      ground
+41            ground      ground
+42            ground      ground
+43            ground      ground
+44            ground      ground
+45            ground      ground
+46            ground      ground
+47            ground      ground
+48            ground      ground
+49            ground      ground
+50            ground      ground
+51            ground      ground
+52            ground      ground
+53            ground      ground
+54            ground      ground
+55            ground      ground
+56            ground      ground
+57            ground      ground
+58            ground      ground
+59            ground      ground
+60            ground      ground
+61            ground      ground
+62            ground      ground
+63            ground      ground
+64            ground      ground
+65            ground      ground
+66            ground      ground
+67            ground      ground
+68          parasite      ground
+69          parasite      ground
+70          parasite      ground
+71          parasite      ground
+72          parasite      ground
+73       aboveground aboveground
+74       aboveground aboveground
+75            ground      ground
+76            ground      ground
+77            ground      ground
+78            ground      ground
+79            ground      ground
+80            ground      ground
+81            ground      ground
+82            ground      ground
+83            ground      ground
+   n_bio_1 mean_bio_1 sd_bio_1
+1       47  13.385106 3.464602
+2       18  23.766667 2.351470
+3        2  21.050000 0.919239
+4      378  13.899206 5.339679
+5      177  11.161017 4.892853
+6       40  19.610000 3.566065
+7      219  18.033333 4.685703
+8      150  23.252667 3.472823
+9       37  20.816216 3.384566
+10     233  11.254506 3.247889
+11     292  14.007877 5.480704
+12     468  13.016453 5.565519
+13      43  18.518605 3.380987
+14       2  26.700000 0.424264
+15     430  10.792791 3.660705
+16       6  22.833333 0.913601
+17       7  25.385714 1.288964
+18       2  23.400000 2.121320
+19       2  21.450000 0.353553
+20      17  16.770588 3.481157
+21       8  17.025000 2.768574
+22       4  15.100000 2.981051
+23       9  18.011111 1.263373
+24      17  17.500000 1.528480
+25       7  15.257143 1.392668
+26      15  16.980000 2.198116
+27       3  18.166667 0.416333
+28      22  16.831818 2.222265
+29      35  18.017143 2.341629
+30       7  18.342857 3.522242
+31      17  13.817647 3.470993
+32       1   8.300000       NA
+33       8  18.475000 1.817966
+34       1  22.200000       NA
+35       7  19.528571 2.460836
+36      16  13.237500 5.863887
+37      18  14.583333 4.165863
+38       2  14.350000 3.889087
+39       9  16.311111 2.084733
+40       8  18.000000 4.740404
+41      26  25.600000 1.968553
+42      62  26.117742 2.029982
+43      12  16.250000 2.767506
+44     106  14.886792 4.446573
+45       5  22.480000 2.899483
+46       2  27.700000 0.565685
+47      61  17.445902 3.393453
+48      34  18.447059 3.160287
+49      10  21.120000 3.361481
+50      66  20.389394 2.423864
+51      14  23.057143 3.071135
+52     224  19.927679 3.762685
+53      46  19.589130 3.806733
+54      21  23.733333 2.155072
+55       4  23.475000 0.618466
+56       4  23.100000 2.925748
+57       4  27.475000 0.434933
+58      38  21.444737 4.969240
+59      50  20.920000 2.516557
+60       2  26.000000 0.424264
+61      48  21.279167 4.557386
+62     221  14.872398 4.200347
+63      13  23.261538 3.468318
+64       1  18.800000       NA
+65      18  23.600000 2.470532
+66       1  25.500000       NA
+67       8  27.450000 0.417475
+68       1  20.800000       NA
+69       4  17.825000 1.804393
+70      32  11.278125 2.706949
+71      24   7.945833 3.975138
+72       1   6.400000       NA
+73      24  13.837500 3.041426
+74      21  17.009524 2.985784
+75       2  15.950000 5.586144
+76       3  15.566667 4.565450
+77      19  17.815789 4.021368
+78       8  20.087500 3.602554
+79      36  20.044444 3.245343
+80      26  18.696154 4.156776
+81      78  23.707692 3.504571
+82      12  18.100000 3.892884
+83       3  22.433333 2.837840
+   se_bio_1 within_sp_var_bio_1
+1  0.505364            0.291784
+2  0.554247            0.761880
+3  0.650000            6.856918
+4  0.274643            0.036280
+5  0.367769            0.077479
+6  0.563844            0.342846
+7  0.316630            0.062620
+8  0.283555            0.091426
+9  0.556419            0.370644
+10 0.212776            0.058858
+11 0.320734            0.046965
+12 0.257266            0.029303
+13 0.515596            0.318926
+14 0.300000            6.856918
+15 0.176535            0.031893
+16 0.372976            2.285639
+17 0.487183            1.959120
+18 1.500000            6.856918
+19 0.250000            6.856918
+20 0.844305            0.806696
+21 0.978839            1.714230
+22 1.490525            3.428459
+23 0.421124            1.523760
+24 0.370711            0.806696
+25 0.526379            1.959120
+26 0.567551            0.914256
+27 0.240370            4.571279
+28 0.473788            0.623356
+29 0.395808            0.391824
+30 1.331282            1.959120
+31 0.841839            0.806696
+32       NA           13.713837
+33 0.642748            1.714230
+34       NA           13.713837
+35 0.930109            1.959120
+36 1.465972            0.857115
+37 0.981903            0.761880
+38 2.750000            6.856918
+39 0.694911            1.523760
+40 1.675986            1.714230
+41 0.386065            0.527455
+42 0.257808            0.221191
+43 0.798910            1.142820
+44 0.431889            0.129376
+45 1.296688            2.742767
+46 0.400000            6.856918
+47 0.434487            0.224817
+48 0.541985            0.403348
+49 1.062994            1.371384
+50 0.298357            0.207785
+51 0.820795            0.979560
+52 0.251405            0.061222
+53 0.561272            0.298127
+54 0.470275            0.653040
+55 0.309233            3.428459
+56 1.462874            3.428459
+57 0.217467            3.428459
+58 0.806117            0.360890
+59 0.355895            0.274277
+60 0.300000            6.856918
+61 0.657802            0.285705
+62 0.282546            0.062054
+63 0.961938            1.054911
+64       NA           13.713837
+65 0.582310            0.761880
+66       NA           13.713837
+67 0.147600            1.714230
+68       NA           13.713837
+69 0.902196            3.428459
+70 0.478525            0.428557
+71 0.811422            0.571410
+72       NA           13.713837
+73 0.620828            0.571410
+74 0.651551            0.653040
+75 3.950000            6.856918
+76 2.635864            4.571279
+77 0.922565            0.721781
+78 1.273695            1.714230
+79 0.540891            0.380940
+80 0.815211            0.527455
+81 0.396815            0.175818
+82 1.123779            1.142820
+83 1.638428            4.571279
+ [ reached 'max' / getOption("max.print") -- omitted 3631 rows ]
+      family       tribe
+1 Andrenidae Andreninini
+2 Andrenidae Andreninini
+3 Andrenidae Andreninini
+4 Andrenidae Andreninini
+5 Andrenidae Andreninini
+6 Andrenidae Andreninini
+                   tips
+1          Andrena_vaga
+2 Andrena_erythrogaster
+3       Andrena_carlini
+4         Andrena_pruni
+5    Andrena_transnigra
+6      Andrena_dunningi
+  sociality_binary
+1         solitary
+2         solitary
+3         solitary
+4         solitary
+5         solitary
+6         solitary
+  sociality_three_states
+1               solitary
+2               solitary
+3               solitary
+4               solitary
+5               solitary
+6               solitary
+  nest_three_states nest_binary
+1            ground      ground
+2            ground      ground
+3            ground      ground
+4            ground      ground
+5            ground      ground
+6            ground      ground
