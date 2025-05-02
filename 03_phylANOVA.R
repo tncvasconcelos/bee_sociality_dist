@@ -8,7 +8,7 @@
 
 # Setup:
 
-#rm(list=ls())
+rm(list=ls())
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
 library(phytools)
 

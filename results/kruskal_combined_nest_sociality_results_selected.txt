@@ -1,0 +1,32 @@
+[1] "Testing nest*sociality combination ~ bio_1"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 565.56, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_4"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 614.51, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_12"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 393.46, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_15"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 100.07, df = 3, p-value
+< 2.2e-16
+
