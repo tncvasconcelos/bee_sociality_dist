@@ -1,9 +1,15 @@
+# ==============================================================================
+# Heatmaps
+# ==============================================================================
+# Plots heatmaps of the Americas showing proportion of social and above-ground species
+# ==============================================================================
 
-#-------------------------------------------------------------------------------
-#------------------------------------SETUP--------------------------------------
-rm(list=ls())
+# ------------------------------------------------------------------------------
+# Setup: clear environment, set working directory, load libraries
+# ------------------------------------------------------------------------------
 
-# Libraries
+#rm(list=ls())
+
 library(sp)
 library(sf)
 library(ggplot2)
@@ -12,32 +18,32 @@ library(dplyr)
 library(data.table)
 library(patchwork)
 
-# Directories
 getwd()      
-#wd <- "/Users/tvasc/Desktop/bee_sociality_dist/proportion_heatmaps"
 wd <- "/Users/lenarh/Desktop/bee_sociality_dist/proportion_heatmaps"
 setwd(wd)
 data_wd <- paste0(wd, "/data")
 data_wd
 
 # Source code
-#functions_path <- file.path(wd, "example code", "00_utility_functions_synthesis.R") 
-#source(functions_path)
+# functions_path <- file.path(wd, "example code", "00_utility_functions_synthesis.R") 
+# source(functions_path)
 # Note 11/6/24 - function that is in this document works, but one in 00_utility_functions_synthesis.R doesn't
 
-# Load and check data
+
+# ------------------------------------------------------------------------------
+# Load trait and occurrence data
+# ------------------------------------------------------------------------------
+
 tree_spp_traits <- read.csv(file.path(data_wd, "bees_traits.csv")) 
 colnames(tree_spp_traits)[3] <- "species" # to be consistent with gbif_occurrence_data
 colnames(tree_spp_traits) 
 nrow(tree_spp_traits) # 4293
-
 # tree_spp_traits contains trait information (sociality, nesting) for phylogeny tip species
 
 gbif_occurrence_data <- fread(file.path(data_wd, "05_cleaned_database.csv")) # fast read; relies on data.table package
 head(gbif_occurrence_data)
 colnames(gbif_occurrence_data)
 nrow(gbif_occurrence_data) # 6890148
-
 # gbif_occurrence_data contains distribution data for all bees with data in GBIF
 
 tree_spp_traits$species
@@ -47,49 +53,51 @@ tree_spp_traits$species <- gsub("_", " ", tree_spp_traits$species) # remove unde
 tree_spp_traits$species
 
 
-#-------------------------------------------------------------------------------
-#-----------------MAKE DATAFRAME OF SPECIES STILL TO SCORE----------------------
-
+# ------------------------------------------------------------------------------
+# Make dataframe of species still to score
+# ------------------------------------------------------------------------------
 # Find species in gbif_occurrence_data that aren't in tree_spp_traits
+# ------------------------------------------------------------------------------
 
-# Perform anti-join
-bee_species_not_in_tree <- anti_join(gbif_occurrence_data, tree_spp_traits, by = "species")
-head(bee_species_not_in_tree) # contains rows of gbif_occurrence_data where "species" column doesn't have a match in tree_spp_traits
+# # Perform anti-join
+# bee_species_not_in_tree <- anti_join(gbif_occurrence_data, tree_spp_traits, by = "species")
+# head(bee_species_not_in_tree) # contains rows of gbif_occurrence_data where "species" column doesn't have a match in tree_spp_traits
+# 
+# # Investigate species not in tree
+# nrow(bee_species_not_in_tree) # 761200 rows
+# head(bee_species_not_in_tree$species) # There are multiple observations per species
+# length(unique(bee_species_not_in_tree$species)) # 7655 unique species (in gbif_occurrence_data, but not tree_spp_traits) - this is what we want
+# 
+# # Select unique species, keeping family and subfamily columns
+# unique_species_not_in_tree <- unique(bee_species_not_in_tree[c("family", "subfamily", "species")])
+# unique(unique_species_not_in_tree$family) # Unique species from all 7 families
+# 
+# # Write unique species names to a CSV file
+# write.csv(unique_species_not_in_tree, "unique_species_not_in_tree.csv", row.names = FALSE)
+# 
+# # Let's see how many species there are per family that I need to score
+# unique_families <- unique(unique_species_not_in_tree$family)
+# 
+# # Loop through each unique family
+# for (family in unique_families) {
+#   # Filter the dataframe to include only rows where the "family" column is equal to the current family
+#   family_rows <- unique_species_not_in_tree[unique_species_not_in_tree$family == family, ]
+#   
+#   # Count the number of rows in the filtered subset
+#   num_family_rows <- nrow(family_rows)
+#   
+#   # Print
+#   cat("Number of species to score for family", family, ":", num_family_rows, "\n")
+# }
+# 
+# # Weird things: no Apis, some subfamilies missing from this dataset. All spp. are in both datasets?
+# 
 
-# Investigate species not in tree
-nrow(bee_species_not_in_tree) # 761200 rows
-head(bee_species_not_in_tree$species) # There are multiple observations per species
-length(unique(bee_species_not_in_tree$species)) # 7655 unique species (in gbif_occurrence_data, but not tree_spp_traits) - this is what we want
 
-# Select unique species, keeping family and subfamily columns
-unique_species_not_in_tree <- unique(bee_species_not_in_tree[c("family", "subfamily", "species")])
-unique(unique_species_not_in_tree$family) # Unique species from all 7 families
+# ------------------------------------------------------------------------------
+# Subset gbif occurrence data to only include species scored for nesting/sociality
+# ------------------------------------------------------------------------------
 
-# Write unique species names to a CSV file
-write.csv(unique_species_not_in_tree, "unique_species_not_in_tree.csv", row.names = FALSE)
-
-# Let's see how many species there are per family that I need to score
-unique_families <- unique(unique_species_not_in_tree$family)
-
-# Loop through each unique family
-for (family in unique_families) {
-  # Filter the dataframe to include only rows where the "family" column is equal to the current family
-  family_rows <- unique_species_not_in_tree[unique_species_not_in_tree$family == family, ]
-  
-  # Count the number of rows in the filtered subset
-  num_family_rows <- nrow(family_rows)
-  
-  # Print
-  cat("Number of species to score for family", family, ":", num_family_rows, "\n")
-}
-
-# Weird things: no Apis, some subfamilies missing from this dataset. All spp. are in both datasets?
-
-
-#-------------------------------------------------------------------------------
-#---------------------------------SUBSET DATAFRAME------------------------------
-
-# Try using a subset of gbif_occurrence_data for heatmaps; finish scoring sociality later
 # Note: make sure to transform "tips" column in tree_spp_traits to "species" before creating this subset
 gbif_subset <- gbif_occurrence_data[gbif_occurrence_data$species %in% tree_spp_traits$species, 
                                  c("species", "decimalLatitude", "decimalLongitude")]
@@ -100,7 +108,7 @@ head(gbif_subset)
 
 # gbif_subset contains occurrence (lat, lon) information for phylogeny tip species
 
-# Save CSV to working directory 
+# Save csv to data wd
 write.csv(gbif_subset, file.path(data_wd, "gbif_subset.csv"), row.names = FALSE) # ran 1/10/25
 
 length(unique(gbif_subset$species)) # 3748 species (compared to 4293 in tree_spp_traits), 
@@ -113,8 +121,9 @@ length(unique(gbif_occurrence_data$species)) # was originally 11,607
 # Now to use this subset to make plots.
 
 
-#-------------------------------------------------------------------------------
-#---------------------SPECIES RICHNESS PER AREA FUNCTION------------------------
+# ------------------------------------------------------------------------------
+# Species richness per area function
+# ------------------------------------------------------------------------------
 
 # First, we have to generate the total species richness for each area 
 # (i.e., count # of species within each area from global map)
@@ -161,12 +170,13 @@ list_result1 # Loading the data - list of species present in each country shapef
 # Will have to harmonize the names 
 
 
-#-------------------------------------------------------------------------------
-#------------------------PLOTTING: SPECIES RICHNESS-----------------------------
-
+# ------------------------------------------------------------------------------
+# Plotting: species richness
+# ------------------------------------------------------------------------------
 # Here, we're using ALL bees (not just the subset we scored for sociality and nesting)
 # To look at overall species richness patterns
 # Skip to loading the richness_per_area csv (below) which was already created, unless you need to re-run this
+# ------------------------------------------------------------------
 
 twgd_path <- "TWDG/wgsrpd-master/level3/level3.shp"
 
@@ -211,9 +221,9 @@ spp_rich_heatmap <- ggplot(data = twgd_data_bees) +
 spp_rich_heatmap
 
 
-#-------------------------------------------------------------------------------
-#-----------------------PLOTTING: PROPORTION SOCIAL-----------------------------
-
+# ------------------------------------------------------------------------------
+# Plotting: proportion social
+# ------------------------------------------------------------------------------
 # For this, we'll use the thinned GBIF points and tree_spp_traits
 #   thinned_points is latitude and longitude observations for tip species we have scored, with additional filtering
 #   tree_spp_traits is trait scoring for tip species
@@ -222,6 +232,7 @@ spp_rich_heatmap
 # And ultimately get a dataset that has one row per TWGD level 3 region, 
 #   the geometry that describes that region in MULTIPOLYGON format,
 #   and proportion of species in that region which are social.
+# ------------------------------------------------------------------------------
 
 thinned_points$species <- gsub("_"," ", thinned_points$species) # Make species name formatting consistent
 
@@ -272,8 +283,9 @@ prop_social_heatmap <- ggplot(data = bee_twgd_sociality) +
 prop_social_heatmap
 
 
-#-------------------------------------------------------------------------------
-#----------------PLOTTING: PROPORTION ABOVE-GROUND NESTING----------------------
+# ------------------------------------------------------------------------------
+# Plotting: proportion above-ground nesting
+# ------------------------------------------------------------------------------
 
 thinned_points$species <- gsub("_"," ", thinned_points$species) # Make species name formatting consistent
 
@@ -322,8 +334,9 @@ prop_aboveground_heatmap <- ggplot(data = bee_twgd_nest) +
 prop_aboveground_heatmap
 
 
-#-------------------------------------------------------------------------------
-#-----------------------------PLOTTING: TOGETHER--------------------------------
+# ------------------------------------------------------------------------------
+# Plotting: both heatmaps together
+# ------------------------------------------------------------------------------
 
 # Combine the two plots
 combined_plot <- prop_aboveground_heatmap + prop_social_heatmap +
@@ -337,8 +350,9 @@ ggsave("/Users/lenarh/Desktop/bee_sociality_dist/proportion_heatmaps/plots/combi
        plot = combined_plot, width = 8, height = 6)
 
 
-#-------------------------------------------------------------------------------
-#---------------------RE-RUN HEATMAPS EXCLUDING BOMBUS--------------------------
+# ------------------------------------------------------------------------------
+# Plotting: now excluding bumblebees (Bombus)
+# ------------------------------------------------------------------------------
 
 # Check how many Bombus are in datasets
 sum(grepl("Bombus", tree_spp_traits$species)) # 243
@@ -352,7 +366,7 @@ thinned_points_bombus <- thinned_points[!grepl("^Bombus", thinned_points$species
 sum(grepl("Bombus", tree_spp_traits_bombus$species)) # 0 
 sum(grepl("Bombus", thinned_points_bombus$species)) # 0
 
-# OVERALL SPECIES RICHNESS
+# Species richness
 twgd_path <- "TWDG/wgsrpd-master/level3/level3.shp"
 twgd_data <- st_read(twgd_path)
 twgd_data <- as(twgd_data, "Spatial")
@@ -379,7 +393,7 @@ spp_rich_heatmap_bombus <- ggplot(data = twgd_data_bees_bombus) +
 
 spp_rich_heatmap_bombus
 
-# ABOVE-GROUND RICHNESS
+# Above-ground richness
 abvgrnd_subset_bombus <- subset(thinned_points_bombus, thinned_points_bombus$species%in%tree_spp_traits_bombus$species[which(tree_spp_traits_bombus$nest_binary=="aboveground")])
 richness_abvgrnd_per_area_bombus <- organize.bubble.plot2(points = abvgrnd_subset_bombus, twgd_data) # 369
 head(richness_abvgrnd_per_area_bombus)
@@ -415,7 +429,7 @@ prop_aboveground_heatmap_bombus <- ggplot(data = bee_twgd_nest_bombus) +
 
 prop_aboveground_heatmap_bombus # Greenland is still showing up as 1.0 proportion above-ground nesting.
 
-# SOCIAL RICHNESS
+# Social richness
 social_subset_bombus <- subset(thinned_points_bombus, thinned_points_bombus$species%in%tree_spp_traits_bombus$species[which(tree_spp_traits_bombus$sociality_binary=="social")])
 richness_social_per_area_bombus <- organize.bubble.plot2(points = social_subset_bombus, twgd_data) # 369
 head(richness_social_per_area_bombus)
@@ -450,7 +464,7 @@ prop_social_heatmap_bombus <- ggplot(data = bee_twgd_sociality_bombus) +
 
 prop_social_heatmap_bombus # Greenland is still showing up as 1.0 proportion social.
 
-# COMBINED PLOT
+# Combined plot
 combined_plot_bombus <- prop_aboveground_heatmap_bombus + prop_social_heatmap_bombus +
   plot_annotation(tag_levels = 'A') # This will add "A" and "B" labels automatically
 

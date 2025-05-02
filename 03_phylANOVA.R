@@ -1,49 +1,53 @@
-# Project: TROPICAL BEE SOCIALITY/NESTING
-# Authors: Lena Heinrich, Aline Martins, Thais Vasconcelos
-# University of Michigan, Ann Arbor
+# ==============================================================================
+# 03. phylANOVA
+# ==============================================================================
+# Run phylogenetic ANOVA (phylANOVA) to test associations between 
+# bee traits (sociality, nesting) and climatic variables.
+# ==============================================================================
 
-# 03 PHYLANOVA
-
-################################################################################
-
-# Setup:
-
+# ------------------------------------------------------------------------------
+# Setup: clear environment, set working directory, load required library
+# ------------------------------------------------------------------------------
 rm(list=ls())
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
 library(phytools)
 
-# Loading traits, tree and climatic data:
+
+# ------------------------------------------------------------------------------
+# Load trait data, tree, and list of climate summary statistic files
+# ------------------------------------------------------------------------------
 traits <- read.csv("curated_data/bees_traits.csv")
 tree <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv") # Selects summstats.csv files from curated_data
 
 
-################################################################################
+# ------------------------------------------------------------------------------
+# Run phylANOVA between sociality_binary and each climate variable
+# ------------------------------------------------------------------------------
 
-# Run phylANOVA between sociality and climate variables using sociality_binary
-
-# Open a sink for results
-sink("results/phylANOVA_sociality_results.txt")
+sink("results/phylANOVA_sociality_results.txt") # Output file
 
 # Loop that iterates over each environmental variable in the all_climatic_vars vector
 for(climate_index in 1:length(all_climatic_vars)) {
   
-  # Read the climate data for the current variable
+  # Load and clean climate data
   climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index])) # reading climate data corresponding to current index
   climate <- subset(climate, !is.na(climate[,3])) # removing species with NA means
-  sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label) # find species that are present in the trait data, climate data, and tree
   
-  # Create subsets of traits, climate data, and the tree that include only the sampled species
+  # Identify species with complete data in all datasets
+  sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label)
+  
+  # Subset all datasets to sampled species
   subset_traits <- subset(traits, traits$tips %in% sampled_species)
   subset_climate <- subset(climate, climate$species %in% sampled_species)
   subset_tree <- keep.tip(tree, tree$tip.label[tree$tip.label %in% sampled_species])
   
-  # Create merged dataset
+  # Merge traits and climate data by species
   merged_table <- merge(subset_traits, subset_climate, by.x="tips",by.y="species")
     
-  # Prepare data for phylANOVA
+  # Prepare named vectors for phylANOVA
   sociality <- merged_table$sociality_binary 
-  names(sociality) <- merged_table$tips # making named vector for phylANOVA
+  names(sociality) <- merged_table$tips
     
   one_clim_var <- merged_table[,9] # column 9 is the mean climate value for that variable
   names(one_clim_var) <- merged_table$tips 
@@ -59,9 +63,10 @@ for(climate_index in 1:length(all_climatic_vars)) {
 
 sink()
 
-################################################################################
 
-# phylANOVA between nesting and climate variables using nesting_binary:
+# ------------------------------------------------------------------------------
+# Run phylANOVA between nesting_binary and each climate variable
+# ------------------------------------------------------------------------------
 
 sink("results/phylANOVA_nesting_results.txt")
 
@@ -95,9 +100,10 @@ for(climate_index in 1:length(all_climatic_vars)) {
 sink()
 dev.off()
 
-################################################################################
 
-# phylANOVA for the combination of nests and sociality:
+# ------------------------------------------------------------------------------
+# Run phylANOVA using 4-level combination of sociality and nesting traits
+# ------------------------------------------------------------------------------
 
 sink("results/phyloANOVA_nesting*sociality_results.txt")
 
