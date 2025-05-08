@@ -1,0 +1,137 @@
+Warning messages:
+1: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+2: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+3: Removed 2 rows containing missing values or values outside
+the scale range (`geom_point()`).
+4: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+5: Removed 71 rows containing missing values or values outside
+the scale range (`geom_point()`).
+6: Removed 2 rows containing missing values or values outside
+the scale range (`geom_point()`).
+7: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+8: Removed 42 rows containing missing values or values outside
+the scale range (`geom_point()`).
+9: Removed 39 rows containing missing values or values outside
+the scale range (`geom_point()`).
+10: Removed 3 rows containing missing values or values outside
+the scale range (`geom_point()`).
+11: Removed 4 rows containing missing values or values outside
+the scale range (`geom_point()`).
+12: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+13: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+14: Removed 1 row containing missing values or values outside
+the scale range (`geom_point()`).
+15: Removed 5 rows containing missing values or values outside
+the scale range (`geom_point()`).
+16: Removed 106 rows containing missing values or values
+outside the scale range (`geom_point()`).
+
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 202.09, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_18"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 350.06, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_19"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 132.73, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_2"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 299.36, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_3"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 518.59, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_4"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 614.51, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_5"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 180.3, df = 3, p-value <
+2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_6"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 617.83, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_7"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 560.25, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_8"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 348.2, df = 3, p-value <
+2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_9"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 441.83, df = 3, p-value
+< 2.2e-16
+
+[1] "Testing nest*sociality combination ~ bio_ai"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 301.9, df = 3, p-value <
+2.2e-16
+
+[1] "Testing nest*sociality combination ~ LAI"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by group
+Kruskal-Wallis chi-squared = 187.36, df = 3, p-value
+< 2.2e-16
+
