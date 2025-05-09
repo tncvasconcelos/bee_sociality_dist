@@ -147,8 +147,8 @@ Kruskal-Wallis chi-squared = 382.18, df = 1, p-value
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared = 115.9, df = 1, p-value
-< 2.2e-16
+Kruskal-Wallis chi-squared = 115.9, df = 1, p-value <
+2.2e-16
 
 [1] "Testing nesting type ~ bio_9"
 

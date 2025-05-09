@@ -24,7 +24,6 @@ all_climatic_vars <- list.files("curated_data", "summstats.csv") # Selects summs
 # ------------------------------------------------------------------------------
 # Run phylANOVA between sociality_binary and each climate variable
 # ------------------------------------------------------------------------------
-
 sink("results/phylANOVA_sociality_results.txt") # Output file
 
 # Loop that iterates over each environmental variable in the all_climatic_vars vector
@@ -67,7 +66,6 @@ sink()
 # ------------------------------------------------------------------------------
 # Run phylANOVA between nesting_binary and each climate variable
 # ------------------------------------------------------------------------------
-
 sink("results/phylANOVA_nesting_results.txt")
 
 for(climate_index in 1:length(all_climatic_vars)) {
@@ -104,8 +102,7 @@ dev.off()
 # ------------------------------------------------------------------------------
 # Run phylANOVA using 4-level combination of sociality and nesting traits
 # ------------------------------------------------------------------------------
-
-sink("results/phyloANOVA_nesting*sociality_results.txt")
+sink("results/phyloANOVA_combined_results.txt")
 
 traits$comb_nest_soc <- paste(traits$sociality_binary, traits$nest_binary, sep="_")
 table(traits$comb_nest_soc)
