@@ -623,7 +623,7 @@ for (climate_index in 1:length(selected_vars)) {
   plot <- ggplot(merged_table, aes(x = comb_nest_soc, y = value, fill = comb_nest_soc)) +
     geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
     geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +
-    scale_fill_brewer(palette = "Set3") +
+    scale_fill_viridis_d(option = "cividis") +
     labs(x = "", y = "Climatic Variable Value", 
          title = paste(variable_labels[selected_vars[climate_index]], significance)) +
     scale_x_discrete(labels = c("solitary_ground" = "Solitary/Ground", 
@@ -658,7 +658,11 @@ quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plot grid
-ggsave("plots/kruskal_combined_boxplots_selected.pdf", 
+ggsave("plots/kruskal_combined_boxplots_selected2.pdf", 
+       plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
+       width = 10, height = 12)
+
+ggsave("plots/kruskal_combined_boxplots_selected2.png", 
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 10, height = 12)
 

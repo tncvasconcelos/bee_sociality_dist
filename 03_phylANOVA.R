@@ -19,7 +19,7 @@ library(phytools)
 traits <- read.csv("curated_data/bees_traits.csv")
 tree <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv") # Selects summstats.csv files from curated_data
-
+head(traits)
 
 # ------------------------------------------------------------------------------
 # Run phylANOVA between sociality_binary and each climate variable

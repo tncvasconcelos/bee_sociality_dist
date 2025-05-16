@@ -42,14 +42,16 @@ proj4string(twgd_data) <- CRS("")
 # ==============================================================================
 # Quick load (if skipping full re-run)
 # This is everything you need to skip right to plotting
-twgd_bees <- st_read(file.path(data_wd, "twgd_bees.gpkg"))
-st_crs(twgd_bees) <- 4326
+bee_twgd <- st_read(file.path(data_wd, "bee_twgd.gpkg")) # Overall species richness per polygon
+st_crs(bee_twgd) <- 4326
 
-bee_twgd_sociality <- st_read(file.path(data_wd, "bee_twgd_sociality.gpkg"))
+bee_twgd_sociality <- st_read(file.path(data_wd, "bee_twgd_sociality.gpkg")) # Proportion social per polygon
 st_crs(bee_twgd_sociality) <- 4326
 
-bee_twgd_nest <- st_read(file.path(data_wd, "bee_twgd_nest.gpkg"))
+bee_twgd_nest <- st_read(file.path(data_wd, "bee_twgd_nest.gpkg")) # Proportion above-ground nesting per polygon
 st_crs(bee_twgd_nest) <- 4326
+
+scatterplot_data_clean <- read.csv(file.path(data_wd, "scatterplot_data_clean.csv")) # Data prepped for scatterplots
 # ==============================================================================
 
 
@@ -206,7 +208,7 @@ plot_heatmap <- function(data, var, title, viridis_option = "viridis") {
       legend.background     = element_rect(fill = "white", color = NA),
       legend.key.height     = unit(0.6, "cm"),
       legend.key.width      = unit(0.6, "cm"),
-      legend.title          = element_text(size = 12),
+      legend.title          = element_text(size = 12, margin = margin(b = 6)),
       legend.text           = element_text(size = 10),
       panel.grid            = element_blank(),
       panel.border          = element_blank(),
@@ -219,8 +221,8 @@ plot_heatmap <- function(data, var, title, viridis_option = "viridis") {
     )
 }
 
-prop_social_heatmap <- plot_heatmap(bee_twgd_sociality, "prop_social", "Proportion Social", viridis_option = "turbo")
-prop_aboveground_heatmap <- plot_heatmap(bee_twgd_nest, "prop_aboveground", "Proportion Above-Ground Nesting", viridis_option = "turbo")
+prop_social_heatmap <- plot_heatmap(bee_twgd_sociality, "prop_social", "Proportion Social", viridis_option = "cividis")
+prop_aboveground_heatmap <- plot_heatmap(bee_twgd_nest, "prop_aboveground", "Proportion\nAbove-Ground\nNesting", viridis_option = "cividis")
 
 combined_heatmaps <- prop_aboveground_heatmap + prop_social_heatmap +
   plot_layout(ncol = 1) +
@@ -253,16 +255,16 @@ nesting_df <- bee_twgd_nest %>%
 nesting_df
 
 # Repair invalid geometries first
-twgd_bees_valid <- st_make_valid(twgd_bees)
+bee_twgd_valid <- st_make_valid(bee_twgd)
 
 # Then compute centroids
-centroid_coords <- twgd_bees_valid %>%
+centroid_coords <- bee_twgd_valid %>%
   st_centroid() %>%
   st_coordinates() %>%
   as.data.frame()
 
 # Combine with region ID and species richness
-richness_clean <- twgd_bees_valid %>%
+richness_clean <- bee_twgd_valid %>%
   st_drop_geometry() %>%
   select(one_area = LEVEL3_COD, spp_rich) %>%
   bind_cols(centroid_coords) %>%
@@ -271,53 +273,92 @@ richness_clean <- twgd_bees_valid %>%
 head(richness_clean)
 
 # Merge into dataframe for plotting
-merged_df <- social_df %>%
+scatterplot_data <- social_df %>%
   inner_join(nesting_df, by = "one_area") %>%
   inner_join(richness_clean, by = "one_area")
-head(merged_df)
-colnames(merged_df)
-nrow(merged_df) # 113
+head(scatterplot_data)
+colnames(scatterplot_data)
+nrow(scatterplot_data) # 113
 
 # Calculate absolute latitude
-merged_df$abs_lat <- abs(merged_df$lat)
+scatterplot_data$abs_lat <- abs(scatterplot_data$lat)
 
 # Remove NAs and inspect
-merged_df_clean <- merged_df %>%
+scatterplot_data_clean <- scatterplot_data %>%
   filter(!is.na(abs_lat), !is.na(prop_social), !is.na(prop_aboveground), !is.na(lon), !is.na(lat))
 
-nrow(merged_df_clean) # 113
+nrow(scatterplot_data_clean) # 113
 
-merged_df_clean %>% # Check which polygons have prop_social == 1
+scatterplot_data_clean %>% # Check which polygons have prop_social == 1
   filter(prop_social == 1) # ALU, ARU, BER, GNL
 
-twgd_bees %>% # Get country names for polygons which prop_social == 1
+bee_twgd %>% # Get country names for polygons which prop_social == 1
   filter(LEVEL3_COD %in% c("ALU", "ARU", "BER", "GNL")) %>%
   select(LEVEL3_COD, LEVEL3_NAM)
 
-merged_df_clean %>% # Check which polygons have prop_aboveground == 1
+scatterplot_data_clean %>% # Check which polygons have prop_aboveground == 1
   filter(prop_aboveground == 1) # ARU, BER, NLA
   
-twgd_bees %>% # Get country names for polygons which prop_aboveground == 1
+bee_twgd %>% # Get country names for polygons which prop_aboveground == 1
   filter(LEVEL3_COD %in% c("ARU", "BER", "NLA")) %>%
   select(LEVEL3_COD, LEVEL3_NAM)
 
 # Fit GLS models using cleaned dataset
-gls_social <- gls(prop_social ~ abs_lat, data = merged_df_clean,
+# gls_social <- gls(prop_social ~ abs_lat, data = scatterplot_data_clean,
+#                   correlation = corSpher(form = ~ lon + lat, nugget = TRUE),
+#                   method = "REML")
+# 
+# gls_aboveground <- gls(prop_aboveground ~ abs_lat, data = scatterplot_data_clean,
+#                        correlation = corSpher(form = ~ lon + lat, nugget = TRUE),
+#                        method = "REML")
+
+# Fit GLS models using cleaned dataset: quadratic version since data has multiple modes
+gls_social <- gls(prop_social ~ abs_lat + I(abs_lat^2),
+                  data = scatterplot_data_clean,
                   correlation = corSpher(form = ~ lon + lat, nugget = TRUE),
                   method = "REML")
 
-gls_aboveground <- gls(prop_aboveground ~ abs_lat, data = merged_df_clean,
+gls_aboveground <- gls(prop_aboveground ~ abs_lat + I(abs_lat^2),
+                       data = scatterplot_data_clean,
                        correlation = corSpher(form = ~ lon + lat, nugget = TRUE),
                        method = "REML")
 
+
+summary(gls_social)
+summary(gls_aboveground)
+
+# Save/read CSV
+write.csv(scatterplot_data_clean, file.path(data_wd, "scatterplot_data_clean.csv"), row.names = FALSE)
+scatterplot_data_clean <- read.csv(file.path(data_wd, "scatterplot_data_clean.csv"))
+
+# Extract predicted values from GLS models
+scatterplot_data_clean$gls_fit_social <- predict(gls_social)
+scatterplot_data_clean$gls_fit_aboveground <- predict(gls_aboveground)
 
 # ------------------------------------------------------------------------------
 # Plot scatterplots
 # ------------------------------------------------------------------------------
 
-plot_trait_scatter <- function(data, trait_var, color_var, y_label, viridis_option = "viridis", show_size_legend = TRUE) {
-  ggplot(data, aes(x = abs_lat, y = !!sym(trait_var))) +
-  geom_point(aes(size = spp_rich, color = !!sym(color_var)), alpha = 0.8) +
+plot_trait_scatter <- function(data, trait_var, color_var, y_label, viridis_option = "viridis", show_size_legend = TRUE, gls_fit_var = NULL) {
+  p <- ggplot(data, aes(x = abs_lat, y = !!sym(trait_var))) +
+    geom_point(aes(size = spp_rich, color = !!sym(color_var)), alpha = 0.8) +
+    # Loess line
+    geom_smooth(mapping = aes(), 
+                se = FALSE, 
+                formula = y ~ x, 
+                method = "loess", 
+                span = 1.5,
+                color = scales::alpha("darkgray", 0.8), 
+                linewidth = 1)
+  # Optional: include line from GLS models
+  if (!is.null(gls_fit_var)) {
+    p <- p + geom_line(aes(y = !!sym(gls_fit_var)), 
+                       color = scales::alpha("gray", 0.8), 
+                       linetype = "dashed", 
+                       linewidth = 1)
+  }
+  
+  p +
     # Color scale (no legend shown by default)
     scale_color_viridis_c(
       option = viridis_option,
@@ -326,7 +367,7 @@ plot_trait_scatter <- function(data, trait_var, color_var, y_label, viridis_opti
     ) +
     # Size scale
     scale_size_continuous(
-      name = if (show_size_legend) "Species Richness" else NULL,
+      name = if (show_size_legend) "Species\nRichness" else NULL,
       breaks = if (show_size_legend) c(5, 50, 150, 300, 500, 700) else waiver(),
       limits = range(data$spp_rich, na.rm = TRUE),
       guide = if (show_size_legend) "legend" else "none"
@@ -347,22 +388,30 @@ plot_trait_scatter <- function(data, trait_var, color_var, y_label, viridis_opti
 }
 
 social_scatter <- plot_trait_scatter(
-  data = merged_df_clean,
+  data = scatterplot_data_clean,
   trait_var = "prop_social",
   color_var = "prop_social",
   y_label = "Proportion Social",
-  viridis_option = "turbo",
-  show_size_legend = TRUE
-)
+  viridis_option = "cividis",
+  show_size_legend = TRUE,
+  gls_fit_var = "gls_fit_social"
+) +
+  theme(
+    legend.position = c(1.3, 0.7),        # top right
+    legend.justification = "right",
+    legend.background = element_rect(fill = "white", color = NA)
+  )
 
 nesting_scatter <- plot_trait_scatter(
-  data = merged_df_clean,
+  data = scatterplot_data_clean,
   trait_var = "prop_aboveground",
   color_var = "prop_aboveground",
   y_label = "Proportion Above-Ground Nesting",
-  viridis_option = "turbo",
-  show_size_legend = FALSE
+  viridis_option = "cividis",
+  show_size_legend = FALSE,
+  gls_fit_var = "gls_fit_aboveground"
 )
+
 
 combined_scatterplots <- social_scatter + nesting_scatter +
   plot_layout(ncol = 2, guides = "collect") &
@@ -387,6 +436,32 @@ ggsave(
   dpi = 1500
 )
 
+
+# ------------------------------------------------------------------------------
+# Assemble four-panel figure of heatmaps + scatterplots
+# ------------------------------------------------------------------------------
+combined_mapscatter <- (
+  (prop_social_heatmap + social_scatter + plot_layout(widths = c(1, 1))) /
+    (prop_aboveground_heatmap + nesting_scatter + plot_layout(widths = c(1, 1))))
+
+quartz()
+print(combined_mapscatter)
+
+ggsave(
+  filename = file.path(wd, "plots", "combined_mapscatter.png"),
+  plot = combined_mapscatter,
+  width = 12,
+  height = 8,
+  dpi = 1500
+)
+
+ggsave(
+  filename = file.path(wd, "plots", "combined_mapscatter.pdf"),
+  plot = combined_mapscatter,
+  width = 12,
+  height = 8,
+  dpi = 1500
+)
 
 # ------------------------------------------------------------------------------
 # Archive: unused code
