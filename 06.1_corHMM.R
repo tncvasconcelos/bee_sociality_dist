@@ -161,8 +161,10 @@ dev.off()
 plotRECON <- function(phy, likelihoods, piecolors=NULL, cex=0.5, pie.cex=0.25, file=NULL, height=11, width=8.5, show.tip.label=TRUE, title=NULL, ...){
   if(is.null(piecolors)){
     #piecolors=c("pink","black","red","yellow","forestgreen","blue","coral","aquamarine")
-    piecolors=c("#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF", 
-                "#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF")
+    # piecolors=c("#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF", 
+    #             "#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF")
+    piecolors=rev(c("#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF",
+      "#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF"))
     }
   if(!is.null(file)){
     pdf(file, height=height, width=width,useDingbats=FALSE)
@@ -201,4 +203,6 @@ plotRECON(
 
 axisPhylo()
 dev.off()
+
+
 
