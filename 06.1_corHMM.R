@@ -24,18 +24,14 @@ dat <- dat[,c("tips","sociality_binary","nest_binary")]
 
 #-------------------------------------
 # determining best corHMM models with corhmm dredge
-dredge_sociality <- corHMM:::corHMMDredge(phy, dat, max.rate.cat=2, root.p=c(0,0,0,1))
+# Note: we are fixing the root to be state 4 ("solitary/ground") with root.p=c(0,0,0,1)
+# dredge_sociality <- corHMM:::corHMMDredge(phy, dat, max.rate.cat=2, root.p=c(0,0,0,1))
+#save(dredge_sociality, file="corHMMdredge_results/corhmm_dredge_binary.Rsave")
+load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
 
-corHMMDredge
-save(dredge_sociality, file="corhmm_dredge_binary2.Rsave")
-load("corhmm_dredge_binary2.Rsave")
 corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
-write.csv(corhmm_tbl_sociality, file="corhmm_tbl_dredge.csv")
-# 
-# dredge_nesting <- corHMM:::corHMMDredge(phy, merged_traits[,c("tips","nest")],max.rate.cat=3)
-# save(dredge_nesting, file="corhmm_dredge_nesting.Rsave")
-# corhmm_tbl_nesting <- corHMM:::getModelTable(dredge_nesting)
-# write.csv(corhmm_tbl_nesting, file="corhmm_tbl_nesting.csv")
+write.csv(corhmm_tbl_sociality, file="corHMMdredge_results/corhmm_tbl_dredge.csv")
+
 #---------------------
 # Rate matrix figure
 
@@ -47,33 +43,17 @@ library(scales)
 
 # Define states
 states <- c(
-  "R1_social|aboveground", "R1_solitary|aboveground", "R1_social|ground", "R1_solitary|ground",
-  "R2_social|aboveground", "R2_solitary|aboveground", "R2_social|ground", "R2_solitary|ground"
+  "R1 social|aboveground", "R1 solitary|aboveground", "R1 social|ground", "R1 solitary|ground",
+  "R2 social|aboveground", "R2 solitary|aboveground", "R2 social|ground", "R2 solitary|ground"
 )
+
+rates_mat <- dredge_sociality[[10]]$solution
 
 # Rebuild the transition matrix manually (you pasted it but it's not in R object form)
 # So let's manually create it in a simple way for now:
 
 # Create a named 8x8 matrix
 rates_mat <- matrix(NA, nrow = 8, ncol = 8, dimnames = list(states, states))
-
-# Fill in the rates (following row -> column)
-rates_mat["R1_social|aboveground", "R1_social|ground"] <- 0.007757304
-rates_mat["R1_solitary|aboveground", "R1_social|aboveground"] <- 0.0009546045
-rates_mat["R1_solitary|aboveground", "R1_solitary|ground"] <- 0.04095273
-rates_mat["R1_social|ground", "R1_solitary|ground"] <- 0.00640701
-rates_mat["R1_solitary|ground", "R1_solitary|aboveground"] <- 0.007757304
-rates_mat["R1_solitary|ground", "R1_social|ground"] <- 0.003658308
-
-# R2 transitions
-rates_mat["R2_solitary|aboveground", "R1_solitary|aboveground"] <- 0.004112767
-rates_mat["R2_solitary|aboveground", "R2_social|aboveground"] <- 0.0280217403
-rates_mat["R2_social|aboveground", "R1_solitary|aboveground"] <- 0.0064070101
-rates_mat["R2_social|aboveground", "R2_solitary|aboveground"] <- 0.0009546045
-rates_mat["R2_solitary|ground", "R2_solitary|aboveground"] <- 0.0001164249
-rates_mat["R2_solitary|ground", "R1_solitary|ground"] <- 0.04095273
-rates_mat["R1_social|ground", "R2_social|ground"] <- 0.005339529
-rates_mat["R2_social|ground", "R2_social|aboveground"] <- 0.0004447670
 
 # Convert matrix to edge list
 edges <- as.data.frame(as.table(rates_mat)) %>%
@@ -90,7 +70,7 @@ state_colors <- c(
 
 # Assign colors to nodes
 assign_color <- function(state) {
-  part <- sub("R[12]_", "", state)
+  part <- sub("R[12] ", "", state)
   rate_class <- substr(state, 2, 2)  # R1 or R2
   
   base_color <- state_colors[[part]]
@@ -110,6 +90,7 @@ g <- graph_from_data_frame(edges, vertices = nodes, directed = TRUE)
 tg <- as_tbl_graph(g)
 
 # Plot
+pdf("plots/transition_matrix_corhmm.pdf")
 ggraph(tg, layout = 'circle') +
   geom_edge_link(aes(width = rate),
                  arrow = arrow(length = unit(3, 'mm')),
@@ -122,6 +103,7 @@ ggraph(tg, layout = 'circle') +
   scale_color_manual(values = nodes$color) +
   theme_void() +
   ggtitle("Transition Diagram for Sociality (Model 10)\nColors by State, Lighter for R2")
+dev.off()
 
 #---------------------
 
@@ -168,21 +150,21 @@ getTipRecon <- function(file){
 }
 
 
-#getModelAvgRate(corhmm_fits$hidden_Markov_correlated_model_fit)
-
 anc_recon <- dredge_sociality[[10]]$states
-anc_recon[1,]
+#anc_recon[1,] # checking root state
 
 
-boxplot(corhmm_fits$hidden_Markov_correlated_model_fit$states)
+#boxplot(dredge_sociality[[10]]$states)
 
 dev.off()
 
 plotRECON <- function(phy, likelihoods, piecolors=NULL, cex=0.5, pie.cex=0.25, file=NULL, height=11, width=8.5, show.tip.label=TRUE, title=NULL, ...){
   if(is.null(piecolors)){
     #piecolors=c("pink","black","red","yellow","forestgreen","blue","coral","aquamarine")
-    piecolors=c("#040404FF" ,"#851170FF", "#F36E35FF", "#FFFE9EFF", 
-                "#04040480", "#85117080", "#F36E3580", "#FFFE9E80")
+    # piecolors=c("#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF", 
+    #             "#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF")
+    piecolors=rev(c("#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF",
+      "#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF"))
     }
   if(!is.null(file)){
     pdf(file, height=height, width=width,useDingbats=FALSE)
@@ -209,7 +191,7 @@ plotRECON <- function(phy, likelihoods, piecolors=NULL, cex=0.5, pie.cex=0.25, f
 # custom_colors <- c(pal1, pal2)
 # names(custom_colors) <- colnames(anc_recon)
 
-pdf("corhmm_recon_test_no_dredge.pdf", height=45, width=10)
+pdf("corHMMdredge_results/corhmm_dredge_recon_final.pdf", height=45, width=10)
 
 plotRECON(
   phy = phy,
@@ -222,4 +204,5 @@ plotRECON(
 axisPhylo()
 dev.off()
 
-?plotRECON
+
+

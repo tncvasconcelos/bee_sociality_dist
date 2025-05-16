@@ -41,15 +41,16 @@ thinned_points <- subset(thinned_points, !thinned_points$species %in% remove)
 # Saving filtered points
 save(thinned_points, file="curated_data/thinned_points_res1.Rsave")
 
-# load("curated_data/thinned_points_res1.Rsave")
+#load("curated_data/thinned_points_res05.Rsave")
+colnames(thinned_points) <- c("species","lat","lon")
 
 #--------------------------------------------
 
 # 2. Now getting summary statistics of climatic variables for each species
-all_layers <- list.files("env_layers", paste(c(".tif$",".bil$"),collapse = "|")) 
+all_layers <- list.files("environmental_layers", paste(c(".tif$",".bil$"),collapse = "|")) 
 # note: env_layers is also on gitignore for now due to the size of the layer files
 labels <- gsub(paste(c(".tif$",".bil$"),collapse = "|"),"", all_layers)
-all_layers <- lapply(paste0("env_layers/",all_layers), raster)
+all_layers <- lapply(paste0("environmental_layers/",all_layers), raster)
 names(all_layers) <- labels
 
 # Now extracting data and saving curated datasets:
