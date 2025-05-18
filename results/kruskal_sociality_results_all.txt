@@ -43,8 +43,8 @@ Kruskal-Wallis chi-squared = 187.03, df = 1, p-value
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by sociality
-Kruskal-Wallis chi-squared = 154.7, df = 1, p-value
-< 2.2e-16
+Kruskal-Wallis chi-squared = 154.7, df = 1, p-value <
+2.2e-16
 
 [1] "sociality ~ bio_14"
 
@@ -123,8 +123,8 @@ Kruskal-Wallis chi-squared = 20.656, df = 1, p-value
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by sociality
-Kruskal-Wallis chi-squared = 28.55, df = 1, p-value
-= 9.13e-08
+Kruskal-Wallis chi-squared = 28.55, df = 1, p-value =
+9.13e-08
 
 [1] "sociality ~ bio_6"
 
@@ -139,8 +139,8 @@ Kruskal-Wallis chi-squared = 9.4268, df = 1, p-value
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by sociality
-Kruskal-Wallis chi-squared = 39.33, df = 1, p-value
-= 3.58e-10
+Kruskal-Wallis chi-squared = 39.33, df = 1, p-value =
+3.58e-10
 
 [1] "sociality ~ bio_8"
 
@@ -171,6 +171,6 @@ Kruskal-Wallis chi-squared = 197.16, df = 1, p-value
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by sociality
-Kruskal-Wallis chi-squared = 8.909, df = 1, p-value
-= 0.002838
+Kruskal-Wallis chi-squared = 8.909, df = 1, p-value =
+0.002838
 
