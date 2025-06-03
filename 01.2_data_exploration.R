@@ -47,22 +47,21 @@ trait_summary_df$Trait_Combination <- factor(trait_summary_df$Trait_Combination,
 # ------------------------------------------------------------------------------
 plot1 <- ggplot(trait_summary_df, aes(x = Trait_Combination, y = Species_Count, fill = Trait_Combination)) +
   geom_bar(stat = "identity") +
-  geom_text(aes(label = Species_Count), vjust = -0.5, size = 5, family = "Times") +
+  geom_text(aes(label = Species_Count), vjust = -0.5, size = 5) +  # Removed family = "Times"
   scale_fill_viridis_d(option = "cividis", name = "Trait Combination") +
   labs(x = "Trait Combination",
        y = "Species Count") +
   theme_minimal() +
   theme(
-    text = element_text(family = "Times"),
     legend.position = c(0.95, 0.95),  # Inside top-right
     legend.justification = c("right", "top"),
     legend.background = element_blank(),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14, angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 16, angle = 45, hjust = 1, color = "black"),
+    axis.text.y = element_text(size = 16, color = "black"),
     panel.grid = element_blank(),
     axis.line = element_line(color = "black"),
     axis.ticks = element_line(color = "black")
@@ -99,22 +98,21 @@ family_species_counts <- traits %>%
 plot2 <- ggplot(family_combo_counts, aes(x = family, y = Species_Count, fill = trait_combo)) +
   geom_bar(stat = "identity", position = position_stack(reverse = TRUE)) +
   geom_text(data = family_species_counts, aes(x = family, y = Species_Count, label = Species_Count),
-              vjust = -0.5, size = 4, family = "Times", inherit.aes = FALSE) +
+            vjust = -0.5, size = 4, inherit.aes = FALSE) +  # Removed family = "Times"
   scale_fill_viridis_d(option = "cividis", name = "Trait Combination") +
   labs(x = "Family",
        y = "Species Count") +
   theme_minimal() +
   theme(
-    text = element_text(family = "Times"),
     legend.position = c(0.95, 0.95),  # Inside top-right
     legend.justification = c("right", "top"),
     legend.background = element_blank(),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14, angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 16, angle = 45, hjust = 1, color = "black"),
+    axis.text.y = element_text(size = 16, color = "black"),
     panel.grid = element_blank(),
     axis.line = element_line(color = "black"),
     axis.ticks = element_line(color = "black")
@@ -147,6 +145,14 @@ print(combined_plot)
 
 ggsave(
   filename = file.path(plots_wd, "combined_species_trait_plot.png"),
+  plot = combined_plot,
+  width = 14,
+  height = 8,
+  dpi = 900
+)
+
+ggsave(
+  filename = file.path(plots_wd, "combined_species_trait_plot.pdf"),
   plot = combined_plot,
   width = 14,
   height = 8,

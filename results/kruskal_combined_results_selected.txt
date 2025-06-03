@@ -3,8 +3,8 @@
 	Kruskal-Wallis rank sum test
 
 data:  value by comb_nest_soc
-Kruskal-Wallis chi-squared = 565.56, df = 3, p-value
-< 2.2e-16
+Kruskal-Wallis chi-squared = 565.56, df = 3, p-value <
+2.2e-16
 
 [1] "Dunn's post-hoc test (Bonferroni corrected):"
                                  Comparison          Z
@@ -26,8 +26,8 @@ Kruskal-Wallis chi-squared = 565.56, df = 3, p-value
 	Kruskal-Wallis rank sum test
 
 data:  value by comb_nest_soc
-Kruskal-Wallis chi-squared = 614.51, df = 3, p-value
-< 2.2e-16
+Kruskal-Wallis chi-squared = 614.51, df = 3, p-value <
+2.2e-16
 
 [1] "Dunn's post-hoc test (Bonferroni corrected):"
                                  Comparison          Z
@@ -49,44 +49,44 @@ Kruskal-Wallis chi-squared = 614.51, df = 3, p-value
 	Kruskal-Wallis rank sum test
 
 data:  value by comb_nest_soc
-Kruskal-Wallis chi-squared = 393.46, df = 3, p-value
-< 2.2e-16
+Kruskal-Wallis chi-squared = 393.46, df = 3, p-value <
+2.2e-16
 
 [1] "Dunn's post-hoc test (Bonferroni corrected):"
-                                 Comparison          Z
-1        social_aboveground - social_ground 10.3499050
-2 social_aboveground - solitary_aboveground 11.1981466
-3      social_ground - solitary_aboveground  0.3717241
-4      social_aboveground - solitary_ground 18.2972963
-5           social_ground - solitary_ground  9.1123617
-6    solitary_aboveground - solitary_ground  9.9657407
-       P.unadj        P.adj
-1 4.189013e-25 2.513408e-24
-2 4.163526e-29 2.498116e-28
-3 7.100983e-01 1.000000e+00
-4 8.695849e-75 5.217509e-74
-5 8.060778e-20 4.836467e-19
-6 2.152633e-23 1.291580e-22
+                                 Comparison          Z      P.unadj
+1        social_aboveground - social_ground 10.3499050 4.189013e-25
+2 social_aboveground - solitary_aboveground 11.1981466 4.163526e-29
+3      social_ground - solitary_aboveground  0.3717241 7.100983e-01
+4      social_aboveground - solitary_ground 18.2972963 8.695849e-75
+5           social_ground - solitary_ground  9.1123617 8.060778e-20
+6    solitary_aboveground - solitary_ground  9.9657407 2.152633e-23
+         P.adj
+1 2.513408e-24
+2 2.498116e-28
+3 1.000000e+00
+4 5.217509e-74
+5 4.836467e-19
+6 1.291580e-22
 [1] "comb_nest_soc ~ Precipitation seasonality"
 
 	Kruskal-Wallis rank sum test
 
 data:  value by comb_nest_soc
-Kruskal-Wallis chi-squared = 100.07, df = 3, p-value
-< 2.2e-16
+Kruskal-Wallis chi-squared = 100.07, df = 3, p-value <
+2.2e-16
 
 [1] "Dunn's post-hoc test (Bonferroni corrected):"
-                                 Comparison          Z
-1        social_aboveground - social_ground  8.6269492
-2 social_aboveground - solitary_aboveground  3.6275457
-3      social_ground - solitary_aboveground -7.1206552
-4      social_aboveground - solitary_ground  3.4895924
-5           social_ground - solitary_ground -8.5177880
-6    solitary_aboveground - solitary_ground -0.5992621
-       P.unadj        P.adj
-1 6.301014e-18 3.780609e-17
-2 2.861281e-04 1.716769e-03
-3 1.074152e-12 6.444912e-12
-4 4.837577e-04 2.902546e-03
-5 1.626295e-17 9.757772e-17
-6 5.489981e-01 1.000000e+00
+                                 Comparison          Z      P.unadj
+1        social_aboveground - social_ground  8.6269492 6.301014e-18
+2 social_aboveground - solitary_aboveground  3.6275457 2.861281e-04
+3      social_ground - solitary_aboveground -7.1206552 1.074152e-12
+4      social_aboveground - solitary_ground  3.4895924 4.837577e-04
+5           social_ground - solitary_ground -8.5177880 1.626295e-17
+6    solitary_aboveground - solitary_ground -0.5992621 5.489981e-01
+         P.adj
+1 3.780609e-17
+2 1.716769e-03
+3 6.444912e-12
+4 2.902546e-03
+5 9.757772e-17
+6 1.000000e+00
