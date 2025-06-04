@@ -80,31 +80,41 @@ ggsave(
 
 
 # ------------------------------------------------------------------------------
-# Plot 2: Stacked barplot of species per trait syndrome by family
+# Plot 2: Stacked barplot of species per trait syndrome by family (sorted)
 # ------------------------------------------------------------------------------
-# Use same levels as previous barplot
+# Recode trait_combo factor levels (if not already done)
 traits$trait_combo <- factor(traits$trait_combo, levels = trait_levels)
 
-# Number of species in each trait combination within each family
+# Count number of species per trait_combo within each family
 family_combo_counts <- traits %>%
   group_by(family, trait_combo) %>%
   summarise(Species_Count = n(), .groups = "drop")
 
-# Total species count per family (for label placement)
-family_species_counts <- traits %>%
+# Total number of species per family
+family_species_counts <- family_combo_counts %>%
   group_by(family) %>%
-  summarise(Species_Count = n_distinct(tips), .groups = "drop")
+  summarise(Total_Species = sum(Species_Count), .groups = "drop")
 
+# Sort family factor levels by descending species count
+ordered_families <- family_species_counts %>%
+  arrange(desc(Total_Species)) %>%
+  pull(family)
+
+# Apply ordering
+family_combo_counts$family <- factor(family_combo_counts$family, levels = ordered_families)
+family_species_counts$family <- factor(family_species_counts$family, levels = ordered_families)
+
+# Plot
 plot2 <- ggplot(family_combo_counts, aes(x = family, y = Species_Count, fill = trait_combo)) +
   geom_bar(stat = "identity", position = position_stack(reverse = TRUE)) +
-  geom_text(data = family_species_counts, aes(x = family, y = Species_Count, label = Species_Count),
-            vjust = -0.5, size = 4, inherit.aes = FALSE) +  # Removed family = "Times"
+  geom_text(data = family_species_counts,
+            aes(x = family, y = Total_Species, label = Total_Species),
+            vjust = -0.5, size = 4, inherit.aes = FALSE) +
   scale_fill_viridis_d(option = "cividis", name = "Trait Combination") +
-  labs(x = "Family",
-       y = "Species Count") +
+  labs(x = "Family", y = "Species Count") +
   theme_minimal() +
   theme(
-    legend.position = c(0.95, 0.95),  # Inside top-right
+    legend.position = c(0.95, 0.95),
     legend.justification = c("right", "top"),
     legend.background = element_blank(),
     legend.title = element_text(size = 20),
@@ -118,9 +128,11 @@ plot2 <- ggplot(family_combo_counts, aes(x = family, y = Species_Count, fill = t
     axis.ticks = element_line(color = "black")
   )
 
+# Show plot
 quartz()
 print(plot2)
 
+# Save plot
 ggsave(
   filename = file.path(plots_wd, "family_trait_breakdown.png"),
   plot = plot2,
@@ -128,7 +140,6 @@ ggsave(
   height = 5,
   dpi = 900
 )
-
 
 # ------------------------------------------------------------------------------
 # Combined plot
