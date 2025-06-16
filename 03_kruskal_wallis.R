@@ -556,8 +556,8 @@ sink("results/kruskal_combined_results_selected.txt")
 library(ggplot2)
 library(viridis)
 library(dunn.test)
-library(colorspace)  # For darken()
-library(gridExtra)   # For grid.arrange
+library(colorspace)
+library(gridExtra)
 
 # Select variables
 selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
@@ -568,6 +568,14 @@ variable_labels <- c("bio_1_climate_summstats.csv" = "Mean annual temperature",
                      "bio_4_climate_summstats.csv" = "Temperature seasonality",
                      "bio_12_climate_summstats.csv" = "Annual precipitation",
                      "bio_15_climate_summstats.csv" = "Precipitation seasonality")
+
+# Define variable units
+variable_units <- c(
+  "bio_1_climate_summstats.csv" = "Mean annual temperature (°C × 0.1)",
+  "bio_4_climate_summstats.csv" = "Temperature seasonality (SD of monthly means, °C × 0.1)",
+  "bio_12_climate_summstats.csv" = "Annual precipitation (mm)",
+  "bio_15_climate_summstats.csv" = "Precipitation seasonality (% CV)"
+)
 
 # Initialize an empty list to store the ggplot objects
 plot_list <- list()
@@ -645,8 +653,11 @@ for (climate_index in 1:length(selected_vars)) {
     geom_jitter(aes(color = comb_nest_soc), height = 0.2, alpha = 0.7, size = 0.5, show.legend = FALSE) +
     scale_fill_manual(values = violin_colors) +
     scale_color_manual(values = point_colors) +
-    labs(y = "", x = "Climatic Variable Value", 
-         title = label) +
+    labs(
+      y = "",
+      x = variable_units[climate_file],  # show unit label on x-axis
+      title = label
+    ) +
     scale_y_discrete(labels = c("solitary_ground" = "Solitary/Ground", 
                                 "solitary_aboveground" = "Solitary/Above-ground",
                                 "social_ground" = "Social/Ground",
