@@ -47,22 +47,21 @@ trait_summary_df$Trait_Combination <- factor(trait_summary_df$Trait_Combination,
 # ------------------------------------------------------------------------------
 plot1 <- ggplot(trait_summary_df, aes(x = Trait_Combination, y = Species_Count, fill = Trait_Combination)) +
   geom_bar(stat = "identity") +
-  geom_text(aes(label = Species_Count), vjust = -0.5, size = 5, family = "Times") +
+  geom_text(aes(label = Species_Count), vjust = -0.5, size = 5) +  # Removed family = "Times"
   scale_fill_viridis_d(option = "cividis", name = "Trait Combination") +
   labs(x = "Trait Combination",
        y = "Species Count") +
   theme_minimal() +
   theme(
-    text = element_text(family = "Times"),
     legend.position = c(0.95, 0.95),  # Inside top-right
     legend.justification = c("right", "top"),
     legend.background = element_blank(),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14, angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 16, angle = 45, hjust = 1, color = "black"),
+    axis.text.y = element_text(size = 16, color = "black"),
     panel.grid = element_blank(),
     axis.line = element_line(color = "black"),
     axis.ticks = element_line(color = "black")
@@ -81,48 +80,59 @@ ggsave(
 
 
 # ------------------------------------------------------------------------------
-# Plot 2: Stacked barplot of species per trait syndrome by family
+# Plot 2: Stacked barplot of species per trait syndrome by family (sorted)
 # ------------------------------------------------------------------------------
-# Use same levels as previous barplot
+# Recode trait_combo factor levels (if not already done)
 traits$trait_combo <- factor(traits$trait_combo, levels = trait_levels)
 
-# Number of species in each trait combination within each family
+# Count number of species per trait_combo within each family
 family_combo_counts <- traits %>%
   group_by(family, trait_combo) %>%
   summarise(Species_Count = n(), .groups = "drop")
 
-# Total species count per family (for label placement)
-family_species_counts <- traits %>%
+# Total number of species per family
+family_species_counts <- family_combo_counts %>%
   group_by(family) %>%
-  summarise(Species_Count = n_distinct(tips), .groups = "drop")
+  summarise(Total_Species = sum(Species_Count), .groups = "drop")
 
+# Sort family factor levels by descending species count
+ordered_families <- family_species_counts %>%
+  arrange(desc(Total_Species)) %>%
+  pull(family)
+
+# Apply ordering
+family_combo_counts$family <- factor(family_combo_counts$family, levels = ordered_families)
+family_species_counts$family <- factor(family_species_counts$family, levels = ordered_families)
+
+# Plot
 plot2 <- ggplot(family_combo_counts, aes(x = family, y = Species_Count, fill = trait_combo)) +
   geom_bar(stat = "identity", position = position_stack(reverse = TRUE)) +
-  geom_text(data = family_species_counts, aes(x = family, y = Species_Count, label = Species_Count),
-              vjust = -0.5, size = 4, family = "Times", inherit.aes = FALSE) +
+  geom_text(data = family_species_counts,
+            aes(x = family, y = Total_Species, label = Total_Species),
+            vjust = -0.5, size = 4, inherit.aes = FALSE) +
   scale_fill_viridis_d(option = "cividis", name = "Trait Combination") +
-  labs(x = "Family",
-       y = "Species Count") +
+  labs(x = "Family", y = "Species Count") +
   theme_minimal() +
   theme(
-    text = element_text(family = "Times"),
-    legend.position = c(0.95, 0.95),  # Inside top-right
+    legend.position = c(0.95, 0.95),
     legend.justification = c("right", "top"),
     legend.background = element_blank(),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    axis.text.x = element_text(size = 14, angle = 45, hjust = 1),
-    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 16, angle = 45, hjust = 1, color = "black"),
+    axis.text.y = element_text(size = 16, color = "black"),
     panel.grid = element_blank(),
     axis.line = element_line(color = "black"),
     axis.ticks = element_line(color = "black")
   )
 
+# Show plot
 quartz()
 print(plot2)
 
+# Save plot
 ggsave(
   filename = file.path(plots_wd, "family_trait_breakdown.png"),
   plot = plot2,
@@ -130,7 +140,6 @@ ggsave(
   height = 5,
   dpi = 900
 )
-
 
 # ------------------------------------------------------------------------------
 # Combined plot
@@ -147,6 +156,14 @@ print(combined_plot)
 
 ggsave(
   filename = file.path(plots_wd, "combined_species_trait_plot.png"),
+  plot = combined_plot,
+  width = 14,
+  height = 8,
+  dpi = 900
+)
+
+ggsave(
+  filename = file.path(plots_wd, "combined_species_trait_plot.pdf"),
   plot = combined_plot,
   width = 14,
   height = 8,

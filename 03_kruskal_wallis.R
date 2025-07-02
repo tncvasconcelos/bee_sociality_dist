@@ -553,6 +553,12 @@ sink()
 # ------------------------------------------------------------------------------
 sink("results/kruskal_combined_results_selected.txt")
 
+library(ggplot2)
+library(viridis)
+library(dunn.test)
+library(colorspace)
+library(gridExtra)
+
 # Select variables
 selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
                    "bio_12_climate_summstats.csv", "bio_15_climate_summstats.csv")
@@ -563,13 +569,32 @@ variable_labels <- c("bio_1_climate_summstats.csv" = "Mean annual temperature",
                      "bio_12_climate_summstats.csv" = "Annual precipitation",
                      "bio_15_climate_summstats.csv" = "Precipitation seasonality")
 
+# Define variable units
+variable_units <- c(
+  "bio_1_climate_summstats.csv" = "Mean annual temperature (°C × 0.1)",
+  "bio_4_climate_summstats.csv" = "Temperature seasonality (SD of monthly means, °C × 0.1)",
+  "bio_12_climate_summstats.csv" = "Annual precipitation (mm)",
+  "bio_15_climate_summstats.csv" = "Precipitation seasonality (% CV)"
+)
+
 # Initialize an empty list to store the ggplot objects
 plot_list <- list()
+
+# Compute global min/max for each variable
+climate_ranges <- list()
+
+for (file in selected_vars) {
+  climate <- read.csv(paste0("curated_data/", file))
+  climate_values <- climate[, 3]
+  climate_ranges[[file]] <- c(min(climate_values, na.rm = TRUE),
+                              max(climate_values, na.rm = TRUE))
+}
 
 # Loop through the selected climate variables
 for (climate_index in 1:length(selected_vars)) {
   
-  climate <- read.csv(paste0("curated_data/", selected_vars[climate_index]))
+  climate_file <- selected_vars[climate_index]
+  climate <- read.csv(paste0("curated_data/", climate_file))
   climate <- subset(climate, !is.na(climate[, 3]))
   sampled_species <- intersect(intersect(traits$tips, climate$species), tree$tip.label)
   
@@ -591,25 +616,13 @@ for (climate_index in 1:length(selected_vars)) {
   kruskal_result <- kruskal.test(value ~ comb_nest_soc, data = merged_table)
   p_value <- kruskal_result$p.value
   
-  if (p_value < 0.0001) {
-    significance <- "****"
-  } else if (p_value < 0.001) {
-    significance <- "***"
-  } else if (p_value < 0.01) {
-    significance <- "**"
-  } else if (p_value < 0.05) {
-    significance <- "*"
-  } else {
-    significance <- ""
-  }
-  
   # Set factor level order
   merged_table$comb_nest_soc <- factor(merged_table$comb_nest_soc,
                                        levels = c("solitary_ground", "solitary_aboveground", 
                                                   "social_ground", "social_aboveground"))
   
   # Run Dunn's post-hoc test if Kruskal is significant
-  label <- variable_labels[selected_vars[climate_index]]
+  label <- variable_labels[climate_file]
   print(paste0("comb_nest_soc ~ ", label))
   print(kruskal_result)
   
@@ -619,54 +632,71 @@ for (climate_index in 1:length(selected_vars)) {
     print(dunn_result$res)
   }
   
+  # Compute breaks that end on a tick
+  x_limits <- climate_ranges[[climate_file]]
+  x_min <- x_limits[1]
+  x_max <- x_limits[2]
+  tick_step <- pretty(x_limits, n = 6)[2] - pretty(x_limits, n = 6)[1]
+  tick_min <- floor(x_min / tick_step) * tick_step
+  tick_max <- ceiling(x_max / tick_step) * tick_step
+  tick_breaks <- seq(tick_min, tick_max, by = tick_step)
+  
+  # Get colors for violins and points
+  violin_colors <- viridis::viridis(n = 4, option = "cividis")
+  names(violin_colors) <- c("solitary_ground", "solitary_aboveground", 
+                            "social_ground", "social_aboveground")
+  point_colors <- sapply(violin_colors, function(x) darken(x, amount = 0.4))
+  
   # Make plot
-  plot <- ggplot(merged_table, aes(x = comb_nest_soc, y = value, fill = comb_nest_soc)) +
-    geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
-    geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +
-    scale_fill_viridis_d(option = "cividis") +
-    labs(x = "", y = "Climatic Variable Value", 
-         title = paste(variable_labels[selected_vars[climate_index]], significance)) +
-    scale_x_discrete(labels = c("solitary_ground" = "Solitary/Ground", 
+  plot <- ggplot(merged_table, aes(x = value, y = comb_nest_soc, fill = comb_nest_soc)) +
+    geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
+    geom_jitter(aes(color = comb_nest_soc), height = 0.2, alpha = 0.7, size = 0.5, show.legend = FALSE) +
+    scale_fill_manual(values = violin_colors) +
+    scale_color_manual(values = point_colors) +
+    labs(
+      y = "",
+      x = variable_units[climate_file],  # show unit label on x-axis
+      title = label
+    ) +
+    scale_y_discrete(labels = c("solitary_ground" = "Solitary/Ground", 
                                 "solitary_aboveground" = "Solitary/Above-ground",
                                 "social_ground" = "Social/Ground",
                                 "social_aboveground" = "Social/Above-ground")) +
-    theme_minimal() +
+    scale_x_continuous(limits = c(tick_min, tick_max), breaks = tick_breaks) +
+    theme_classic() +
     theme(
-      axis.line = element_line(color = "black"),
-      panel.grid = element_blank(),
-      axis.text.x = element_text(size = 20, angle = 45, hjust = 1),
-      axis.text.y = element_text(size = 20),
+      panel.border = element_rect(color = "black", fill = NA, size = 1),
+      axis.text.y = element_text(size = 24, color = "black"),
+      axis.text.x = element_text(size = 20, color = "black"),
       axis.title = element_text(size = 20),
-      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      plot.title = element_text(size = 24, face = "bold", hjust = 0.5),
       legend.position = "none",
-      axis.ticks.y = element_line(color = "black", size = 0.5)
-    ) +
-    scale_y_continuous(breaks = pretty(merged_table$value, n = 6))
+      axis.ticks.x = element_line(color = "black", size = 0.5),
+      plot.margin = margin(t = 10, r = 40, b = 10, l = 40)
+    )
   
   print(plot)
-  
   plot_list[[climate_index]] <- plot
 }
 
-# Arrange plots
+# Arrange plots in grid
 n_vars_selected <- length(selected_vars)
-ncols <- 2
+ncols <- 1
 nrows <- ceiling(n_vars_selected / ncols)
 
 # Display plots
 quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
-# Save plot grid
-ggsave("plots/kruskal_combined_boxplots_selected2.pdf", 
+# Save plots
+ggsave("plots/kruskal_combined_boxplots_selected.pdf", 
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
-       width = 10, height = 12)
+       width = 12, height = 24)
 
-ggsave("plots/kruskal_combined_boxplots_selected2.png", 
+ggsave("plots/kruskal_combined_boxplots_selected.png", 
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
-       width = 10, height = 12)
+       width = 12, height = 24)
 
 par(mfrow = c(1, 1))
 
 sink()
-

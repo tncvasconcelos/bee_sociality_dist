@@ -63,7 +63,6 @@ toPolar <- function(x, y) {
 N <- length(tree$tip.label)
 png(filename = "plots/phylogeny_traitmapping_combinedring.png",
     width = 1800, height = 1800, res = 300)
-par(family = "Times")  # Set font to Arial for PNG output
 plotTree(tree, ftype = "off", lwd = 0.3, type = "fan")
 
 # Extract tip coordinates
