@@ -60,7 +60,7 @@ dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
 dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_4")]
-dat <- dat[!dat$mean_awi_pm_sr_yr == -Inf,]
+#dat <- dat[!dat$mean_awi_pm_sr_yr == -Inf,]
 
 phy <- keep.tip(phy, dat$tips)
 #--------------------------------------

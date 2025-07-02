@@ -66,8 +66,8 @@ phy <- keep.tip(phy, dat$tips)
 #--------------------------------------
 # LIFE HISTORY TRAITS VS. ARIDITY INDEX
 
-load("corhmm_dredge_binary2.Rsave")
-corhmm_tbl <- read.csv("corhmm_tbl_dredge.csv")
+load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
+corhmm_tbl <- read.csv("corHMMdredge_results/corhmm_tbl_dredge.csv")
 cid_disc_model <- dredge_sociality[[which.min(corhmm_tbl$AIC)]]$index.mat
 
 # now setting up OU part
