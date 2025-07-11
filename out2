@@ -1,0 +1,20 @@
+Loading required package: ape
+Loading required package: nloptr
+Loading required package: GenSA
+Loading required package: corpcor
+Loading required package: geiger
+Loading required package: phytools
+Loading required package: maps
+Loading required package: RColorBrewer
+Registered S3 methods overwritten by 'OUwie':
+  method        from  
+  plot.dentist  corHMM
+  print.dentist corHMM
+[1] TRUE
+[1] TRUE
+Starting a thorough search with 100 simmaps using the nlopt_ln optimization protocol...
+Starting a thorough search with 100 simmaps using the nlopt_ln optimization protocol...
+Starting a thorough search with 100 simmaps using the nlopt_ln optimization protocol...
+Starting a thorough search with 100 simmaps using the nlopt_ln optimization protocol...
+Starting a thorough search with 100 simmaps using the nlopt_ln optimization protocol...
+Starting a thorough search with 100 simmaps using the nlopt_ln optimization protocol...
