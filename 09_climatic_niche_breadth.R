@@ -13,18 +13,20 @@
 rm(list=ls())
 # setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
-library(factoextra)
-library(alphashape3d)
-library(corrplot)
-library(caret)
-library(vegan)
-library(dplyr)
-library(combinat)
-library(phytools)
 library(ggplot2)
+library(dplyr)
+library(scales)
+library(ggrepel)
 library(viridis)
 library(colorspace)
 library(gridExtra)
+library(factoextra)
+library(vegan)
+library(caret)
+library(corrplot)
+library(phytools)
+library(alphashape3d)
+library(combinat)
 
 #-------------------------------------------------------------------------------
 # Load trait, tree, and climate summary data
@@ -103,9 +105,6 @@ for(i in 2:length(climatic_list)) {
   merged_climatic_vars <- merge(merged_climatic_vars, one_climatic_var, by="species") 
 }
 
-# Select only mean columns
-#merged_climatic_vars <- merged_climatic_vars[,c(1, grep("mean", colnames(merged_climatic_vars)))]
-
 # Merge with trait data again
 merged_traits_pca <- merge(traits, merged_climatic_vars, by.x="tips",by.y="species")
 
@@ -129,13 +128,6 @@ merged_traits_pca$combined_trait <- paste(merged_traits_pca$sociality_binary, me
 clim_vars <- merged_traits_pca[cols]
 clim_vars$tip <- merged_traits_pca$tip
 clim_vars$combined_trait <- merged_traits_pca$combined_trait
-
-#merged_traits_pca <- merged_traits_pca[,c("tips","combined_trait",cols)]
-#merged_traits_pca[,c("tips","combined_trait",cols)]
-#merged_traits_pca$combined_trait
-
-# finite_rows <- apply(merged_traits_pca, 1, function(row) all(is.finite(row)))
-# clean_data <- merged_traits_pca[finite_rows, ]
 cols <- grep("mean", colnames(clim_vars))
 
 # Remove highly collinear variables (r > 0.9)
@@ -187,7 +179,7 @@ volumes
 # different regions of climate space (based on PCA scores).
 # ==============================================================================
 
-# Use the first 3 PCs for climate space (as above)
+# Use the first 3 PCs (as above)
 adonis_data <- pca_df[, c("PC1", "PC2", "PC3")]
 adonis_group <- pca_df$combined_trait
 
@@ -284,7 +276,7 @@ trait_labels <- c("solitary_ground" = "Solitary/Ground",
                   "social_ground" = "Social/Ground",
                   "social_aboveground" = "Social/Above-ground")
 
-# Precipitation Breadth Violin Plot
+# Precipitation breadth violin plot
 p1 <- ggplot(merged_traits, aes(x = prec_breadth, y = combined_trait, fill = combined_trait)) +
   geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
   geom_jitter(aes(color = combined_trait), height = 0.2, alpha = 0.7, size = 0.5, show.legend = FALSE) +
@@ -302,7 +294,7 @@ p1 <- ggplot(merged_traits, aes(x = prec_breadth, y = combined_trait, fill = com
     legend.position = "none"
   )
 
-# Temperature Breadth Violin Plot
+# Temperature breadth violin plot
 p2 <- ggplot(merged_traits, aes(x = temp_breadth, y = combined_trait, fill = combined_trait)) +
   geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
   geom_jitter(aes(color = combined_trait), height = 0.2, alpha = 0.7, size = 0.5, show.legend = FALSE) +
@@ -320,9 +312,8 @@ p2 <- ggplot(merged_traits, aes(x = temp_breadth, y = combined_trait, fill = com
     legend.position = "none"
   )
 
-# Show plots
-print(p1)
-print(p2)
+p1
+p2
 
 # Save plots
 ggsave("plots/precipitation_breadth_violin.pdf", p1, width = 8, height = 6)
@@ -337,47 +328,168 @@ ggsave("plots/niche_breadth_violin_combined.png", combined_univariate_niches, wi
 
 
 #-------------------------------------------------------------------------------
-# Plot combined 2D PCA (PC1 - PC2) and niche volume bar plots
+# View PCA loadings and contributions before plotting
 #-------------------------------------------------------------------------------
-# Panel A: PCA plot
 # Cumulative variance explained by first 2 PCs (62.44% of total variation)
 eig <- (pca_result$sdev)^2
 variance <- eig * 100 / sum(eig)
-sum(variance[1:2])  # How much variation PC1 + PC2 account for
+sum(variance[1:2])  # How much variation PC1 + PC2 account for - 62.44%
 
-# Set consistent factor order and colors
+# Get PCA variable information
+pca_vars <- get_pca_var(pca_result)
+
+# Loadings: directions of variables in PC space
+print(round(pca_vars$coord[, 1:2], 2))  # Loadings for PC1–PC3
+
+#               Dim.1  Dim.2  Dim.3
+# mean_alt.y  -0.347  0.166  0.728
+# mean_bio_1   0.721  0.612 -0.228
+# mean_bio_13  0.869 -0.084  0.187
+# mean_bio_14  0.605 -0.667 -0.099
+# mean_bio_15 -0.020  0.772  0.357
+# mean_bio_18  0.738 -0.280 -0.023
+# mean_bio_19  0.610 -0.344  0.248
+# mean_bio_2  -0.656  0.546  0.004
+# mean_bio_3   0.589  0.555  0.414
+# mean_bio_4  -0.779 -0.320 -0.358
+# mean_bio_5   0.079  0.695 -0.591
+# mean_bio_8   0.663  0.379 -0.432
+
+# Contributions: how much each variable contributes (%) to each PC
+print(round(pca_vars$contrib[, 1:3], 2))  # Contributions for PC1–PC3
+
+#             Dim.1 Dim.2 Dim.3
+# mean_alt.y   2.67  0.93 32.08
+# mean_bio_1  11.53 12.57  3.16
+# mean_bio_13 16.75  0.24  2.12
+# mean_bio_14  8.13 14.93  0.59
+# mean_bio_15  0.01 19.96  7.73
+# mean_bio_18 12.08  2.63  0.03
+# mean_bio_19  8.25  3.97  3.74
+# mean_bio_2   9.55  9.98  0.00
+# mean_bio_3   7.70 10.34 10.36
+# mean_bio_4  13.45  3.44  7.75
+# mean_bio_5   0.14 16.19 21.17
+# mean_bio_8   9.75  4.82 11.28
+
+#-------------------------------------------------------------------------------
+# Plot 2D PCA
+#-------------------------------------------------------------------------------
+# Set factor order and colors
 pca_df$combined_trait <- factor(pca_df$combined_trait, levels = c("solitary_ground", "solitary_aboveground", 
                                                                   "social_ground", "social_aboveground"))
-
-violin_colors <- viridis::viridis(n = 4, option = "cividis")
-names(violin_colors) <- levels(pca_df$combined_trait)
+trait_colors <- viridis::viridis(n = 4, option = "cividis")
+names(trait_colors) <- levels(pca_df$combined_trait)
 
 # Plot
 pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = combined_trait)) +
-  stat_ellipse(aes(group = combined_trait), 
-               type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
-  stat_ellipse(aes(group = combined_trait), 
-               type = "norm", size = 0.5, linetype = "solid") +
+  stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+  stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5, linetype = "solid") +
   geom_point(size = 2, alpha = 0.8) +
-  scale_color_manual(values = violin_colors, labels = trait_labels) +
-  scale_fill_manual(values = violin_colors, guide = "none") +  # Remove second legend
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+  scale_color_manual(values = trait_colors, labels = trait_labels) +
+  scale_fill_manual(values = trait_colors, guide = "none") +
   theme_classic() +
-  labs(title = "", 
-       color = "Trait Combination",
-       x = "PC1", y = "PC2") +
+  labs(
+    title = "",
+    color = "Trait Combination",
+    x = "PC1",
+    y = "PC2"
+  ) +
   theme(
     plot.title = element_text(size = 0),
     axis.title = element_text(size = 16),
     axis.text = element_text(size = 14),
     legend.title = element_text(size = 16),
     legend.text = element_text(size = 14),
-    legend.position = c(0.98, 0.98),
+    legend.position = c(1.00, 0.98),
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = NA)
   )
 
+pca_plot
 
-# # Panel B: niche volume bar plot
+# Save PCA plot
+ggsave("plots/pca_climatic_niche_space.pdf", pca_plot, width = 8, height = 8)
+ggsave("plots/pca_climatic_niche_space.png", pca_plot, width = 8, height = 8)
+
+
+#-------------------------------------------------------------------------------
+# Plot PCA loading arrows (color by contribution, no arrow scaling)
+#-------------------------------------------------------------------------------
+# Extract PCA variable loadings and contributions
+pca_vars <- get_pca_var(pca_result)
+contributions <- pca_vars$contrib
+
+loadings_df <- as.data.frame(pca_vars$coord)
+loadings_df$variable <- rownames(loadings_df)
+
+# Replace variable codes with descriptive labels
+loadings_df$label <- recode(loadings_df$variable,
+                            mean_bio_1 = "Annual Temp",
+                            mean_bio_2 = "Diurnal Temp Range",
+                            mean_bio_3 = "Isothermality",
+                            mean_bio_4 = "Temp Seasonality",
+                            mean_bio_5 = "Max Temp (Warmest Month)",
+                            mean_bio_8 = "Mean Temp (Wettest Qtr)",
+                            mean_bio_13 = "Precip (Wettest Month)",
+                            mean_bio_14 = "Precip (Driest Month)",
+                            mean_bio_15 = "Precip Seasonality",
+                            mean_bio_18 = "Precip (Warmest Qtr)")
+
+# Filter to top contributors (≥ 9% to PC1 or PC2)
+top_vars <- contributions[, 1:2] >= 9
+top_var_names <- rownames(contributions)[apply(top_vars, 1, any)]
+loadings_df <- loadings_df[loadings_df$variable %in% top_var_names, ]
+
+# Add contribution value for coloring
+loadings_df$contrib <- apply(contributions[loadings_df$variable, 1:2], 1, max)
+
+# Plot with unscaled arrow length and color-coded contribution
+arrow_plot <- ggplot(loadings_df, aes(x = 0, y = 0)) +
+  geom_segment(aes(xend = Dim.1, yend = Dim.2, color = contrib),
+               arrow = arrow(length = unit(0.25, "cm")),
+               size = 1) +
+  geom_text_repel(aes(x = Dim.1, y = Dim.2, label = label),
+                  size = 4, color = "black") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+  scale_color_viridis_c(name = "Max Contribution\n(PC1 or PC2)") +
+  coord_equal() +
+  theme_classic() +
+  labs(
+    title = "PCA Loadings",
+    x = "PC1",
+    y = "PC2"
+  ) +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10),
+    legend.position = c(0.97, 0.03),
+    legend.justification = c("right", "bottom"),
+    legend.background = element_rect(fill = "white", color = NA)
+  )
+
+arrow_plot
+
+# Arrow direction = the direction of the variable's influence on PC1 and PC2 (into which quadrant)
+
+# Arrow length = the magnitude of the loading (i.e., how strongly the variable is associated with those axes)
+
+# Arrow color = the contribution, i.e., how much that variable contributes to explaining variance along PC1 or PC2
+
+# Save arrow plot
+ggsave("plots/pca_loadings.pdf", arrow_plot, width = 8, height = 8)
+ggsave("plots/pca_loadings.png", arrow_plot, width = 8, height = 8)
+
+
+#-------------------------------------------------------------------------------
+# Plot niche volume bar plots
+#-------------------------------------------------------------------------------
 # # Prepare volume data for plotting
 # volume_df <- data.frame(
 #   combined_trait = names(volumes),
@@ -402,16 +514,6 @@ pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = 
 #     axis.text.x = element_text(size = 12, angle = 20, hjust = 1),
 #     axis.text.y = element_text(size = 12)
 #   )
-# 
-# # Arrange and save
-# combined_pca_volume <- grid.arrange(pca_plot, volume_plot, ncol = 1)
-# ggsave("plots/multivariate_climatic_niche_combined.pdf", combined_pca_volume, width = 8, height = 12)
-# ggsave("plots/multivariate_climatic_niche_combined.png", combined_pca_volume, width = 8, height = 12)
-
-# Save only the PCA plot
-ggsave("plots/pca_climatic_niche_space.pdf", pca_plot, width = 8, height = 8)
-ggsave("plots/pca_climatic_niche_space.png", pca_plot, width = 8, height = 8)
-
 
 # #-------------------------------------------------------------------------------
 # # Plot 3D PCA (PC1 - PC3)
@@ -445,4 +547,3 @@ ggsave("plots/pca_climatic_niche_space.png", pca_plot, width = 8, height = 8)
 # #PCs <- predict(predictors, pca_result, index = 1:3)
 # #Convert to Points
 # #PCs.points <- rasterToPoints(PCs)
-# 
