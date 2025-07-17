@@ -59,15 +59,15 @@ all(shared_species %in% phy$tip.label)
 dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
-dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_12")]
+dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_15")]
 #dat <- dat[!dat$mean_awi_pm_sr_yr == -Inf,]
 
 phy <- keep.tip(phy, dat$tips)
 #--------------------------------------
 # LIFE HISTORY TRAITS VS. ARIDITY INDEX
 
-load("corhmm_dredge_binary2.Rsave")
-corhmm_tbl <- read.csv("corhmm_tbl_dredge.csv")
+load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
+corhmm_tbl <- read.csv("corHMMdredge_results/corhmm_tbl_dredge.csv")
 cid_disc_model <- dredge_sociality[[which.min(corhmm_tbl$AIC)]]$index.mat
 
 # now setting up OU part
@@ -90,7 +90,7 @@ model_list <- list(list(2, cid_disc_model, "BM1"),
                    list(2, cid_disc_model, full_oum_model),
                    list(2, cid_disc_model, cid_oum_model)) # the two is for two rate classes
 
-names(model_list) <- c("bm1_8states_run12", "ou1_8states_run12", "oum_soc_8states_run12", "oum_nest_8states_run12", "oum_full_8states_run12", "oum_cid_8states_run12")
+names(model_list) <- c("bm1_8states_run_bio_15", "ou1_8states_run_bio_15", "oum_soc_8states_run_bio_15", "oum_nest_8states_run_bio_15", "oum_full_8states_run_bio_15", "oum_cid_8states_run_bio_15")
 
 # model_list <- list(list(1, disc_model, oum_color),
 #                   list(1, disc_model, oum_model))
