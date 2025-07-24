@@ -1,74 +1,100 @@
-# rm(list=ls())
-# setwd("/Users/tvasc/Desktop/bee_sociality_dist")
+# ==============================================================================
+# 06.1 Ancestral state reconstruction of sociality and nesting strategy
+# ==============================================================================
+# Uses corHMM to model the correlated evolution of sociality and nesting strategy 
+# in bees under hidden rate models, selects the best-fitting model via AIC, and 
+# reconstructs ancestral states across the phylogeny. Visualizes the inferred 
+# transition matrix and ancestral state reconstructions. 
+# ==============================================================================
+
+#-------------------------------------------------------------------------------
+# Setup
+#-------------------------------------------------------------------------------
+rm(list=ls())
+#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
+setwd("/Users/lenarh/Desktop/bee_sociality_dist")
+
+# Load libraries
 library(corHMM)
-
-source("00_utility_functions.R")
-#--------------------------------------
-# First organizing dataset:
-# Reloading traits, tree and climatic data
-traits <- read.csv("curated_data/bees_traits.csv")
-phy <- read.tree("curated_data/ML_beetree_pruned.tre")
-phy <- keep.tip(phy, which(phy$tip.label %in% traits$tips))
-
-#------------------------------------
-dat <- traits
-shared_species <- intersect(dat$tips, phy$tip.label)
-
-all(shared_species %in% dat$tips)
-all(shared_species %in% phy$tip.label)
-
-dat <- dat[match(shared_species, dat$tips),]
-phy <- keep.tip(phy, shared_species)
-dat <- dat[match(phy$tip.label, dat$tips),]
-dat <- dat[,c("tips","sociality_binary","nest_binary")]
-
-#-------------------------------------
-# determining best corHMM models with corhmm dredge
-# Note: we are fixing the root to be state 4 ("solitary/ground") with root.p=c(0,0,0,1)
-# dredge_sociality <- corHMM:::corHMMDredge(phy, dat, max.rate.cat=2, root.p=c(0,0,0,1))
-#save(dredge_sociality, file="corHMMdredge_results/corhmm_dredge_binary.Rsave")
-load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
-
-corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
-write.csv(corhmm_tbl_sociality, file="corHMMdredge_results/corhmm_tbl_dredge.csv")
-
-#---------------------
-# Rate matrix figure
-
+library(phytools)
 library(tidyverse)
 library(igraph)
 library(ggraph)
 library(tidygraph)
 library(scales)
 
+# Load utility functions
+source("00_utility_functions.R")
+
+#-------------------------------------------------------------------------------
+# Organizing dataset
+#-------------------------------------------------------------------------------
+# Reloading traits, tree and climatic data
+traits <- read.csv("curated_data/bees_traits.csv")
+phy <- read.tree("curated_data/ML_beetree_pruned.tre")
+
+# Drop tips in the tree that don’t match any in the trait data
+phy <- keep.tip(phy, which(phy$tip.label %in% traits$tips))
+
+# Find species shared by both datasets
+dat <- traits
+shared_species <- intersect(dat$tips, phy$tip.label)
+
+all(shared_species %in% dat$tips)
+all(shared_species %in% phy$tip.label)
+
+# Reorder the data and tree to align species
+dat <- dat[match(shared_species, dat$tips),]
+phy <- keep.tip(phy, shared_species)
+dat <- dat[match(phy$tip.label, dat$tips),]
+
+# Keep relevant trait columns
+dat <- dat[,c("tips","sociality_binary","nest_binary")]
+
+#-------------------------------------------------------------------------------
+# Model selection (run or load corHMM dredge) with root fixed as solitary/ground
+#-------------------------------------------------------------------------------
+# Run model selection with corHMMDredge (if not already done)
+#dredge_sociality <- corHMM:::corHMMDredge(phy, dat, max.rate.cat=2, root.p=c(0,0,0,1))
+#save(dredge_sociality, file="corHMMdredge_results/corhmm_dredge_binary.Rsave")
+
+# Load saved dredge results
+load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
+
+# Save summary table to compare models with AIC values
+corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
+#write.csv(corhmm_tbl_sociality, file="corHMMdredge_results/corhmm_tbl_dredge.csv")
+
+#-------------------------------------------------------------------------------
+# Visualize transition matrix
+#-------------------------------------------------------------------------------
 # Define states
 states <- c(
   "R1 social|aboveground", "R1 solitary|aboveground", "R1 social|ground", "R1 solitary|ground",
   "R2 social|aboveground", "R2 solitary|aboveground", "R2 social|ground", "R2 solitary|ground"
 )
 
+# Extract the transition rate matrix from the 10th (best) model
 rates_mat <- dredge_sociality[[10]]$solution
 
-# Rebuild the transition matrix manually (you pasted it but it's not in R object form)
-# So let's manually create it in a simple way for now:
-
-# Create a named 8x8 matrix
-rates_mat <- matrix(NA, nrow = 8, ncol = 8, dimnames = list(states, states))
+# Manually create transition matrix
+# Initialize an 8x8 empty matrix for states
+rates_mat <- matrix(NA, nrow = 8, ncol = 8, dimnames = list(states, states)) 
 
 # Convert matrix to edge list
-edges <- as.data.frame(as.table(rates_mat)) %>%
+edges <- as.data.frame(as.table(rates_mat)) %>% 
   filter(!is.na(Freq)) %>%
   rename(from = Var1, to = Var2, rate = Freq)
 
-# Define biological colors
-state_colors <- c(
+# Define state colors
+state_colors <- c( 
   "social|aboveground" = "darkblue",
   "solitary|aboveground" = "darkred",
   "social|ground" = "darkgreen",
   "solitary|ground" = "purple"
 )
 
-# Assign colors to nodes
+# Assign colors to nodes depending on rate class (R1 = opaque, R2 = transparent)
 assign_color <- function(state) {
   part <- sub("R[12] ", "", state)
   rate_class <- substr(state, 2, 2)  # R1 or R2
@@ -82,14 +108,13 @@ assign_color <- function(state) {
   }
 }
 
-nodes <- tibble(name = states) %>%
+nodes <- tibble(name = states) %>% # Creates a node table with colors
   mutate(color = sapply(name, assign_color))
 
-# Build graph
+# Create graph and plot
 g <- graph_from_data_frame(edges, vertices = nodes, directed = TRUE)
 tg <- as_tbl_graph(g)
 
-# Plot
 pdf("plots/transition_matrix_corhmm.pdf")
 ggraph(tg, layout = 'circle') +
   geom_edge_link(aes(width = rate),
@@ -105,22 +130,20 @@ ggraph(tg, layout = 'circle') +
   ggtitle("Transition Diagram for Sociality (Model 10)\nColors by State, Lighter for R2")
 dev.off()
 
-#---------------------
-
-# Ancestral state plot
-
-# this script will reconstruc the ancestral state based on our model averaged corHMM models
-
-## functions 
-WtQ <- function(Q, Weights){
+#===============================================================================
+# Ancestral State Reconstruction (ASR) & Plotting
+#===============================================================================
+# Reconstruct the ancestral state based on corHMM models
+#-------------------------------------------------------------------------------
+# Functions 
+#-------------------------------------------------------------------------------
+WtQ <- function(Q, Weights){ # Weighted average of transition rates using AIC weights
   Weights <- Weights[!is.na(Q)]/sum(Weights[!is.na(Q)])
   AvgQ <- sum(Q[!is.na(Q)] * Weights)
   return(AvgQ)
 }
 
-
-# model average rates from corHMM
-getModelAvgRate <- function(file){
+getModelAvgRate <- function(file){ # Loads model set, computes AIC weights, and creates a model-averaged rate matrix
   load(file)
   rate.mat <- obj$res_ARD.ARD.2$index.mat
   AICc <- unlist(lapply(obj, function(x) x$AICc))
@@ -137,8 +160,7 @@ getModelAvgRate <- function(file){
   return(rate.mat)
 }
 
-
-getTipRecon <- function(file){
+getTipRecon <- function(file){ # Reconstructs states using model-averaged transition matrix, returns marginal likelihoods
   load(file)
   phy <- obj$res_ER$phy
   data <- obj$res_ER$data
@@ -149,23 +171,15 @@ getTipRecon <- function(file){
   return(res)
 }
 
-
-anc_recon <- dredge_sociality[[10]]$states
-#anc_recon[1,] # checking root state
-
-
-#boxplot(dredge_sociality[[10]]$states)
-
-dev.off()
-
+# Plots ancestral state reconstructions with colored pie charts at nodes
 plotRECON <- function(phy, likelihoods, piecolors=NULL, cex=0.5, pie.cex=0.25, file=NULL, height=11, width=8.5, show.tip.label=TRUE, title=NULL, ...){
   if(is.null(piecolors)){
     #piecolors=c("pink","black","red","yellow","forestgreen","blue","coral","aquamarine")
     # piecolors=c("#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF", 
     #             "#851170FF", "#040404FF", "#F36E35FF", "#FFFE9EFF")
     piecolors=rev(c("#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF",
-      "#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF"))
-    }
+                    "#00204DFF", "#575C6DFF", "#A69D75FF", "#FFEA46FF"))
+  }
   if(!is.null(file)){
     pdf(file, height=height, width=width,useDingbats=FALSE)
   }
@@ -183,26 +197,22 @@ plotRECON <- function(phy, likelihoods, piecolors=NULL, cex=0.5, pie.cex=0.25, f
   }
 }
 
-#pal1 <- hcl.colors(8, palette = "Viridis", alpha = 0.7)
-#pal1 <- hcl.colors(4, palette = "Inferno", alpha = 1)
-#pal2 <- hcl.colors(4, palette = "Inferno", alpha = 0.25)
-
-# 
-# custom_colors <- c(pal1, pal2)
-# names(custom_colors) <- colnames(anc_recon)
+#-------------------------------------------------------------------------------
+# Plot ancestral state reconstruction
+#-------------------------------------------------------------------------------
+# Extract likelihoods for internal nodes from best model (10th)
+anc_recon <- dredge_sociality[[10]]$states
+#anc_recon[1,] # checking root state
 
 pdf("corHMMdredge_results/corhmm_dredge_recon_final.pdf", height=45, width=10)
 
 plotRECON(
   phy = phy,
   likelihoods = anc_recon,
-  pie.cex = 0.3,  # Size of pie charts
+  pie.cex = 0.3,
   show.tip.label = T,
-  cex=0.1
+  cex = 0.1
 )
 
 axisPhylo()
 dev.off()
-
-
-

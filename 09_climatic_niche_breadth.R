@@ -6,7 +6,6 @@
 # and multivariately (using PCA and 3D volume estimation).
 # ==============================================================================
 
-
 #-------------------------------------------------------------------------------
 # Setup: clear workspace, set wd, load packages
 #-------------------------------------------------------------------------------
@@ -34,7 +33,6 @@ library(combinat)
 traits <- read.csv("curated_data/bees_traits.csv")
 phy <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv", full.names = T)
-
 
 # ==============================================================================
 # 1) Univariate niche breadths (temp and precip)
@@ -74,6 +72,8 @@ merged_traits <- subset(merged_traits, !is.na(merged_traits$mean_bio_5))
 
 # Check data
 head(merged_traits)
+
+saveRDS(merged_traits, file = "merged_traits.rds")
 
 # Calculate univariate niche breadths for each species
     # temp_breadth = BIO5 - BIO6 (temperature range)
@@ -147,6 +147,9 @@ pca_df <- as.data.frame(pca_result$x)
 # Add the grouping variable
 pca_df$combined_trait <- cleaned_clim_vars$combined_trait 
 
+# Save PCA results and scores
+saveRDS(pca_result, file = "pca_result.rds")
+saveRDS(pca_df, file = "pca_df.rds")
 
 # ==============================================================================
 # 3) Niche volume calculation per life history syndrome (alpha shape volume)
@@ -178,7 +181,6 @@ volumes
 # Tests whether species grouped by trait combination occupy significantly
 # different regions of climate space (based on PCA scores).
 # ==============================================================================
-
 # Use the first 3 PCs (as above)
 adonis_data <- pca_df[, c("PC1", "PC2", "PC3")]
 adonis_group <- pca_df$combined_trait
@@ -258,24 +260,32 @@ print(pairwise_results)
 # ==============================================================================
 # 5) Plotting
 # ==============================================================================
-# Plot univariate niches as violin plots
+# Setup required for ALL plotting
 #-------------------------------------------------------------------------------
+# Reload trait dataset, PCA dataframe and results
+merged_traits <- readRDS("merged_traits.rds")
+pca_result <- readRDS("pca_result.rds")
+pca_df <- readRDS("pca_df.rds")
+
 # Set combined_trait factor level order
 merged_traits$combined_trait <- factor(merged_traits$combined_trait,
                                        levels = c("solitary_ground", "solitary_aboveground", 
                                                   "social_ground", "social_aboveground"))
 
 # Color setup
-violin_colors <- viridis::viridis(n = 4, option = "cividis")
-names(violin_colors) <- levels(merged_traits$combined_trait)
-point_colors <- sapply(violin_colors, function(x) darken(x, amount = 0.4))
+trait_colors <- viridis::viridis(n = 4, option = "cividis")
+names(trait_colors) <- levels(merged_traits$combined_trait)
+point_colors <- sapply(trait_colors, function(x) darken(x, amount = 0.4))
 
-# Labels for y-axis
+# Trait labels
 trait_labels <- c("solitary_ground" = "Solitary/Ground", 
                   "solitary_aboveground" = "Solitary/Above-ground",
                   "social_ground" = "Social/Ground",
                   "social_aboveground" = "Social/Above-ground")
 
+#-------------------------------------------------------------------------------
+# Plot univariate niches as violin plots
+#-------------------------------------------------------------------------------
 # Precipitation breadth violin plot
 p1 <- ggplot(merged_traits, aes(x = prec_breadth, y = combined_trait, fill = combined_trait)) +
   geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
@@ -328,60 +338,8 @@ ggsave("plots/niche_breadth_violin_combined.png", combined_univariate_niches, wi
 
 
 #-------------------------------------------------------------------------------
-# View PCA loadings and contributions before plotting
-#-------------------------------------------------------------------------------
-# Cumulative variance explained by first 2 PCs (62.44% of total variation)
-eig <- (pca_result$sdev)^2
-variance <- eig * 100 / sum(eig)
-sum(variance[1:2])  # How much variation PC1 + PC2 account for - 62.44%
-
-# Get PCA variable information
-pca_vars <- get_pca_var(pca_result)
-
-# Loadings: directions of variables in PC space
-print(round(pca_vars$coord[, 1:2], 2))  # Loadings for PC1–PC3
-
-#               Dim.1  Dim.2  Dim.3
-# mean_alt.y  -0.347  0.166  0.728
-# mean_bio_1   0.721  0.612 -0.228
-# mean_bio_13  0.869 -0.084  0.187
-# mean_bio_14  0.605 -0.667 -0.099
-# mean_bio_15 -0.020  0.772  0.357
-# mean_bio_18  0.738 -0.280 -0.023
-# mean_bio_19  0.610 -0.344  0.248
-# mean_bio_2  -0.656  0.546  0.004
-# mean_bio_3   0.589  0.555  0.414
-# mean_bio_4  -0.779 -0.320 -0.358
-# mean_bio_5   0.079  0.695 -0.591
-# mean_bio_8   0.663  0.379 -0.432
-
-# Contributions: how much each variable contributes (%) to each PC
-print(round(pca_vars$contrib[, 1:3], 2))  # Contributions for PC1–PC3
-
-#             Dim.1 Dim.2 Dim.3
-# mean_alt.y   2.67  0.93 32.08
-# mean_bio_1  11.53 12.57  3.16
-# mean_bio_13 16.75  0.24  2.12
-# mean_bio_14  8.13 14.93  0.59
-# mean_bio_15  0.01 19.96  7.73
-# mean_bio_18 12.08  2.63  0.03
-# mean_bio_19  8.25  3.97  3.74
-# mean_bio_2   9.55  9.98  0.00
-# mean_bio_3   7.70 10.34 10.36
-# mean_bio_4  13.45  3.44  7.75
-# mean_bio_5   0.14 16.19 21.17
-# mean_bio_8   9.75  4.82 11.28
-
-#-------------------------------------------------------------------------------
 # Plot 2D PCA
 #-------------------------------------------------------------------------------
-# Set factor order and colors
-pca_df$combined_trait <- factor(pca_df$combined_trait, levels = c("solitary_ground", "solitary_aboveground", 
-                                                                  "social_ground", "social_aboveground"))
-trait_colors <- viridis::viridis(n = 4, option = "cividis")
-names(trait_colors) <- levels(pca_df$combined_trait)
-
-# Plot
 pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = combined_trait)) +
   stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
   stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5, linetype = "solid") +
@@ -394,19 +352,19 @@ pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = 
   labs(
     title = "",
     color = "Trait Combination",
-    x = "PC1",
-    y = "PC2"
+    x = "PC1: Cool, dry, seasonal (T)  ← →  Warm, wet, aseasonal (T)",
+    y = "PC2: Mild summer temperatures, aseasonal (P) ← → Extreme summer temperatures, seasonal (P)"
   ) +
   theme(
     plot.title = element_text(size = 0),
-    axis.title = element_text(size = 16),
-    axis.text = element_text(size = 14),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
+    axis.title = element_text(size = 13),
+    axis.text = element_text(size = 12),
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
     legend.position = c(1.00, 0.98),
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = NA)
-  )
+  ) 
 
 pca_plot
 
@@ -459,7 +417,7 @@ arrow_plot <- ggplot(loadings_df, aes(x = 0, y = 0)) +
   coord_equal() +
   theme_classic() +
   labs(
-    title = "PCA Loadings",
+    title = "",
     x = "PC1",
     y = "PC2"
   ) +
@@ -469,7 +427,7 @@ arrow_plot <- ggplot(loadings_df, aes(x = 0, y = 0)) +
     axis.text = element_text(size = 12),
     legend.title = element_text(size = 12),
     legend.text = element_text(size = 10),
-    legend.position = c(0.97, 0.03),
+    legend.position = c(1.2, 0.03),
     legend.justification = c("right", "bottom"),
     legend.background = element_rect(fill = "white", color = NA)
   )
@@ -485,6 +443,71 @@ arrow_plot
 # Save arrow plot
 ggsave("plots/pca_loadings.pdf", arrow_plot, width = 8, height = 8)
 ggsave("plots/pca_loadings.png", arrow_plot, width = 8, height = 8)
+
+
+#-------------------------------------------------------------------------------
+# View PCA loadings and contributions
+#-------------------------------------------------------------------------------
+# Cumulative variance explained by first 2 PCs (62.44% of total variation)
+eig <- (pca_result$sdev)^2
+variance <- eig * 100 / sum(eig)
+sum(variance[1:2])  # How much variation PC1 + PC2 account for - 62.44%
+
+# Get PCA variable information
+pca_vars <- get_pca_var(pca_result)
+
+# Loadings: directions of variables in PC space
+print(round(pca_vars$coord[, 1:2], 2))  # Loadings for PC1–PC2
+
+#             Dim.1 Dim.2
+# mean_alt.y  -0.35  0.17
+# mean_bio_1   0.72  0.61
+# mean_bio_13  0.87 -0.08
+# mean_bio_14  0.61 -0.67
+# mean_bio_15 -0.02  0.77
+# mean_bio_18  0.74 -0.28
+# mean_bio_19  0.61 -0.34
+# mean_bio_2  -0.66  0.55
+# mean_bio_3   0.59  0.56
+# mean_bio_4  -0.78 -0.32
+# mean_bio_5   0.08  0.69
+# mean_bio_8   0.66  0.38
+
+# Contributions: how much each variable contributes (%) to each PC
+print(round(pca_vars$contrib[, 1:2], 2))  # Contributions for PC1–PC2
+
+#             Dim.1 Dim.2
+# mean_alt.y   2.67  0.93
+# mean_bio_1  11.53 12.57
+# mean_bio_13 16.75  0.24
+# mean_bio_14  8.13 14.93
+# mean_bio_15  0.01 19.96
+# mean_bio_18 12.08  2.63
+# mean_bio_19  8.25  3.97
+# mean_bio_2   9.55  9.98
+# mean_bio_3   7.70 10.34
+# mean_bio_4  13.45  3.44
+# mean_bio_5   0.14 16.19
+# mean_bio_8   9.75  4.82
+
+
+
+# Filter to top contributors (≥ 9% to PC1 or PC2)
+top_vars <- contributions[, 1:2] >= 9
+top_var_names <- rownames(contributions)[apply(top_vars, 1, any)]
+top_var_names
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #-------------------------------------------------------------------------------
@@ -515,9 +538,9 @@ ggsave("plots/pca_loadings.png", arrow_plot, width = 8, height = 8)
 #     axis.text.y = element_text(size = 12)
 #   )
 
-# #-------------------------------------------------------------------------------
-# # Plot 3D PCA (PC1 - PC3)
-# #-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Plot 3D PCA (PC1 - PC3)
+#-------------------------------------------------------------------------------
 # # Assign a color to each group
 # group_colors <- as.factor(pca_df$combined_trait)
 # palette_colors <- rainbow(length(levels(group_colors)))
@@ -533,17 +556,78 @@ ggsave("plots/pca_loadings.png", arrow_plot, width = 8, height = 8)
 #   type = "s",
 #   xlab = "PC1", ylab = "PC2", zlab = "PC3"
 # )
-# 
+
 # # PCA variable loadings (i.e., contributions of bioclimatic variables to 3 PCs)
 # var <- get_pca_var(pca_result)
 # var$coord[,1:3]
-# 
+
 # # Cumulative variance explained by first 3 PCs (78.45% of total variation)
 # eig <- (pca_result$sdev)^2
 # variance <- eig*100/sum(eig)
 # sum(variance[1:3])
+
+#Map the 3 first axes of the PCA
+#PCs <- predict(predictors, pca_result, index = 1:3)
+#Convert to Points
+#PCs.points <- rasterToPoints(PCs)
+
+
+# #-------------------------------------------------------------------------------
+# # Plot separate PCAs for sociality and nesting strategy
+# #-------------------------------------------------------------------------------
+# # Load data
+# merged_traits <- readRDS("merged_traits.rds")
+# pca_result <- readRDS("pca_result.rds")
+# pca_df <- readRDS("pca_df.rds")
 # 
-# #Map the 3 first axes of the PCA
-# #PCs <- predict(predictors, pca_result, index = 1:3)
-# #Convert to Points
-# #PCs.points <- rasterToPoints(PCs)
+# # Factor level order for combined_trait
+# pca_df$combined_trait <- factor(pca_df$combined_trait,
+#                                 levels = c("solitary_ground", "solitary_aboveground", 
+#                                            "social_ground", "social_aboveground"))
+# 
+# # Split into sociality and nesting
+# library(tidyr)
+# pca_df <- pca_df %>%
+#   separate(combined_trait, into = c("sociality", "nesting"), sep = "_", remove = FALSE)
+# 
+# # Color palettes
+# social_colors <- c("solitary" = "#1f78b4", "social" = "#e31a1c")
+# nesting_colors <- c("ground" = "#33a02c", "aboveground" = "#ff7f00")
+# 
+# # ---- PCA plot colored by SOCIALITY ----
+# pca_social_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = sociality, fill = sociality)) +
+#   stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+#   stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5) +
+#   geom_point(size = 2, alpha = 0.8) +
+#   geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+#   geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+#   scale_color_manual(values = social_colors) +
+#   scale_fill_manual(values = social_colors, guide = "none") +
+#   theme_classic() +
+#   labs(
+#     title = "PCA Colored by Sociality",
+#     color = "Sociality",
+#     x = "PC1: Cool, dry, seasonal (T) ← → Warm, wet, aseasonal (T)",
+#     y = "PC2: Mild summer temperatures, aseasonal (P) ← → Extreme summer temperatures, seasonal (P)"
+#   )
+# 
+# # ---- PCA plot colored by NESTING ----
+# pca_nesting_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = nesting, fill = nesting)) +
+#   stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+#   stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5) +
+#   geom_point(size = 2, alpha = 0.8) +
+#   geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+#   geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+#   scale_color_manual(values = nesting_colors) +
+#   scale_fill_manual(values = nesting_colors, guide = "none") +
+#   theme_classic() +
+#   labs(
+#     title = "PCA Colored by Nesting Strategy",
+#     color = "Nesting",
+#     x = "PC1: Cool, dry, seasonal (T) ← → Warm, wet, aseasonal (T)",
+#     y = "PC2: Mild summer temperatures, aseasonal (P) ← → Extreme summer temperatures, seasonal (P)"
+#   )
+# 
+# # View both plots
+# pca_social_plot
+# pca_nesting_plot

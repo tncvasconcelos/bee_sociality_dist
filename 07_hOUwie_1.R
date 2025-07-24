@@ -1,55 +1,65 @@
-# rm(list=ls())
+# ==============================================================================
+# 07.1 hOUwie
+# ==============================================================================
+# Fits hOUwie models using precipitation seasonality (bio_15) as the continuous trait
+# ==============================================================================
+
+#-------------------------------------------------------------------------------
+# Setup: load libraries, utility functions, and data
+#-------------------------------------------------------------------------------
+#rm(list=ls())
+#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 library(corHMM)
 library(OUwie)
 library(parallel)
-#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
+source("00_utility_functions.R") # source helper functions
 
-source("00_utility_functions.R")
-#--------------------------------------
-# First organizing dataset:
 # Reloading traits, tree and climatic data
 traits <- read.csv("curated_data/bees_traits.csv")
 phy <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv", full.names = T)
 
-# Let's take bio1 and bio12 (temperature and precipitation) and seasonalities (bio4 and bio15)
-all_climatic_vars <- all_climatic_vars[grep(paste(c("bio_1_","bio_12_","bio_4_",
-                                                    "bio_15_","ai"),collapse="|"), all_climatic_vars)]
+# Keep only target climate variables: temp, precip (1, 12), temp and precip seasonality (4, 15)
+all_climatic_vars <- all_climatic_vars[grep(paste(c("bio_1_", "bio_12_", "bio_4_",
+                                                    "bio_15_", "ai"), collapse="|"), all_climatic_vars)]
 climatic_list <- lapply(all_climatic_vars, read.csv)
 
-# Now merge everything in one table
-merged_climatic_vars <- climatic_list[[1]] 
-for(i in 2:length(climatic_list)) {
+# Merge all climate variables by species name
+merged_climatic_vars <- climatic_list[[1]] # initializes merged climate dataframe using first climate variable in list (mean_bio_1)
+
+for(i in 2:length(climatic_list)) { # adds each remaining climate variable one by one (series of merges by species name)
   one_climatic_var <- climatic_list[[i]]
-  merged_climatic_vars <- merge(merged_climatic_vars, one_climatic_var, by="species") 
+  merged_climatic_vars <- merge(merged_climatic_vars, one_climatic_var, by = "species") 
 }
 
-# Select only mean columns
-merged_climatic_vars <- merged_climatic_vars[,c(1, grep("mean", colnames(merged_climatic_vars)))]
+# Keep only the mean columns
+merged_climatic_vars <- merged_climatic_vars[ ,c(1, grep("mean", colnames(merged_climatic_vars)))]
 
-# And finally merge to the trait data
-merged_traits <- merge(traits, merged_climatic_vars, by.x="tips",by.y="species")
+# Merge with trait data
+merged_traits <- merge(traits, merged_climatic_vars, by.x = "tips",by.y = "species")
 
-# merged_traits0 <- merged_traits[1,]
-# while(length(unique(merged_traits0$sociality))<3) {
-#   merged_traits0 <- merged_traits[sample(1:nrow(merged_traits), 100),]
-# }
-# merged_traits <- merged_traits0
 
-# log all continuous variables:
-merged_traits$mean_bio_1 <- log((merged_traits$mean_bio_1)+273) # transform celcius to kelvin for temperature
+#-------------------------------------------------------------------------------
+# Log-transform continuous variables
+#-------------------------------------------------------------------------------
+merged_traits$mean_bio_1 <- log((merged_traits$mean_bio_1) + 273) # convert °C to Kelvin for temp
 merged_traits$mean_bio_12 <- log(merged_traits$mean_bio_12)
 merged_traits$mean_bio_15 <- log(merged_traits$mean_bio_15)
 merged_traits$mean_bio_4 <- log(merged_traits$mean_bio_4)
 merged_traits$mean_awi_pm_sr_yr <- log(merged_traits$mean_awi_pm_sr_yr)
 
+# Remove incomplete rows
 merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_1))
 merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_bio_4))
 merged_traits <- subset(merged_traits, !is.nan(merged_traits$mean_awi_pm_sr_yr))
 
+# Prune phylogeny to match data
 phy <- keep.tip(phy, which(phy$tip.label %in% merged_traits$tips))
 
-#------------------------------------
+
+#-------------------------------------------------------------------------------
+# Align data and tree tips
+#-------------------------------------------------------------------------------
 dat <- merged_traits
 shared_species <- intersect(dat$tips, phy$tip.label)
 
@@ -59,30 +69,46 @@ all(shared_species %in% phy$tip.label)
 dat <- dat[match(shared_species, dat$tips),]
 phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips),]
-dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_15")]
-#dat <- dat[!dat$mean_awi_pm_sr_yr == -Inf,]
+
+# Keep only discrete traits and the focal continuous trait: BIO15 (precipitation seasonality)
+dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_15")] # precipitation seasonality
 
 phy <- keep.tip(phy, dat$tips)
-#--------------------------------------
-# LIFE HISTORY TRAITS VS. ARIDITY INDEX
 
+
+#-------------------------------------------------------------------------------
+# Load best-fitting corHMM discrete model
+#-------------------------------------------------------------------------------
 load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
 corhmm_tbl <- read.csv("corHMMdredge_results/corhmm_tbl_dredge.csv")
 cid_disc_model <- dredge_sociality[[which.min(corhmm_tbl$AIC)]]$index.mat
 
-# now setting up OU part
-# Pure rate heterogeneity model for continuous and discrete
-cid_oum_model <- nest_oum_model <- soc_oum_model<- full_oum_model<- getOUParamStructure("OUM", 4, 2, null.model = TRUE) # character independent model (i.e. all observed states have the same optima)
-#               1                2                3                4 
-#   [1]"social|aboveground"   "solitary|aboveground" "social|ground"        "solitary|ground"    
 
-soc_oum_model[3,c(1,3,5,7)] <- 3
-soc_oum_model[3,c(2,4,6,8)] <- 4
+#-------------------------------------------------------------------------------
+# Define OU parameter structures for continuous trait models
+#-------------------------------------------------------------------------------
+# CID: character-independent model (same optima across discrete states)
+cid_oum_model <- nest_oum_model <- soc_oum_model <- full_oum_model <- 
+  getOUParamStructure("OUM", 4, 2, null.model = TRUE) # (i.e. all observed states have the same optima)
+
+# Custom optima for each model
+# Sociality model: shared optima by social state
+#     Estimates one optima for all social species and one for all solitary species, 
+#     assuming nesting strategy does not affect the optimum.
+soc_oum_model[3,c(1,3,5,7)] <- 3 # Assigns optimum "3" to all social states (1, 3, 5, 7)
+soc_oum_model[3,c(2,4,6,8)] <- 4 # Assigns optimum "4" to all solitary states (2, 4, 6, 8)
+
+# Nesting model: shared optima by nest type
 nest_oum_model[3,c(1,2,5,6)] <- 3
 nest_oum_model[3,c(3,4,7,8)] <- 4
+
+# Full model: separate optima for all trait combinations
 full_oum_model[3,c(1:8)] <- c(3:6)
 
-# All models that were run
+
+#-------------------------------------------------------------------------------
+# Bundle models to run (BM1, OU1, and various OUM configurations)
+#-------------------------------------------------------------------------------
 model_list <- list(list(2, cid_disc_model, "BM1"),
                    list(2, cid_disc_model, "OU1"),
                    list(2, cid_disc_model, soc_oum_model),
@@ -90,22 +116,35 @@ model_list <- list(list(2, cid_disc_model, "BM1"),
                    list(2, cid_disc_model, full_oum_model),
                    list(2, cid_disc_model, cid_oum_model)) # the two is for two rate classes
 
-names(model_list) <- c("bm1_8states_run_bio_15", "ou1_8states_run_bio_15", "oum_soc_8states_run_bio_15", "oum_nest_8states_run_bio_15", "oum_full_8states_run_bio_15", "oum_cid_8states_run_bio_15")
+names(model_list) <- c("bm1_8states_run_bio_15", 
+                       "ou1_8states_run_bio_15", 
+                       "oum_soc_8states_run_bio_15", 
+                       "oum_nest_8states_run_bio_15", 
+                       "oum_full_8states_run_bio_15", 
+                       "oum_cid_8states_run_bio_15")
 
-# model_list <- list(list(1, disc_model, oum_color),
-#                   list(1, disc_model, oum_model))
-# names(model_list) <- c("oum_col", "oum_full")
 
-
+#-------------------------------------------------------------------------------
+# Wrapper function to run and save each model
+#-------------------------------------------------------------------------------
 quickFunc <- function(model_list, model_name){
   res <- hOUwie(phy, dat, 2, model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
   file.name <- paste0("houwie_results/",model_name, ".Rsave")
   save(res, file=file.name)
 }
 
+
+#-------------------------------------------------------------------------------
+# Run all models in parallel
+#-------------------------------------------------------------------------------
 mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 80)
 
-# 
+
+
+
+#-------------------------------------------------------------------------------
+# (Optional) Manual runs for debugging
+#-------------------------------------------------------------------------------
 # # all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
 # # 
 # rownames(dat) <- dat$tips
