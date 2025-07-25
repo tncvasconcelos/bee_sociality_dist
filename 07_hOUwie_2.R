@@ -127,7 +127,6 @@ names(model_list) <- c("bm1_8states_run_bio15",
                        "oum_full_8states_bio15", 
                        "oum_cid_8states_bio15")
 
-model_list <- model_list$oum_nest_8states_bio15
 
 #-------------------------------------------------------------------------------
 # Wrapper function to run and save each model
@@ -150,9 +149,7 @@ quickFunc <- function(model_list, model_name){
 #-------------------------------------------------------------------------------
 # Run all models in parallel
 #-------------------------------------------------------------------------------
-mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 80)
-
-
+# mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 80)
 
 
 #-------------------------------------------------------------------------------
@@ -167,8 +164,8 @@ mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.c
 # save(oum_ou1_res, file="houwie_results/OU1.Rsave")
 # oum_soc_res <- hOUwie(phy, dat, 2, cid_disc_model, soc_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
 # save(oum_soc_res, file="houwie_results/oum_soc.Rsave")
-# oum_nest_res <- hOUwie(phy, dat, 2, cid_disc_model, nest_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
-# save(oum_nest_res, file="houwie_results/oum_nest.Rsave")
+oum_nest_res <- hOUwie(phy, dat, 2, cid_disc_model, nest_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
+save(oum_nest_res, file="houwie_results/oum_nest_8states_bio15.Rsave")
 # oum_ful_res <- hOUwie(phy, dat, 2, cid_disc_model, full_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
 # save(oum_ful_res, file="houwie_results/oum_full.Rsave")
 # oum_cid_res <- hOUwie(phy, dat, 2, cid_disc_model, cid_oum_model, FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 10)
