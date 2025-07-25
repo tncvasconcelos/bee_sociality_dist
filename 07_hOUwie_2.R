@@ -71,7 +71,7 @@ phy <- keep.tip(phy, shared_species)
 dat <- dat[match(phy$tip.label, dat$tips), ]
 
 # Keep only discrete traits and the focal continuous trait: BIO4 (temperature seasonality)
-dat <- dat[, c("tips", "sociality_binary", "nest_binary", "mean_bio_4")]
+dat <- dat[, c("tips", "sociality_binary", "nest_binary", "mean_bio_15")]
 
 phy <- keep.tip(phy, dat$tips)
 
@@ -120,13 +120,14 @@ model_list <- list(
   list(2, cid_disc_model, cid_oum_model)
 )
 
-names(model_list) <- c("bm1_8states_run_bio4", 
-                       "ou1_8states_bio4", 
-                       "oum_soc_8states_bio4", 
-                       "oum_nest_8states_bio4", 
-                       "oum_full_8states_bio4", 
-                       "oum_cid_8states_bio4")
+names(model_list) <- c("bm1_8states_run_bio15", 
+                       "ou1_8states_bio15", 
+                       "oum_soc_8states_bio15", 
+                       "oum_nest_8states_bio15", 
+                       "oum_full_8states_bio15", 
+                       "oum_cid_8states_bio15")
 
+model_list <- model_list$oum_nest_8states_bio15
 
 #-------------------------------------------------------------------------------
 # Wrapper function to run and save each model
@@ -138,7 +139,9 @@ quickFunc <- function(model_list, model_name) {
   save(res, file = paste0("houwie_results/", model_name, ".Rsave"))
 }
 quickFunc <- function(model_list, model_name){
-  res <- hOUwie(phy, dat, 2, model_list[[2]], model_list[[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, n_starts = 10, ncores = 10)
+  res <- hOUwie(phy, dat, 2, model_list[[2]], model_list[[3]], 
+                nSim = 100, diagn_msg = TRUE, adaptive_sampling = FALSE, 
+                n_starts = 10, ncores = 10)
   file.name <- paste0("houwie_results/",model_name, ".Rsave")
   save(res, file=file.name)
 }
