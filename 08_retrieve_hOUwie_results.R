@@ -19,6 +19,7 @@ library(OUwie)
 library(corHMM)
 library(parallel)
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
+#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 source("00_utility_functions.R") # provides getModelTable() and getModelAvgParams()?
 
 #-------------------------------------------------------------------------------
@@ -26,7 +27,7 @@ source("00_utility_functions.R") # provides getModelTable() and getModelAvgParam
 #-------------------------------------------------------------------------------
 all_model_results <- list.files("houwie_results") # List result files
 
-all_model_results <- subset(all_model_results, grepl("_bio1", all_model_results)) # Keep BIO1 only
+all_model_results <- subset(all_model_results, grepl("_run2", all_model_results)) # Keep BIO1 only
 #all_model_results <- subset(all_model_results, grepl("_bio4", all_model_results))  # Keep BIO4 only
 
 model_names <- gsub(".Rsave", "", all_model_results) # Strip extensions for naming
