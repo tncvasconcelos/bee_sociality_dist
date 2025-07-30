@@ -4,7 +4,7 @@
 # Loads and compares fitted hOUwie models using temperature seasonality (BIO4)
 # or mean annual temperature (BIO1)
 
-# You will need to manually comment and uncomment lines pertaining to which variable to select!
+# Note: you will need to manually comment and uncomment lines pertaining to which variable to select!
 
 # Outputs a model comparison table and model-averaged parameter estimates
 # ==============================================================================
@@ -22,7 +22,7 @@ setwd("/Users/lenarh/Desktop/bee_sociality_dist")
 source("00_utility_functions.R") # provides getModelTable() and getModelAvgParams()?
 
 #-------------------------------------------------------------------------------
-# Load hOUwie model results (use comments to select BIO4 or BIO1
+# Load hOUwie model results (use comments to select BIO4 or BIO1)
 #-------------------------------------------------------------------------------
 all_model_results <- list.files("houwie_results") # List result files
 

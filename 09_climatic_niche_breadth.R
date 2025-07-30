@@ -9,8 +9,8 @@
 #-------------------------------------------------------------------------------
 # Setup: clear workspace, set wd, load packages
 #-------------------------------------------------------------------------------
-rm(list=ls())
-# setwd("/Users/tvasc/Desktop/bee_sociality_dist")
+#rm(list=ls())
+#setwd("/Users/tvasc/Desktop/bee_sociality_dist")
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
 library(ggplot2)
 library(dplyr)
@@ -272,16 +272,148 @@ merged_traits$combined_trait <- factor(merged_traits$combined_trait,
                                        levels = c("solitary_ground", "solitary_aboveground", 
                                                   "social_ground", "social_aboveground"))
 
-# Color setup
-trait_colors <- viridis::viridis(n = 4, option = "cividis")
-names(trait_colors) <- levels(merged_traits$combined_trait)
-point_colors <- sapply(trait_colors, function(x) darken(x, amount = 0.4))
-
 # Trait labels
 trait_labels <- c("solitary_ground" = "Solitary/Ground", 
                   "solitary_aboveground" = "Solitary/Above-ground",
                   "social_ground" = "Social/Ground",
                   "social_aboveground" = "Social/Above-ground")
+
+# Color setup
+# Option 1: cividis palette 
+# trait_colors <- viridis::viridis(n = 4, option = "cividis")
+# names(trait_colors) <- levels(merged_traits$combined_trait)
+# point_colors <- sapply(trait_colors, function(x) darken(x, amount = 0.4))
+
+# Option 2: unified color scheme for 3 plot figure 
+# Unified color scheme across all plots
+trait_colors <- c(
+  "solitary_ground" = "#2B6CA3",
+  "solitary_aboveground" = "#7DB7E8",
+  "social_ground" = "#A44424",
+  "social_aboveground" = "#F4A582"
+)
+
+sociality_colors <- c(
+  "solitary" = "#2B6CA3",  # same as solitary_ground
+  "social" = "#A44424"     # same as social_ground
+)
+
+nesting_colors <- c(
+  "ground" = "#505050",        # neutral dark gray for contrast
+  "aboveground" = "#B0B0B0"    # reused from above-ground social
+)
+
+
+
+#-------------------------------------------------------------------------------
+# Plot 2D PCA
+#-------------------------------------------------------------------------------
+pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = combined_trait)) +
+  stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+  stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5, linetype = "solid") +
+  geom_point(size = 1, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+  scale_color_manual(values = trait_colors, labels = trait_labels) +
+  scale_fill_manual(values = trait_colors, guide = "none") +
+  theme_classic() +
+  labs(
+    title = "",
+    color = "Trait Combination",
+    x = "",
+    y = ""
+  ) +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+    plot.title = element_text(size = 0),
+    axis.title = element_text(size = 17),
+    axis.text = element_text(size = 20),
+    legend.title = element_text(size = 22),
+    legend.text = element_text(size = 20),
+    #    legend.position = c(0.98, 0.98),
+    legend.position = "right",
+    legend.justification = c("right", "top"),
+    legend.background = element_rect(fill = "white", color = NA) 
+  ) + guides(color = guide_legend(override.aes = list(size = 3)))# + theme(legend.position = "none")
+
+pca_plot
+
+# Save PCA plot
+#ggsave("plots/pca_climatic_niche_space.pdf", pca_plot, width = 8, height = 8)
+#ggsave("plots/pca_climatic_niche_space.png", pca_plot, width = 8, height = 8)
+
+
+# -------------------------------------------------------------------------------
+# Plot separate PCAs for sociality and nesting strategy
+# -------------------------------------------------------------------------------
+# Make sure traits are aligned with PCA data
+pca_df$sociality <- merged_traits$sociality_binary
+pca_df$nesting <- merged_traits$nest_binary
+
+# Sociality colors
+pca_sociality <- ggplot(pca_df, aes(x = PC1, y = PC2, color = sociality, fill = sociality)) +
+  stat_ellipse(aes(group = sociality), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+  stat_ellipse(aes(group = sociality), type = "norm", size = 0.5) +
+  geom_point(size = 1, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+  scale_color_manual(values = sociality_colors, labels = c("solitary" = "Solitary", "social" = "Social")) +
+  scale_fill_manual(values = sociality_colors, guide = "none") +
+  labs(
+    title = "",
+    color = "Sociality",
+    x = "",
+    y = ""
+  ) +
+  theme_classic() +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+    axis.title = element_text(size = 17),
+    axis.text = element_text(size = 20),
+    legend.title = element_text(size = 22),
+    legend.text = element_text(size = 20),
+    #    legend.position = c(0.98, 0.98),
+    legend.position = "right",
+    legend.justification = c("right", "top"),
+    legend.background = element_rect(fill = "white", color = NA)
+  ) + guides(color = guide_legend(override.aes = list(size = 3)))# + theme(legend.position = "none")
+
+pca_sociality
+
+# Nesting colors
+pca_nesting <- ggplot(pca_df, aes(x = PC1, y = PC2, color = nesting, fill = nesting)) +
+  stat_ellipse(aes(group = nesting), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+  stat_ellipse(aes(group = nesting), type = "norm", size = 0.5) +
+  geom_point(size = 1, alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+  scale_color_manual(values = nesting_colors, labels = c("ground" = "Ground", "aboveground" = "Above-ground")) +
+  scale_fill_manual(values = nesting_colors, guide = "none") +
+  labs(
+    title = "",
+    color = "Nesting Strategy",
+    x = "",
+    y = ""
+  ) +
+  theme_classic() +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+    axis.title = element_text(size = 17),
+    axis.text = element_text(size = 20),
+    legend.title = element_text(size = 22),
+    legend.text = element_text(size = 20),
+#    legend.position = c(0.98, 0.98),
+    legend.position = "right",
+    legend.justification = c("right", "top"),
+    legend.background = element_rect(fill = "white", color = NA)
+  ) + guides(color = guide_legend(override.aes = list(size = 3)))# + theme(legend.position = "none")
+
+pca_nesting
+
+# Combine plots
+library(patchwork)
+quartz()
+pca_nesting / pca_sociality / pca_plot
 
 #-------------------------------------------------------------------------------
 # Plot univariate niches as violin plots
@@ -335,42 +467,6 @@ combined_univariate_niches <- grid.arrange(p1, p2, ncol = 1)
 # Save as PDF and PNG
 ggsave("plots/niche_breadth_violin_combined.pdf", combined_univariate_niches, width = 10, height = 12)
 ggsave("plots/niche_breadth_violin_combined.png", combined_univariate_niches, width = 10, height = 12)
-
-
-#-------------------------------------------------------------------------------
-# Plot 2D PCA
-#-------------------------------------------------------------------------------
-pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = combined_trait)) +
-  stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
-  stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5, linetype = "solid") +
-  geom_point(size = 2, alpha = 0.8) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
-  scale_color_manual(values = trait_colors, labels = trait_labels) +
-  scale_fill_manual(values = trait_colors, guide = "none") +
-  theme_classic() +
-  labs(
-    title = "",
-    color = "Trait Combination",
-    x = "PC1: Cool, dry, seasonal (T)  ← →  Warm, wet, aseasonal (T)",
-    y = "PC2: Mild summer temperatures, aseasonal (P) ← → Extreme summer temperatures, seasonal (P)"
-  ) +
-  theme(
-    plot.title = element_text(size = 0),
-    axis.title = element_text(size = 13),
-    axis.text = element_text(size = 12),
-    legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12),
-    legend.position = c(1.00, 0.98),
-    legend.justification = c("right", "top"),
-    legend.background = element_rect(fill = "white", color = NA)
-  ) 
-
-pca_plot
-
-# Save PCA plot
-ggsave("plots/pca_climatic_niche_space.pdf", pca_plot, width = 8, height = 8)
-ggsave("plots/pca_climatic_niche_space.png", pca_plot, width = 8, height = 8)
 
 
 #-------------------------------------------------------------------------------
@@ -502,14 +598,9 @@ top_var_names
 
 
 
-
-
-
-
-
-
-
-
+# ==============================================================================
+# Code graveyard: optional things not currently used in manuscript
+# ==============================================================================
 #-------------------------------------------------------------------------------
 # Plot niche volume bar plots
 #-------------------------------------------------------------------------------
@@ -571,63 +662,3 @@ top_var_names
 #Convert to Points
 #PCs.points <- rasterToPoints(PCs)
 
-
-# #-------------------------------------------------------------------------------
-# # Plot separate PCAs for sociality and nesting strategy
-# #-------------------------------------------------------------------------------
-# # Load data
-# merged_traits <- readRDS("merged_traits.rds")
-# pca_result <- readRDS("pca_result.rds")
-# pca_df <- readRDS("pca_df.rds")
-# 
-# # Factor level order for combined_trait
-# pca_df$combined_trait <- factor(pca_df$combined_trait,
-#                                 levels = c("solitary_ground", "solitary_aboveground", 
-#                                            "social_ground", "social_aboveground"))
-# 
-# # Split into sociality and nesting
-# library(tidyr)
-# pca_df <- pca_df %>%
-#   separate(combined_trait, into = c("sociality", "nesting"), sep = "_", remove = FALSE)
-# 
-# # Color palettes
-# social_colors <- c("solitary" = "#1f78b4", "social" = "#e31a1c")
-# nesting_colors <- c("ground" = "#33a02c", "aboveground" = "#ff7f00")
-# 
-# # ---- PCA plot colored by SOCIALITY ----
-# pca_social_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = sociality, fill = sociality)) +
-#   stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
-#   stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5) +
-#   geom_point(size = 2, alpha = 0.8) +
-#   geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
-#   geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
-#   scale_color_manual(values = social_colors) +
-#   scale_fill_manual(values = social_colors, guide = "none") +
-#   theme_classic() +
-#   labs(
-#     title = "PCA Colored by Sociality",
-#     color = "Sociality",
-#     x = "PC1: Cool, dry, seasonal (T) ← → Warm, wet, aseasonal (T)",
-#     y = "PC2: Mild summer temperatures, aseasonal (P) ← → Extreme summer temperatures, seasonal (P)"
-#   )
-# 
-# # ---- PCA plot colored by NESTING ----
-# pca_nesting_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = nesting, fill = nesting)) +
-#   stat_ellipse(aes(group = combined_trait), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
-#   stat_ellipse(aes(group = combined_trait), type = "norm", size = 0.5) +
-#   geom_point(size = 2, alpha = 0.8) +
-#   geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
-#   geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
-#   scale_color_manual(values = nesting_colors) +
-#   scale_fill_manual(values = nesting_colors, guide = "none") +
-#   theme_classic() +
-#   labs(
-#     title = "PCA Colored by Nesting Strategy",
-#     color = "Nesting",
-#     x = "PC1: Cool, dry, seasonal (T) ← → Warm, wet, aseasonal (T)",
-#     y = "PC2: Mild summer temperatures, aseasonal (P) ← → Extreme summer temperatures, seasonal (P)"
-#   )
-# 
-# # View both plots
-# pca_social_plot
-# pca_nesting_plot

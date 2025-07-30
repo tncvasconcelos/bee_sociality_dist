@@ -19,7 +19,7 @@ traits <- read.csv("curated_data/bees_traits.csv")
 phy <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv", full.names = TRUE)
 
-# Keep only target climate variables: temp, precip (1, 12), temp and precip seasonality (4, 15), aridity index
+# Keep only target climate variables: temp, precip (1, 12), temp and precip seasonality (4, 15), aridity index (ai)
 all_climatic_vars <- all_climatic_vars[grep(paste(c("bio_1_", "bio_12_", "bio_4_",
                                                     "bio_15_", "ai"), collapse = "|"), 
                                             all_climatic_vars)]
