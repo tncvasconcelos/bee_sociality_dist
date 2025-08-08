@@ -22,6 +22,7 @@ library(igraph)
 library(ggraph)
 library(tidygraph)
 library(scales)
+#devtools::install_github("thej022214/corHMM")
 
 # Load utility functions
 source("00_utility_functions.R")
@@ -216,3 +217,8 @@ plotRECON(
 
 axisPhylo()
 dev.off()
+
+#-------------------------------------------------------------------------------
+# Estimate number and timing of trait transitions via SIMMAP
+# (using corHMM dev version: thej022214/corHMM)
+#-------------------------------------------------------------------------------
