@@ -16,7 +16,7 @@
 /*.tar.gz
 
 # Output files from R CMD check
-/*.Rcheck/
+wh/*.Rcheck/
 
 # RStudio files
 .Rproj.user/
@@ -53,6 +53,10 @@ environmental_layers/
 plots/bee_maps.pdf
 old/
 
-proportion_heatmaps/data/
-proportion_heatmaps/bee_species_not_in_tree.csv
+# Large CSVs to exclude from Git
+proportion_heatmaps/data/05_cleaned_database.csv
+proportion_heatmaps/data/gbif_subset.csv
 proportion_heatmaps/subset_all_bees.csv
+proportion_heatmaps/bee_species_not_in_tree.csv
+11_proportion_heatmaps/
+
