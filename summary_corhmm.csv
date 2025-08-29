@@ -1,0 +1,15 @@
+transition,avg_count,sd_count,avg_age,sd_age
+"R2 social|ground,R2 social|aboveground",1,0,1.807028487,0.997050046
+"R1 solitary|aboveground,R1 social|aboveground",1.71,0.832363072,40.91766407,30.17455212
+"R2 solitary|ground,R2 solitary|aboveground",3.44,1.094707193,16.73841135,13.68268106
+"R2 social|aboveground,R2 solitary|aboveground",8.1,1.872178011,5.701611022,6.926313215
+"R1 solitary|ground,R1 social|ground",9.61,1.757494773,16.3169303,12.12242082
+"R2 solitary|aboveground,R2 social|aboveground",12,1.59544807,11.7913041,18.03272074
+"R1 social|aboveground,R1 social|ground",15.31,0.563090319,7.75324962,10.84377642
+"R1 solitary|ground,R1 solitary|aboveground",19.51,3.793921241,26.26202251,27.06440833
+"R1 social|ground,R2 social|ground",19.96,4.089701281,7.381313108,8.010180303
+"R1 social|ground,R1 solitary|ground",24.05,2.138511708,5.815870755,6.907394606
+"R1 solitary|aboveground,R2 solitary|aboveground",48.13,7.416409597,20.98825028,21.57923631
+"R2 solitary|aboveground,R1 solitary|aboveground",52.5,6.089401291,11.90300474,11.94153084
+"R1 solitary|aboveground,R1 solitary|ground",72.27,6.728283435,19.46906223,22.88459241
+"R1 solitary|ground,R2 solitary|ground",104.98,12.25897321,25.28628774,23.75878667
