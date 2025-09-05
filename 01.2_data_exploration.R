@@ -144,21 +144,26 @@ ggsave(
 # ------------------------------------------------------------------------------
 # Combined plot
 # ------------------------------------------------------------------------------
-plot1 <- plot1 + theme(legend.position = "none") # remove legend from plot 1
-plot2 <- plot2 + theme(axis.title.y = element_blank()) # remove y-axis label from plot 2
+plot1 <- plot1 +
+  theme(legend.position = "none") + # remove legend from plot 1
+  labs(tag = "A") +
+  theme(plot.tag = element_text(size = 25, face = "bold"))
 
-#combined_plot <- plot1 / plot2 # vertical layout
+plot2 <- plot2 +
+  theme(axis.title.y = element_blank()) + # remove y-axis label from plot 2
+  labs(tag = "B") +
+  theme(plot.tag = element_text(size = 25, face = "bold"))
 
-combined_plot <- plot1 | plot2
+combined_plot <- plot1 + plot2
 
 quartz()
-print(combined_plot)
+combined_plot 
 
 ggsave(
   filename = file.path(plots_wd, "combined_species_trait_plot.png"),
   plot = combined_plot,
   width = 14,
-  height = 8,
+  height = 9,
   dpi = 900
 )
 
