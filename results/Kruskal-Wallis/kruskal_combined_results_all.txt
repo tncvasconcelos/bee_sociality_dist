@@ -1,0 +1,184 @@
+[1] "comb_nest_soc ~ all"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+50.914, df = 3, p-value = 5.102e-11
+
+[1] "comb_nest_soc ~ alt"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+49.508, df = 3, p-value = 1.017e-10
+
+[1] "comb_nest_soc ~ bio_1"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+565.56, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_10"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+223.43, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_11"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+633.11, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_12"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+393.46, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_13"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+416.92, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_14"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+197.76, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_15"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+100.07, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_16"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+419.52, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_17"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+202.09, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_18"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+350.06, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_19"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+132.73, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_2"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+299.36, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_3"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+518.59, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_4"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+614.51, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_5"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 180.3,
+df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_6"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+617.83, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_7"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+560.25, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_8"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 348.2,
+df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_9"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+441.83, df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ bio_ai"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared = 301.9,
+df = 3, p-value < 2.2e-16
+
+[1] "comb_nest_soc ~ LAI"
+
+	Kruskal-Wallis rank sum test
+
+data:  value by comb_nest_soc
+Kruskal-Wallis chi-squared =
+187.36, df = 3, p-value < 2.2e-16
+

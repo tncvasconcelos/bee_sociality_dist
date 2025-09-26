@@ -1,0 +1,32 @@
+[1] "Testing nesting type ~ bio_1"
+
+	Kruskal-Wallis rank sum test
+
+data:  one_clim_var by nests
+Kruskal-Wallis chi-squared =
+260.56, df = 1, p-value < 2.2e-16
+
+[1] "Testing nesting type ~ bio_4"
+
+	Kruskal-Wallis rank sum test
+
+data:  one_clim_var by nests
+Kruskal-Wallis chi-squared =
+407.09, df = 1, p-value < 2.2e-16
+
+[1] "Testing nesting type ~ bio_12"
+
+	Kruskal-Wallis rank sum test
+
+data:  one_clim_var by nests
+Kruskal-Wallis chi-squared =
+185.03, df = 1, p-value < 2.2e-16
+
+[1] "Testing nesting type ~ bio_15"
+
+	Kruskal-Wallis rank sum test
+
+data:  one_clim_var by nests
+Kruskal-Wallis chi-squared =
+14.358, df = 1, p-value = 0.0001512
+
