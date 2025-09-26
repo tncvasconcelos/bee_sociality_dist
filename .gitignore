@@ -60,3 +60,7 @@ proportion_heatmaps/subset_all_bees.csv
 proportion_heatmaps/bee_species_not_in_tree.csv
 11_proportion_heatmaps/
 
+
+# Large data (not tracked by git)
+12_proportion_heatmaps/**/*.csv
+12_proportion_heatmaps/*_bees*.csv
