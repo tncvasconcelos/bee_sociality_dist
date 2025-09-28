@@ -117,7 +117,7 @@ model_list <- list(list(2, cid_disc_model, "BM1"),
                    list(2, cid_disc_model, soc_oum_model),
                    list(2, cid_disc_model, nest_oum_model),
                    list(2, cid_disc_model, full_oum_model),
-                   list(2, cid_disc_model, cid_oum_model)) # the two is for two rate classes
+                   list(2, cid_disc_model, cid_oum_model)) # the 2 is for two rate classes
 
 names(model_list) <- c("bm1_8states_run_bio_15", 
                        "ou1_8states_run_bio_15", 
@@ -143,13 +143,10 @@ quickFunc <- function(model_list, model_name){
 mclapply(1:6, function(x) quickFunc(model_list[[x]], names(model_list)[x]), mc.cores = 80)
 
 
-
-
 #-------------------------------------------------------------------------------
 # (Optional) Manual runs for debugging
 #-------------------------------------------------------------------------------
-# # all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
-# # 
+# all_model_res[[5]] <- hOUwie(phy, dat, model_set[[5]][[1]], model_set[[5]][[2]], model_set[[5]][[3]], nSim = 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 5, ncores = 5)
 # rownames(dat) <- dat$tips
 # oum_bm1_res <- hOUwie(phy, dat, 2, cid_disc_model, "BM1", FALSE, 100, diagn_msg = TRUE, adaptive_sampling = TRUE, n_starts = 10, ncores = 1)
 # save(oum_bm1_res, file="houwie_results/BM1.Rsave")

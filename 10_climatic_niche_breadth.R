@@ -3,7 +3,7 @@
 # ==============================================================================
 # Evaluates how combinations of sociality and nesting strategy influence
 # bees’ climatic niche breadth, both univariately (temperature and precipitation) 
-# and multivariately (using PCA and 3D volume estimation).
+# and multivariately (using PCA)
 # ==============================================================================
 
 #-------------------------------------------------------------------------------
@@ -16,29 +16,26 @@ results_wd <- file.path(wd, "results/PCA")
 
 library(ggplot2)
 library(dplyr)
-library(scales)
-library(ggrepel)
 library(viridis)
 library(colorspace)
+library(ggrepel)
 library(gridExtra)
 library(factoextra)
-library(vegan)
 library(caret)
 library(corrplot)
-library(phytools)
+library(vegan)
 library(alphashape3d)
-library(combinat)
 
-# Load trait, tree, and climate summary data
+# Load trait and climate summary data
 traits <- read.csv("curated_data/bees_traits.csv")
-phy <- read.tree("curated_data/ML_beetree_pruned.tre")
 all_climatic_vars <- list.files("curated_data", "summstats.csv", full.names = T)
+
 
 # ==============================================================================
 # 1) Univariate niche breadths (temp and precip)
 # ==============================================================================
-# Let's compare the extremes by taking the min max temperatures of the coldest and warmest months, 
-# and the min max precipitations of the wettest and driest months
+# Found by taking the difference between the min/max temperatures of the coldest and warmest months, 
+# and the min/max precipitations of the wettest and driest months
 # ==============================================================================
 # Filter for BIOCLIM variables corresponding to:
 # - BIO5: Max temperature of warmest month
@@ -91,6 +88,174 @@ table(merged_traits$combined_trait)
 
 # Save dataset with trait data, climatic data, and univariate niche breadths
 saveRDS(merged_traits, file = file.path(results_wd, "merged_traits.rds"))
+
+# ------------------------------------------------------------------------------
+# PERMANOVA on univariate climatic niche space
+# ------------------------------------------------------------------------------
+# Temperature
+# ------------------------------------------------------------------------------
+adonis_data_temp <- data.frame(x = merged_traits$temp_breadth)
+groups <- merged_traits$combined_trait 
+
+# Run PERMANOVA
+permanova_result_temp <- adonis2(adonis_data_temp ~ groups, method = "euclidean", permutations = 999)
+
+# Print results
+print(permanova_result_temp)
+
+# R^2 = 0.171
+# p = 0.001 with 999 permutations
+#     With 999 permutations, the smallest possible p-value you can report is 0.001,
+#     This means none of the 999 random groupings had as much between-group difference as the real data.
+
+# Convert to df
+permanova_df_temp <- as.data.frame(permanova_result_temp)
+head(permanova_df_temp)
+
+# Save PERMANOVA
+write.csv(permanova_df_temp, file = file.path(results_wd, "permanova_main_temp.csv"), row.names = TRUE)
+
+# ------------------------------------------------------------------------------
+# Precipitation
+# ------------------------------------------------------------------------------
+adonis_data_precip <- data.frame(x = merged_traits$prec_breadth)
+groups <- merged_traits$combined_trait 
+
+# Run PERMANOVA
+permanova_result_precip <- adonis2(adonis_data_precip ~ groups, method = "euclidean", permutations = 999)
+
+# Print results
+print(permanova_result_precip)
+
+# R^2 = 0.126
+# p = 0.001 with 999 permutations
+
+# Convert to df
+permanova_df_precip <- as.data.frame(permanova_result_precip)
+head(permanova_df_precip)
+
+# Save PERMANOVA
+write.csv(permanova_df_precip, file = file.path(results_wd, "permanova_main_precip.csv"), row.names = TRUE)
+
+# ------------------------------------------------------------------------------
+# Pairwise PERMANOVA on univariate climatic niche space
+# ------------------------------------------------------------------------------
+# Temperature
+# ------------------------------------------------------------------------------
+groups <- unique(merged_traits$combined_trait)
+
+# Store results
+pairwise_results_temp <- data.frame(
+  Group1 = character(),
+  Group2 = character(),
+  R2 = numeric(),
+  F_value = numeric(),
+  p_value = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through all unique pairs
+for (i in 1:(length(groups)-1)) {
+  for (j in (i+1):length(groups)) {
+    g1 <- groups[i]
+    g2 <- groups[j]
+    
+    # Subset to the two groups and keep finite temp_breadth
+    subset_df <- merged_traits %>%
+      dplyr::filter(combined_trait %in% c(g1, g2),
+                    is.finite(temp_breadth))
+    
+    # UNIVARIATE predictor as a 1-col data frame
+    data  <- data.frame(x = subset_df$temp_breadth)
+    group <- droplevels(factor(subset_df$combined_trait))
+    
+    # Run PERMANOVA
+    result <- adonis2(data ~ group, method = "euclidean", permutations = 999)
+    
+    # Store in results table
+    pairwise_results_temp <- rbind(pairwise_results_temp, data.frame(
+      Group1 = g1,
+      Group2 = g2,
+      R2 = result$R2[1],
+      F_value = result$F[1],
+      p_value = result$`Pr(>F)`[1]
+    ))
+  }
+}
+
+# Print all pairwise results
+print(pairwise_results_temp)
+
+# Save pairwise PERMANOVA
+write.csv(pairwise_results_temp, file = file.path(results_wd, "permanova_pairwise_temp.csv"), row.names = FALSE)
+
+# 9/27/25
+#                 Group1               Group2           R2     F_value p_value
+# 1      solitary_ground solitary_aboveground 0.0662167806 198.2709850   0.001
+# 2      solitary_ground   social_aboveground 0.2740825427 817.4327520   0.001
+# 3      solitary_ground        social_ground 0.0002042334   0.5113007   0.480
+# 4 solitary_aboveground   social_aboveground 0.1311725476 182.2286630   0.001
+# 5 solitary_aboveground        social_ground 0.0609463756 100.2734538   0.001
+# 6   social_aboveground        social_ground 0.3644481025 524.1201656   0.001
+
+# ------------------------------------------------------------------------------
+# Precipitation
+# ------------------------------------------------------------------------------
+groups <- unique(merged_traits$combined_trait)
+
+# Store results
+pairwise_results_precip <- data.frame(
+  Group1 = character(),
+  Group2 = character(),
+  R2 = numeric(),
+  F_value = numeric(),
+  p_value = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through all unique pairs
+for (i in 1:(length(groups)-1)) {
+  for (j in (i+1):length(groups)) {
+    g1 <- groups[i]
+    g2 <- groups[j]
+    
+    # Subset to the two groups and keep finite temp_breadth
+    subset_df <- merged_traits %>%
+      dplyr::filter(combined_trait %in% c(g1, g2),
+                    is.finite(prec_breadth))
+    
+    # Univariate predictor as a 1-col data frame
+    data  <- data.frame(x = subset_df$prec_breadth)
+    group <- droplevels(factor(subset_df$combined_trait))
+    
+    # Run PERMANOVA
+    result <- adonis2(data ~ group, method = "euclidean", permutations = 999)
+    
+    # Store in results table
+    pairwise_results_precip  <- rbind(pairwise_results_precip, data.frame(
+      Group1 = g1,
+      Group2 = g2,
+      R2 = result$R2[1],
+      F_value = result$F[1],
+      p_value = result$`Pr(>F)`[1]
+    ))
+  }
+}
+
+# Print all pairwise results
+print(pairwise_results_precip)
+
+# Save pairwise PERMANOVA
+write.csv(pairwise_results_precip, file = file.path(results_wd, "permanova_pairwise_precip.csv"), row.names = FALSE)
+
+# 9/27/25
+#                 Group1               Group2         R2   F_value p_value
+# 1      solitary_ground solitary_aboveground 0.05095001 150.10402   0.001
+# 2      solitary_ground   social_aboveground 0.23207549 654.28754   0.001
+# 3      solitary_ground        social_ground 0.00924688  23.36096   0.001
+# 4 solitary_aboveground   social_aboveground 0.09592990 128.07347   0.001
+# 5 solitary_aboveground        social_ground 0.01299312  20.33863   0.001
+# 6   social_aboveground        social_ground 0.19597136 222.77542   0.001
 
 
 # ==============================================================================
@@ -157,27 +322,24 @@ pca_df$combined_trait <- cleaned_clim_vars$combined_trait
 saveRDS(pca_result, file = file.path(results_wd, "pca_result.rds"))
 saveRDS(pca_df, file = file.path(results_wd, "pca_df.rds"))
 
-
-# ==============================================================================
-# 3) Niche volume calculation per life history syndrome (alpha shape volume)
-# ==============================================================================
-# Calculate the volume of the climatic space occupied by each life history syndrome.
-# ==============================================================================
-strategies <- unique(pca_df$combined_trait)
+# ------------------------------------------------------------------------------
+# Calculate the volume of the climatic space occupied by each trait combination
+# ------------------------------------------------------------------------------
+groups <- unique(pca_df$combined_trait)
 
 volumes <- c()
 
-for (i in 1:length(strategies)) {
-  ashape3d.occ <- ashape3d(as.matrix(pca_df[pca_df$combined_trait==strategies[i],1:3]), alpha = 2)
+for (i in 1:length(groups)) {
+  ashape3d.occ <- ashape3d(as.matrix(pca_df[pca_df$combined_trait==groups[i],1:3]), alpha = 2)
   volumes <- c(volumes, volume_ashape3d(ashape3d.occ)) # niche size  
 }
 
-names(volumes) <- strategies
+names(volumes) <- groups
 
-# Final output: multivariate climatic niche volumes per trait group
-volumes
+# Multivariate climatic niche volumes per trait group
+print(volumes)
 
-# Convert to df and save
+# Convert to df
 volumes_df <- data.frame(
   combined_trait = names(volumes),
   niche_volume = as.numeric(volumes)
@@ -192,48 +354,41 @@ write.csv(volumes_df, file = file.path(results_wd, "multivariate_niche_volumes.c
 # solitary_ground solitary_aboveground   social_aboveground        social_ground 
 # 242.35591            254.03667             68.07669          249.97488 
 
-
-# ==============================================================================
-# 4) Statistical test: PERMANOVA on multivariate climatic niche space
-# ==============================================================================
+# ------------------------------------------------------------------------------
+# PERMANOVA on multivariate climatic niche space
+# ------------------------------------------------------------------------------
 # Tests whether species grouped by trait combination occupy significantly
 # different regions of climate space (based on PCA scores).
-# ==============================================================================
-# Use the first 3 PCs (as above)
+# ------------------------------------------------------------------------------
+groups <- pca_df$combined_trait
+
+# Use the first 3 PCs
 adonis_data <- pca_df[, c("PC1", "PC2", "PC3")]
-adonis_group <- pca_df$combined_trait
 
 # Run PERMANOVA
-permanova_result <- adonis2(adonis_data ~ adonis_group, method = "euclidean", permutations = 999)
+permanova_results_multivar <- adonis2(adonis_data ~ groups, method = "euclidean", permutations = 999)
 
 # Print results
-print(permanova_result)
+print(permanova_results_multivar)
 
 # Convert to df and save
-permanova_df <- as.data.frame(permanova_result)
-head(permanova_df)
+permanova_df_multivar <- as.data.frame(permanova_results_multivar)
+head(permanova_df_multivar)
 
 # Save PERMANOVA
-write.csv(permanova_df, file = file.path(results_wd, "permanova_main.csv"), row.names = TRUE)
-
+write.csv(permanova_df_multivar, file = file.path(results_wd, "permanova_main_multivariate.csv"), row.names = TRUE)
 
 # 6/4/25
 # R^2 = 0.11499
-# This means 11.5% of the variation in species’ positions in climate space is explained by the trait group.
-# Residual = 88.5% — what's left unexplained.
+# p = 0.001
 
-# p = 0.001 with 999 permutations
-# With 999 permutations, the smallest possible p-value you can report is 0.001,
-# This means none of the 999 random groupings had as much between-group difference as your real data.
-
-# ==============================================================================
-# Now let's do a pairwise PERMANOVA to compare between trait groups
-# ==============================================================================
-# Get unique trait combinations
+# ------------------------------------------------------------------------------
+# Pairwise PERMANOVA on multivariate climatic niche space
+# ------------------------------------------------------------------------------
 groups <- unique(pca_df$combined_trait)
 
 # Store results
-pairwise_results <- data.frame(
+pairwise_results_multivariate <- data.frame(
   Group1 = character(),
   Group2 = character(),
   R2 = numeric(),
@@ -260,7 +415,7 @@ for (i in 1:(length(groups)-1)) {
     result <- adonis2(data ~ group, method = "euclidean", permutations = 999)
 
     # Store in results table
-    pairwise_results <- rbind(pairwise_results, data.frame(
+    pairwise_results_multivariate <- rbind(pairwise_results_multivariate, data.frame(
       Group1 = g1,
       Group2 = g2,
       R2 = result$R2[1],
@@ -271,10 +426,10 @@ for (i in 1:(length(groups)-1)) {
 }
 
 # Print all pairwise results
-print(pairwise_results)
+print(pairwise_results_multivariate)
 
 # Save pairwise PERMANOVA
-write.csv(pairwise_results, file = file.path(results_wd, "permanova_pairwise.csv"), row.names = FALSE)
+write.csv(pairwise_results_multivariate, file = file.path(results_wd, "permanova_pairwise_multivariate.csv"), row.names = FALSE)
 
 # 6/4/25
 # Group1               Group2         R2   F_value p_value
@@ -287,7 +442,7 @@ write.csv(pairwise_results, file = file.path(results_wd, "permanova_pairwise.csv
 
 
 # ==============================================================================
-# 5) Plotting
+# 3) Plotting
 # ==============================================================================
 # Setup required for ALL plotting
 #-------------------------------------------------------------------------------
@@ -307,24 +462,9 @@ trait_labels <- c("solitary_ground" = "Solitary/Ground",
                   "social_ground" = "Social/Ground",
                   "social_aboveground" = "Social/Above-ground")
 
-# Color setup for multipanel figure
-trait_colors <- c(
-  "solitary_ground"      = "#1E3D32",  # forest (dark)
-  "solitary_aboveground" = "#7FAF9C",  # soft sage/forest light
-  "social_ground"        = "#8B6C00",  # mustard brown (dark)
-  "social_aboveground"   = "#F5D547"   # bright mustard yellow
-)
-
-sociality_colors <- c(
-  "solitary" = "#2B6CA3",  # same as solitary_ground
-  "social" = "#FDE725"     # same as social_ground
-)
-
-nesting_colors <- c(
-  "ground" = "#505050",        # neutral dark gray for contrast
-  "aboveground" = "#B0B0B0"    # reused from above-ground social
-)
-
+# Trait colors
+trait_colors <- viridis::viridis(n = 4, option = "cividis")
+names(trait_colors) <- levels(merged_traits$combined_trait)
 
 #-------------------------------------------------------------------------------
 # Plot 2D PCA
@@ -358,107 +498,21 @@ pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2, color = combined_trait, fill = 
 
 pca_plot
 
-# Save PCA plot of 4 trait combinations
-ggsave(file.path(results_wd, "2D_pca.pdf"), pca_plot, width = 14, height = 8)
-ggsave(file.path(results_wd, "2D_pca.png"), pca_plot, width = 14, height = 8)
-
-
-# -------------------------------------------------------------------------------
-# Plot separate PCAs for sociality and nesting strategy
-# -------------------------------------------------------------------------------
-# Make sure traits are aligned with PCA data
-pca_df$sociality <- merged_traits$sociality_binary
-pca_df$nesting <- merged_traits$nest_binary
-
-# Sociality PCA
-pca_sociality <- ggplot(pca_df, aes(x = PC1, y = PC2, color = sociality, fill = sociality)) +
-  stat_ellipse(aes(group = sociality), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
-  stat_ellipse(aes(group = sociality), type = "norm", size = 0.5) +
-  geom_point(size = 1, alpha = 0.8) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
-  scale_color_manual(values = sociality_colors, labels = c("solitary" = "Solitary", "social" = "Social")) +
-  scale_fill_manual(values = sociality_colors, guide = "none") +
-  labs(
-    title = "",
-    color = "Sociality",
-    x = "",
-    y = "PC2: Mild summers (T), aseasonal (P) ↔c Extreme summers (T), seasonal (P)"
-  ) +
-  theme_classic() +
-  theme(
-    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
-    axis.title = element_text(size = 17),
-    axis.text = element_text(size = 20),
-    legend.title = element_text(size = 22),
-    legend.text = element_text(size = 20),
-    legend.position = "right",
-    legend.justification = c("right", "top"),
-    legend.background = element_rect(fill = "white", color = NA)
-  ) + guides(color = guide_legend(override.aes = list(size = 3)))
-
-pca_sociality
-
-# Nesting PCA
-pca_nesting <- ggplot(pca_df, aes(x = PC1, y = PC2, color = nesting, fill = nesting)) +
-  stat_ellipse(aes(group = nesting), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
-  stat_ellipse(aes(group = nesting), type = "norm", size = 0.5) +
-  geom_point(size = 1, alpha = 0.8) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
-  geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
-  scale_color_manual(values = nesting_colors, labels = c("ground" = "Ground", "aboveground" = "Above-ground")) +
-  scale_fill_manual(values = nesting_colors, guide = "none") +
-  labs(
-    title = "",
-    color = "Nesting Strategy",
-    x = "",
-    y = ""
-  ) +
-  theme_classic() +
-  theme(
-    panel.border = element_rect(color = "black", fill = NA, size = 0.8),
-    axis.title = element_text(size = 17),
-    axis.text = element_text(size = 20),
-    legend.title = element_text(size = 22),
-    legend.text = element_text(size = 20),
-    legend.position = "right",
-    legend.justification = c("right", "top"),
-    legend.background = element_rect(fill = "white", color = NA)
-  ) + guides(color = guide_legend(override.aes = list(size = 3)))
-
-pca_nesting
-
-# Combine and save 3 panel PCA plot
-library(patchwork)
-combined_pca_plot <- pca_nesting / pca_sociality / pca_plot
-combined_pca_plot
-
-ggsave(file.path(results_wd, "combined_pca_plot.pdf"), combined_pca_plot, width = 10, height = 15)
-ggsave(file.path(results_wd, "combined_pca_plot.png"), combined_pca_plot, width = 10, height = 15)
+# Save PCA plot
+ggsave(file.path(results_wd, "PCA.pdf"), pca_plot, width = 14, height = 8)
+ggsave(file.path(results_wd, "PCA.png"), pca_plot, width = 14, height = 8)
 
 #-------------------------------------------------------------------------------
 # Plot univariate niches as violin plots
 #-------------------------------------------------------------------------------
-# Set combined_trait factor level order and rename
-merged_traits$combined_trait <- factor(merged_traits$combined_trait,
-                                       levels = c("solitary_ground", "solitary_aboveground", 
-                                                  "social_ground", "social_aboveground"))
-
-trait_labels <- c("solitary_ground" = "Solitary/Ground", 
-                  "solitary_aboveground" = "Solitary/Above-ground",
-                  "social_ground" = "Social/Ground",
-                  "social_aboveground" = "Social/Above-ground")
-
-# Define colors
-violin_colors <- viridis::viridis(n = 4, option = "cividis")
-names(violin_colors) <- levels(merged_traits$combined_trait)
-point_colors <- sapply(violin_colors, function(x) darken(x, amount = 0.4))
+# Define point colors (darker versions of trait colors)
+point_colors <- sapply(trait_colors, function(x) darken(x, amount = 0.4))
 
 # Precipitation breadth violin plot
 precip_breadth <- ggplot(merged_traits, aes(x = prec_breadth, y = combined_trait, fill = combined_trait)) +
   geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
   geom_jitter(aes(color = combined_trait), height = 0.2, alpha = 0.7, size = 0.5, show.legend = FALSE) +
-  scale_fill_manual(values = violin_colors) +
+  scale_fill_manual(values = trait_colors) +
   scale_color_manual(values = point_colors) +
   labs(x = "BIO13 - BIO14", y = "", title = "Precipitation Niche Breadth") +
   scale_y_discrete(labels = trait_labels) +
@@ -476,7 +530,7 @@ precip_breadth <- ggplot(merged_traits, aes(x = prec_breadth, y = combined_trait
 temp_breadth <- ggplot(merged_traits, aes(x = temp_breadth, y = combined_trait, fill = combined_trait)) +
   geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
   geom_jitter(aes(color = combined_trait), height = 0.2, alpha = 0.7, size = 0.5, show.legend = FALSE) +
-  scale_fill_manual(values = violin_colors) +
+  scale_fill_manual(values = trait_colors) +
   scale_color_manual(values = point_colors) +
   labs(x = "BIO5 - BIO6", y = "", title = "Temperature Niche Breadth") +
   scale_y_discrete(labels = trait_labels) +
@@ -497,11 +551,11 @@ temp_breadth
 combined_univariate_niches <- grid.arrange(precip_breadth, temp_breadth, ncol = 1)
 
 # Save niche breadth violin plots
-ggsave(file.path(results_wd, "niche_breadth_violin_combined.pdf"), combined_univariate_niches, width = 10, height = 12)
-ggsave(file.path(results_wd, "niche_breadth_violin_combined.png"), combined_univariate_niches, width = 10, height = 12)
+ggsave(file.path(results_wd, "niche_breadth_violins.pdf"), combined_univariate_niches, width = 10, height = 12)
+ggsave(file.path(results_wd, "niche_breadth_violins.png"), combined_univariate_niches, width = 10, height = 12)
 
 #-------------------------------------------------------------------------------
-# Plot PCA loading arrows (color by contribution, no arrow scaling)
+# Plot PCA loading arrows
 #-------------------------------------------------------------------------------
 # Extract PCA variable loadings and contributions
 pca_vars <- get_pca_var(pca_result)
@@ -571,7 +625,6 @@ arrow_plot
 ggsave(file.path(results_wd, "pca_loadings.pdf"), arrow_plot, width = 8, height = 8)
 ggsave(file.path(results_wd, "pca_loadings.png"), arrow_plot, width = 8, height = 8)
 
-
 #-------------------------------------------------------------------------------
 # View PCA loadings and contributions
 #-------------------------------------------------------------------------------
@@ -622,8 +675,6 @@ top_vars <- contributions[, 1:2] >= 9
 top_var_names <- rownames(contributions)[apply(top_vars, 1, any)]
 top_var_names
 
-
-# Save to CSV
 # Extract loadings and contributions for top variables
 top_loadings <- as.data.frame(pca_vars$coord[top_var_names, 1:2])
 top_contribs <- as.data.frame(pca_vars$contrib[top_var_names, 1:2])
@@ -658,37 +709,9 @@ write.csv(top_pca_summary, file.path(results_wd, "pca_top_contributors_PC1_PC2.c
 
 
 
-
 # ==============================================================================
 # Code graveyard: optional things not currently used in manuscript
 # ==============================================================================
-#-------------------------------------------------------------------------------
-# Plot niche volume bar plots
-#-------------------------------------------------------------------------------
-# # Prepare volume data for plotting
-# volume_df <- data.frame(
-#   combined_trait = names(volumes),
-#   volume = as.numeric(volumes)
-# )
-# 
-# # Ensure consistent factor levels and colors
-# volume_df$combined_trait <- factor(volume_df$combined_trait, levels = levels(pca_df$combined_trait))
-# 
-# volume_plot <- ggplot(volume_df, aes(x = combined_trait, y = volume, fill = combined_trait)) +
-#   geom_bar(stat = "identity", width = 0.7, alpha = 0.8, show.legend = FALSE) +
-#   scale_fill_manual(values = violin_colors) +
-#   labs(title = "B. Climatic Niche Volume by Trait Group", x = "", y = "Niche Volume") +
-#   scale_x_discrete(labels = c("solitary_ground" = "Solitary/Ground", 
-#                               "solitary_aboveground" = "Solitary/Above-ground",
-#                               "social_ground" = "Social/Ground",
-#                               "social_aboveground" = "Social/Above-ground")) +
-#   theme_classic() +
-#   theme(
-#     plot.title = element_text(size = 16, face = "bold"),
-#     axis.title = element_text(size = 14),
-#     axis.text.x = element_text(size = 12, angle = 20, hjust = 1),
-#     axis.text.y = element_text(size = 12)
-#   )
 
 #-------------------------------------------------------------------------------
 # Plot 3D PCA (PC1 - PC3)
@@ -722,4 +745,78 @@ write.csv(top_pca_summary, file.path(results_wd, "pca_top_contributors_PC1_PC2.c
 #PCs <- predict(predictors, pca_result, index = 1:3)
 #Convert to Points
 #PCs.points <- rasterToPoints(PCs)
+
+# # -------------------------------------------------------------------------------
+# # Plot separate PCAs for sociality and nesting strategy
+# # -------------------------------------------------------------------------------
+# # Make sure traits are aligned with PCA data
+# pca_df$sociality <- merged_traits$sociality_binary
+# pca_df$nesting <- merged_traits$nest_binary
+# 
+# # Sociality PCA
+# pca_sociality <- ggplot(pca_df, aes(x = PC1, y = PC2, color = sociality, fill = sociality)) +
+#   stat_ellipse(aes(group = sociality), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+#   stat_ellipse(aes(group = sociality), type = "norm", size = 0.5) +
+#   geom_point(size = 1, alpha = 0.8) +
+#   geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+#   geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+#   scale_color_manual(values = sociality_colors, labels = c("solitary" = "Solitary", "social" = "Social")) +
+#   scale_fill_manual(values = sociality_colors, guide = "none") +
+#   labs(
+#     title = "",
+#     color = "Sociality",
+#     x = "",
+#     y = "PC2: Mild summers (T), aseasonal (P) ↔c Extreme summers (T), seasonal (P)"
+#   ) +
+#   theme_classic() +
+#   theme(
+#     panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+#     axis.title = element_text(size = 17),
+#     axis.text = element_text(size = 20),
+#     legend.title = element_text(size = 22),
+#     legend.text = element_text(size = 20),
+#     legend.position = "right",
+#     legend.justification = c("right", "top"),
+#     legend.background = element_rect(fill = "white", color = NA)
+#   ) + guides(color = guide_legend(override.aes = list(size = 3)))
+# 
+# pca_sociality
+# 
+# # Nesting PCA
+# pca_nesting <- ggplot(pca_df, aes(x = PC1, y = PC2, color = nesting, fill = nesting)) +
+#   stat_ellipse(aes(group = nesting), type = "norm", geom = "polygon", alpha = 0.2, color = NA) +
+#   stat_ellipse(aes(group = nesting), type = "norm", size = 0.5) +
+#   geom_point(size = 1, alpha = 0.8) +
+#   geom_hline(yintercept = 0, linetype = "dashed", color = "gray30") +
+#   geom_vline(xintercept = 0, linetype = "dashed", color = "gray30") +
+#   scale_color_manual(values = nesting_colors, labels = c("ground" = "Ground", "aboveground" = "Above-ground")) +
+#   scale_fill_manual(values = nesting_colors, guide = "none") +
+#   labs(
+#     title = "",
+#     color = "Nesting Strategy",
+#     x = "",
+#     y = ""
+#   ) +
+#   theme_classic() +
+#   theme(
+#     panel.border = element_rect(color = "black", fill = NA, size = 0.8),
+#     axis.title = element_text(size = 17),
+#     axis.text = element_text(size = 20),
+#     legend.title = element_text(size = 22),
+#     legend.text = element_text(size = 20),
+#     legend.position = "right",
+#     legend.justification = c("right", "top"),
+#     legend.background = element_rect(fill = "white", color = NA)
+#   ) + guides(color = guide_legend(override.aes = list(size = 3)))
+# 
+# pca_nesting
+# 
+# # Combine and save 3 panel PCA plot
+# library(patchwork)
+# combined_pca_plot <- pca_nesting / pca_sociality / pca_plot
+# combined_pca_plot
+# 
+# ggsave(file.path(results_wd, "combined_pca_plot.pdf"), combined_pca_plot, width = 10, height = 15)
+# ggsave(file.path(results_wd, "combined_pca_plot.png"), combined_pca_plot, width = 10, height = 15)
+
 
