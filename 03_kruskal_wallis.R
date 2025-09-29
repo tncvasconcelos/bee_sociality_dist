@@ -11,7 +11,7 @@
 rm(list=ls())
 wd <- "/Users/lenarh/Desktop/bee_sociality_dist"
 setwd(wd)
-results_wd <- file.path(wd, "results/Kruskal Wallis")
+results_wd <- file.path(wd, "results/Kruskal-Wallis")
 
 library(phytools)
 library(ggplot2)
@@ -453,6 +453,20 @@ sink(file.path(results_wd, "kruskal_combined_results_all.txt"))
 
 plot_list <- list()
 
+# Define trait levels, labels, and colors
+trait_levels <- c("solitary_ground", "solitary_aboveground", 
+                  "social_ground", "social_aboveground")
+
+trait_labels <- c("solitary_ground"     = "Solitary/Ground",
+                  "solitary_aboveground"= "Solitary/Above-ground",
+                  "social_ground"       = "Social/Ground",
+                  "social_aboveground"  = "Social/Above-ground")
+
+# Viridis cividis colors
+trait_colors <- viridis::viridis(n = 4, option = "cividis")
+names(trait_colors) <- trait_levels
+point_colors <- sapply(trait_colors, function(x) colorspace::darken(x, amount = 0.4))
+
 for (climate_index in 1:length(all_climatic_vars)) {
   
   climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index]))
@@ -467,12 +481,11 @@ for (climate_index in 1:length(all_climatic_vars)) {
   
   # Create combined trait group
   merged_table$comb_nest_soc <- interaction(merged_table$sociality_binary, 
-                                            merged_table$nest_binary, 
-                                            sep = "_")
+                                            merged_table$nest_binary, sep = "_")
   
   one_clim_var <- merged_table[, 9]
   colnames(merged_table)[9] <- "value"
-  merged_table <- merged_table[!is.na(merged_table$value), ]  # Remove NAs
+  merged_table <- merged_table[!is.na(merged_table$value), ]
   
   kruskal_result <- kruskal.test(value ~ comb_nest_soc, data = merged_table)
   p_value <- kruskal_result$p.value
@@ -491,35 +504,31 @@ for (climate_index in 1:length(all_climatic_vars)) {
   
   # Set factor level order
   merged_table$comb_nest_soc <- factor(merged_table$comb_nest_soc,
-                                       levels = c("solitary_ground", "solitary_aboveground", 
-                                                  "social_ground", "social_aboveground"))
+                                       levels = trait_levels)
   
-  # Make plot
+  # Make plot with cividis colors
   plot <- ggplot(merged_table, aes(x = comb_nest_soc, y = value, fill = comb_nest_soc)) +
-    geom_violin(width = 0.3, position = position_nudge(x = -0.15), show.legend = FALSE) +
-    geom_jitter(width = 0.15, alpha = 0.7, size = 0.3, color = "black") +
-    scale_fill_brewer(palette = "Set3") +
-    labs(x = "", y = "Climatic Variable Value", 
+    geom_violin(width = 0.9, adjust = 0.8, alpha = 0.6, show.legend = FALSE) +
+    geom_jitter(aes(color = comb_nest_soc), width = 0.15, alpha = 0.7, size = 0.5, show.legend = FALSE) +
+    scale_fill_manual(values = trait_colors) +
+    scale_color_manual(values = point_colors) +
+    labs(x = "", y = "Raster units", 
          title = paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance)) +
-    scale_x_discrete(labels = c("solitary_ground" = "Solitary/Ground", 
-                                "solitary_aboveground" = "Solitary/Above-ground",
-                                "social_ground" = "Social/Ground",
-                                "social_aboveground" = "Social/Above-ground")) +
+    scale_x_discrete(labels = trait_labels) +
     theme_minimal() +
     theme(
       axis.line = element_line(color = "black"),
       panel.grid = element_blank(),
-      axis.text.x = element_text(size = 20, angle = 45, hjust = 1),
-      axis.text.y = element_text(size = 20),
-      axis.title = element_text(size = 20),
-      plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
+      axis.text.x = element_text(size = 12, angle = 45, hjust = 1),
+      axis.text.y = element_text(size = 12),
+      axis.title = element_text(size = 15),
+      plot.title = element_text(size = 15, face = "bold", hjust = 0.5),
       legend.position = "none",
       axis.ticks.y = element_line(color = "black", size = 0.5)
     ) +
     scale_y_continuous(breaks = pretty(merged_table$value, n = 6))
   
   print(plot)
-  
   plot_list[[climate_index]] <- plot
   
   label <- gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index])
@@ -532,19 +541,15 @@ n_plots <- length(plot_list)
 ncols <- 3
 nrows <- ceiling(n_plots / ncols)
 
-# Display plots
 quartz(width = 15, height = 35)
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
-# Save plot grid
 ggsave(file.path(results_wd, "kruskal_combined_boxplots_all.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
-       width = 15, height = 35)
+       width = 12, height = 40)
 
 par(mfrow = c(1, 1))
-
 sink()
-
 
 # ------------------------------------------------------------------------------
 # Kruskal-Wallis test for combined nesting and sociality (4 character states) vs. SELECTED climate variables

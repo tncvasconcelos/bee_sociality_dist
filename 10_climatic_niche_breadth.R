@@ -440,7 +440,6 @@ write.csv(pairwise_results_multivariate, file = file.path(results_wd, "permanova
 # 5 solitary_aboveground        social_ground 0.03143050  50.13591   0.001
 # 6   social_aboveground        social_ground 0.25537780 313.46810   0.001
 
-
 # ==============================================================================
 # 3) Plotting
 # ==============================================================================
@@ -553,6 +552,7 @@ combined_univariate_niches <- grid.arrange(precip_breadth, temp_breadth, ncol = 
 # Save niche breadth violin plots
 ggsave(file.path(results_wd, "niche_breadth_violins.pdf"), combined_univariate_niches, width = 10, height = 12)
 ggsave(file.path(results_wd, "niche_breadth_violins.png"), combined_univariate_niches, width = 10, height = 12)
+
 
 #-------------------------------------------------------------------------------
 # Plot PCA loading arrows

@@ -1,184 +1,187 @@
+
+> plot_list <- list() # Initialize an empty list to store the ggplot objects
+
+> # Loop through the climatic variables
+> for(climate_index in 1:length(all_climatic_vars)) {
++   
++   # Load and clean climate data
++   climate <- re .... [TRUNCATED] 
 [1] "Testing nesting type ~ all"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-3.8552, df = 1, p-value = 0.04959
+Kruskal-Wallis chi-squared = 3.8552, df = 1, p-value = 0.04959
 
 [1] "Testing nesting type ~ alt"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-2.0252, df = 1, p-value = 0.1547
+Kruskal-Wallis chi-squared = 2.0252, df = 1, p-value = 0.1547
 
 [1] "Testing nesting type ~ bio_1"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-260.56, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 260.56, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_10"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-37.225, df = 1, p-value = 1.053e-09
+Kruskal-Wallis chi-squared = 37.225, df = 1, p-value = 1.053e-09
 
 [1] "Testing nesting type ~ bio_11"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-343.58, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 343.58, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_12"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-185.03, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 185.03, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_13"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-219.22, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 219.22, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_14"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-50.085, df = 1, p-value = 1.472e-12
+Kruskal-Wallis chi-squared = 50.085, df = 1, p-value = 1.472e-12
 
 [1] "Testing nesting type ~ bio_15"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-14.358, df = 1, p-value = 0.0001512
+Kruskal-Wallis chi-squared = 14.358, df = 1, p-value = 0.0001512
 
 [1] "Testing nesting type ~ bio_16"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-220.45, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 220.45, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_17"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-54.254, df = 1, p-value = 1.762e-13
+Kruskal-Wallis chi-squared = 54.254, df = 1, p-value = 1.762e-13
 
 [1] "Testing nesting type ~ bio_18"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-89.456, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 89.456, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_19"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-112.76, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 112.76, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_2"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-164.11, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 164.11, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_3"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-271.32, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 271.32, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_4"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-407.09, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 407.09, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_5"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-3.1725, df = 1, p-value = 0.07489
+Kruskal-Wallis chi-squared = 3.1725, df = 1, p-value = 0.07489
 
 [1] "Testing nesting type ~ bio_6"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-353.37, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 353.37, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_7"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-382.18, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 382.18, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_8"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared = 115.9,
-df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 115.9, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_9"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-213.13, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 213.13, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_ai"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-101.15, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 101.15, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ LAI"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-126.73, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 126.73, df = 1, p-value < 2.2e-16
 
+
+> # Arrange plots
+> n_plots <- length(plot_list)
+
+> ncols <- 3
+
+> nrows <- ceiling(n_plots / ncols)  # Calculate the required number of rows to fit all plots
+
+> # Display plots
+> quartz()
+
+> grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+
+> # Save plot grid
+> ggsave(file.path(results_wd, "kruskal_nesting_boxplots_all.pdf"),
++        plot = grid.arrange(grobs = plot_list, ncol = ncols, n .... [TRUNCATED] 
+
+> sink()
