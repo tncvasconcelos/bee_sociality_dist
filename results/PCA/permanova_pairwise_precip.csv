@@ -1,0 +1,7 @@
+"Group1","Group2","R2","F_value","p_value"
+"solitary_ground","solitary_aboveground",0.0509500077863883,150.104022906601,0.001
+"solitary_ground","social_aboveground",0.232075492298322,654.287544917182,0.001
+"solitary_ground","social_ground",0.0092468803684003,23.3609575417861,0.001
+"solitary_aboveground","social_aboveground",0.0959299049767278,128.073471232261,0.001
+"solitary_aboveground","social_ground",0.0129931203758191,20.3386332912737,0.001
+"social_aboveground","social_ground",0.195971356637889,222.775421554679,0.001

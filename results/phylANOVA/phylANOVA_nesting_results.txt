@@ -1,0 +1,594 @@
+[1] "nesting type ~ all"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq   Mean Sq F value
+x           1567236 1567236.3 4.40211
+Residual 1321543787  356019.3        
+         Pr(>F)
+x         0.877
+Residual       
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground    ground
+aboveground    0.000000 -2.098121
+ground         2.098121  0.000000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.877
+ground            0.877  1.000
+---------
+
+[1] "nesting type ~ bio_1"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          9613.935 9613.93514
+Residual 127863.852   34.44608
+            F value Pr(>F)
+x        279.100986  0.191
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 16.70632
+ground        -16.70632  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.191
+ground            0.191  1.000
+---------
+
+[1] "nesting type ~ bio_10"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq   Mean Sq
+x          39080.63 39080.628
+Residual 6201541.66  1670.674
+           F value Pr(>F)
+x        23.392134  0.714
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground    0.000000 4.836542
+ground        -4.836542 0.000000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.714
+ground            0.714  1.000
+---------
+
+[1] "nesting type ~ bio_11"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+           Sum Sq     Mean Sq
+x         3043011 3043010.504
+Residual 26743552    7204.621
+            F value Pr(>F)
+x        422.369294  0.106
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 20.55163
+ground        -20.55163  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.106
+ground            0.106  1.000
+---------
+
+[1] "nesting type ~ bio_12"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq     Mean Sq
+x         131938991 131938990.6
+Residual 1473577030    396976.6
+            F value Pr(>F)
+x        332.359641   0.12
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 18.23073
+ground        -18.23073  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground        1.00   0.12
+ground             0.12   1.00
+---------
+
+[1] "nesting type ~ bio_13"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+           Sum Sq     Mean Sq
+x         3298660 3298659.867
+Residual 35796085    9643.342
+            F value Pr(>F)
+x        342.066052  0.148
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 18.49503
+ground        -18.49503  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.148
+ground            0.148  1.000
+---------
+
+[1] "nesting type ~ bio_14"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          60779.98 60779.9756
+Residual 2864204.72   771.6069
+           F value Pr(>F)
+x        78.770651  0.478
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground    0.000000 8.875283
+ground        -8.875283 0.000000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.478
+ground            0.478  1.000
+---------
+
+[1] "nesting type ~ bio_15"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+              Sum Sq   Mean Sq
+x           6144.629 6144.6294
+Residual 2882832.512  776.6251
+          F value Pr(>F)
+x        7.911963  0.828
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground    0.000000 2.812821
+ground        -2.812821 0.000000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.828
+ground            0.828  1.000
+---------
+
+[1] "nesting type ~ bio_16"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq     Mean Sq
+x         27178855 27178854.92
+Residual 290217758    78183.66
+            F value Pr(>F)
+x        347.628312  0.148
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 18.64479
+ground        -18.64479  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.148
+ground            0.148  1.000
+---------
+
+[1] "nesting type ~ bio_17"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          681869.8 681869.844
+Residual 28463714.7   7668.027
+           F value Pr(>F)
+x        88.923772  0.476
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground  ground
+aboveground     0.00000 9.42994
+ground         -9.42994 0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.476
+ground            0.476  1.000
+---------
+
+[1] "nesting type ~ bio_18"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq    Mean Sq
+x          3204548 3204548.47
+Residual 143775655   38732.67
+           F value Pr(>F)
+x        82.735035  0.467
+Residual                 
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground  ground
+aboveground     0.00000 9.09588
+ground         -9.09588 0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.467
+ground            0.467  1.000
+---------
+
+[1] "nesting type ~ bio_19"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq    Mean Sq
+x          6959350 6959350.31
+Residual 113480378   30571.22
+            F value Pr(>F)
+x        227.643834  0.244
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 15.08787
+ground        -15.08787  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.244
+ground            0.244  1.000
+---------
+
+[1] "nesting type ~ bio_2"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+          Sum Sq     Mean Sq
+x         106256 106256.0366
+Residual 2276653    613.3226
+            F value Pr(>F)
+x        173.246574  0.267
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground    ground
+aboveground     0.00000 -13.16232
+ground         13.16232   0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.267
+ground            0.267  1.000
+---------
+
+[1] "nesting type ~ bio_3"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq    Mean Sq
+x         52887.81 52887.8077
+Residual 531808.95   143.2675
+            F value Pr(>F)
+x        369.154267  0.119
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 19.21339
+ground        -19.21339  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.119
+ground            0.119  1.000
+---------
+
+[1] "nesting type ~ bio_4"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq     Mean Sq
+x         32503449 32503448.89
+Residual 232643996    62673.49
+            F value Pr(>F)
+x        518.615587  0.067
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground    ground
+aboveground     0.00000 -22.77313
+ground         22.77313   0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.067
+ground            0.067  1.000
+---------
+
+[1] "nesting type ~ bio_5"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+               Sum Sq   Mean Sq
+x            3.313876  3.313876
+Residual 72302.926182 19.478159
+          F value Pr(>F)
+x        0.170133  0.976
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground    0.000000 0.412472
+ground        -0.412472 0.000000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.976
+ground            0.976  1.000
+---------
+
+[1] "nesting type ~ bio_6"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+            Sum Sq     Mean Sq
+x         35413.12 35413.12012
+Residual 280508.48    75.56802
+            F value Pr(>F)
+x        468.625772  0.087
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 21.64777
+ground        -21.64777  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.087
+ground            0.087  1.000
+---------
+
+[1] "nesting type ~ bio_7"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+           Sum Sq     Mean Sq
+x         3472364 3472363.761
+Residual 25101190    6762.174
+            F value Pr(>F)
+x        513.498142  0.074
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground      0.0000 -22.6605
+ground          22.6605   0.0000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.074
+ground            0.074  1.000
+---------
+
+[1] "nesting type ~ bio_8"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+           Sum Sq    Mean Sq   F value
+x          396610 396609.956 97.661397
+Residual 15074699   4061.072          
+         Pr(>F)
+x         0.465
+Residual       
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground    0.000000 9.882378
+ground        -9.882378 0.000000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.465
+ground            0.465  1.000
+---------
+
+[1] "nesting type ~ bio_9"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+           Sum Sq     Mean Sq
+x         1458372 1458371.536
+Residual 25577913    6890.602
+            F value Pr(>F)
+x        211.646475  0.236
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 14.54808
+ground        -14.54808  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.236
+ground            0.236  1.000
+---------
+
+[1] "nesting type ~ bio_ai"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+              Sum Sq    Mean Sq
+x         3258754614 3258754614
+Residual 89558098828   24120145
+          F value Pr(>F)
+x        135.1051  0.377
+Residual                
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground   ground
+aboveground     0.00000 11.62347
+ground        -11.62347  0.00000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.377
+ground            0.377  1.000
+---------
+
+[1] "nesting type ~ LAI"
+ANOVA table: Phylogenetic ANOVA
+
+Response: y
+             Sum Sq    Mean Sq
+x          345058.1 345058.064
+Residual 11764540.3   3179.605
+            F value Pr(>F)
+x        108.522289  0.411
+Residual                  
+
+P-value based on simulation.
+---------
+
+Pairwise posthoc test using method = "bonferroni"
+
+Pairwise t-values:
+            aboveground  ground
+aboveground      0.0000 10.4174
+ground         -10.4174  0.0000
+
+Pairwise corrected P-values:
+            aboveground ground
+aboveground       1.000  0.411
+ground            0.411  1.000
+---------
+

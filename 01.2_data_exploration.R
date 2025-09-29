@@ -3,13 +3,12 @@
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# Setup: clear environment, set working directory, load data
+# Setup: clear environment, set working directory, load data and packages
 # ------------------------------------------------------------------------------
-rm(list = ls())
-
+rm(list=ls())
 wd <- "/Users/lenarh/Desktop/bee_sociality_dist"
 setwd(wd)
-plots_wd <- file.path(wd, "plots")
+results_wd <- file.path(wd, "results/Data Exploration")
 
 library(ggplot2)
 library(dplyr)
@@ -71,7 +70,7 @@ quartz()
 print(plot1)
 
 ggsave(
-  filename = file.path(plots_wd, "species_per_trait.png"),
+  filename = file.path(results_wd, "species_per_trait.png"),
   plot = plot1,
   width = 8,
   height = 7,
@@ -134,7 +133,7 @@ print(plot2)
 
 # Save plot
 ggsave(
-  filename = file.path(plots_wd, "family_trait_breakdown.png"),
+  filename = file.path(results_wd, "family_trait_breakdown.png"),
   plot = plot2,
   width = 8,
   height = 5,
@@ -160,7 +159,7 @@ quartz()
 combined_plot 
 
 ggsave(
-  filename = file.path(plots_wd, "combined_species_trait_plot.png"),
+  filename = file.path(results_wd, "combined_species_trait_plot.png"),
   plot = combined_plot,
   width = 14,
   height = 9,
@@ -168,7 +167,7 @@ ggsave(
 )
 
 ggsave(
-  filename = file.path(plots_wd, "combined_species_trait_plot.pdf"),
+  filename = file.path(results_wd, "combined_species_trait_plot.pdf"),
   plot = combined_plot,
   width = 14,
   height = 8,

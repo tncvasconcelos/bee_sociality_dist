@@ -6,10 +6,13 @@
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# Setup: clear environment, set working directory, load libraries
+# Setup: clear environment, set working directories, load libraries
 # ------------------------------------------------------------------------------
 rm(list=ls())
-setwd("/Users/lenarh/Desktop/bee_sociality_dist")
+wd <- "/Users/lenarh/Desktop/bee_sociality_dist"
+setwd(wd)
+results_wd <- file.path(wd, "results/Kruskal Wallis")
+
 library(phytools)
 library(ggplot2)
 library(gridExtra)
@@ -28,7 +31,7 @@ all_climatic_vars <- list.files("curated_data", "summstats.csv") # Selects summs
 # ------------------------------------------------------------------------------
 # Kruskal-Wallis tests and violin plots for nesting_binary vs. ALL climate vars
 # ------------------------------------------------------------------------------
-sink("results/kruskal_nesting_results_all.txt") # Open a sink for results
+sink(file.path(results_wd, "kruskal_nesting_results_all.txt")) # Open sink for results
 plot_list <- list() # Initialize an empty list to store the ggplot objects
 
 # Loop through the climatic variables
@@ -125,9 +128,9 @@ quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plot grid
-ggsave("plots/kruskal_nesting_boxplots_all.pdf", 
+ggsave(file.path(results_wd, "kruskal_nesting_boxplots_all.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
-       width = 15, height = 35)  # Change dimensions to un-scrunch plots
+       width = 15, height = 35)
 
 sink()
 
@@ -137,7 +140,7 @@ sink()
 # ------------------------------------------------------------------------------
 # bio_1, bio_4, bio_12, bio_15
 # ------------------------------------------------------------------------------
-sink("results/kruskal_nesting_results_selected.txt")
+sink(file.path(results_wd, "kruskal_nesting_results_selected.txt")) 
 
 # Select variables
 selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
@@ -232,7 +235,7 @@ quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plot grid
-ggsave("plots/kruskal_nesting_boxplots_selected.pdf", 
+ggsave(file.path(results_wd, "kruskal_nesting_boxplots_selected.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 10, height = 10)
 
@@ -242,7 +245,7 @@ sink()
 # ------------------------------------------------------------------------------
 # Kruskal-Wallis tests and violin plots for sociality_binary vs. ALL climate variables
 # ------------------------------------------------------------------------------
-sink("results/kruskal_sociality_results_all.txt")
+sink(file.path(results_wd, "kruskal_sociality_results_all.txt")) 
 
 plot_list <- list()
 
@@ -325,7 +328,7 @@ quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plot grid
-ggsave("plots/kruskal_sociality_boxplots_all.pdf", 
+ggsave(file.path(results_wd, "kruskal_sociality_boxplots_all.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 15, height = 35)
 
@@ -336,7 +339,7 @@ sink()
 # ------------------------------------------------------------------------------
 # bio_1, bio_4, bio_12, bio_15
 # ------------------------------------------------------------------------------
-sink("results/kruskal_sociality_results_selected.txt")
+sink(file.path(results_wd, "kruskal_sociality_results_selected.txt")) 
 
 # Select variables
 selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
@@ -431,9 +434,9 @@ quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plot grid
-ggsave("plots/kruskal_sociality_boxplots_selected.pdf", 
+ggsave(file.path(results_wd, "kruskal_sociality_boxplots_selected.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
-       width = 10, height = 10)
+       width = 15, height = 35)
 
 par(mfrow = c(1, 1))
 
@@ -446,7 +449,7 @@ sink()
 # trait combinations: solitary_ground, solitary_aboveground, 
 # social_ground, social_aboveground.
 # ------------------------------------------------------------------------------
-sink("results/kruskal_combined_results_all.txt")
+sink(file.path(results_wd, "kruskal_combined_results_all.txt")) 
 
 plot_list <- list()
 
@@ -534,7 +537,7 @@ quartz(width = 15, height = 35)
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plot grid
-ggsave("plots/kruskal_combined_boxplots_all.pdf", 
+ggsave(file.path(results_wd, "kruskal_combined_boxplots_all.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 15, height = 35)
 
@@ -551,7 +554,7 @@ sink()
 # ------------------------------------------------------------------------------
 # bio_1, bio_4, bio_12, bio_15
 # ------------------------------------------------------------------------------
-sink("results/kruskal_combined_results_selected.txt")
+sink(file.path(results_wd, "kruskal_combined_results_selected.txt")) 
 
 library(ggplot2)
 library(viridis)
@@ -684,19 +687,15 @@ n_vars_selected <- length(selected_vars)
 ncols <- 1
 nrows <- ceiling(n_vars_selected / ncols)
 
-# Display plots
-quartz()
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
 # Save plots
-ggsave("plots/kruskal_combined_boxplots_selected.pdf", 
+ggsave("results/Kruskal-Wallis/kruskal_combined_boxplots_selected.pdf", 
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 12, height = 24)
 
-ggsave("plots/kruskal_combined_boxplots_selected.png", 
+ggsave(file.path(results_wd, "kruskal_combined_boxplots_selected.png"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 12, height = 24)
-
-par(mfrow = c(1, 1))
 
 sink()

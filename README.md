@@ -2,6 +2,11 @@
 
 
 Note: packages rgeos, rgdal, and maptools were unfortunately retired as of October 2023. Much of the code here depends on functions from these three packages and, although the functionalities of these packages have been migrated to other packages, I still have to make changes to the code so that it works in computers that dont already have rgeos, rgdal, and maptools installed. 
+Note 9/29/25: Need to make sure we include the following supplemental materials in the Github: 
+- Table including all species which were excluded because they had flexible or unknown sociality and/or nesting behavior (245 species)
+- Table including all species which were excluded because they lacked occurrence data in Dorey et al. (634 species)
+- Table with proportion social and proportion above-ground nesting values for polygons used in proportion heatmaps
+
 
 ----
 Description of folders: 
