@@ -513,7 +513,7 @@ for (climate_index in 1:length(all_climatic_vars)) {
     scale_fill_manual(values = trait_colors) +
     scale_color_manual(values = point_colors) +
     labs(x = "", y = "Raster units", 
-         title = paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]), significance)) +
+         title = paste(gsub("_climate_summstats.csv", "", all_climatic_vars[climate_index]))) +
     scale_x_discrete(labels = trait_labels) +
     theme_minimal() +
     theme(
@@ -536,20 +536,81 @@ for (climate_index in 1:length(all_climatic_vars)) {
   print(kruskal_result)
 }
 
-# Arrange plots
+
+# ---- drop the "all" climate variable plot (right before arranging/saving) ----
+drop_idx <- which(tolower(sub("_climate_summstats\\.csv$", "",
+                              basename(all_climatic_vars))) == "all")
+if (length(drop_idx)) {
+  plot_list <- plot_list[-drop_idx]
+}
+
+# Recompute layout after removal
 n_plots <- length(plot_list)
 ncols <- 3
 nrows <- ceiling(n_plots / ncols)
 
+# Display plots
 quartz(width = 15, height = 35)
 grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
 
+# Save plot grid
 ggsave(file.path(results_wd, "kruskal_combined_boxplots_all.pdf"),
        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
        width = 12, height = 40)
 
-par(mfrow = c(1, 1))
-sink()
+# # Arrange plots
+# n_plots <- length(plot_list)
+# ncols <- 3
+# nrows <- ceiling(n_plots / ncols)
+# 
+# quartz(width = 15, height = 35)
+# grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+# 
+# ggsave(file.path(results_wd, "kruskal_combined_boxplots_all.pdf"),
+#        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
+#        width = 12, height = 40)
+# 
+# par(mfrow = c(1, 1))
+# sink()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ------------------------------------------------------------------------------
 # Kruskal-Wallis test for combined nesting and sociality (4 character states) vs. SELECTED climate variables

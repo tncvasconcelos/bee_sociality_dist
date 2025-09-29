@@ -1,25 +1,3 @@
-
-> plot_list <- list()
-
-> # Define trait levels, labels, and colors
-> trait_levels <- c("solitary_ground", "solitary_aboveground", 
-+                   "social_ground", "soci ..." ... [TRUNCATED] 
-
-> trait_labels <- c("solitary_ground"     = "Solitary/Ground",
-+                   "solitary_aboveground"= "Solitary/Above-ground",
-+                  .... [TRUNCATED] 
-
-> # Viridis cividis colors
-> trait_colors <- viridis::viridis(n = 4, option = "cividis")
-
-> names(trait_colors) <- trait_levels
-
-> point_colors <- sapply(trait_colors, function(x) colorspace::darken(x, amount = 0.4))
-
-> for (climate_index in 1:length(all_climatic_vars)) {
-+   
-+   climate <- read.csv(paste0("curated_data/", all_climatic_vars[climate_index]))
-+   cli .... [TRUNCATED] 
 [1] "comb_nest_soc ~ all"
 
 	Kruskal-Wallis rank sum test
@@ -181,22 +159,3 @@ Kruskal-Wallis chi-squared = 301.9, df = 3, p-value < 2.2e-16
 data:  value by comb_nest_soc
 Kruskal-Wallis chi-squared = 187.36, df = 3, p-value < 2.2e-16
 
-
-> # Arrange plots
-> n_plots <- length(plot_list)
-
-> ncols <- 3
-
-> nrows <- ceiling(n_plots / ncols)
-
-> quartz(width = 15, height = 35)
-
-> grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
-
-> ggsave(file.path(results_wd, "kruskal_combined_boxplots_all.pdf"),
-+        plot = grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows),
-+    .... [TRUNCATED] 
-
-> par(mfrow = c(1, 1))
-
-> sink()
