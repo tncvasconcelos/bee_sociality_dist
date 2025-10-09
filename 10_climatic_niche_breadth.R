@@ -440,7 +440,6 @@ write.csv(pairwise_results_multivariate, file = file.path(results_wd, "permanova
 # 5 solitary_aboveground        social_ground 0.03143050  50.13591   0.001
 # 6   social_aboveground        social_ground 0.25537780 313.46810   0.001
 
-
 # ==============================================================================
 # 3) Plotting
 # ==============================================================================
@@ -465,6 +464,52 @@ trait_labels <- c("solitary_ground" = "Solitary/Ground",
 # Trait colors
 trait_colors <- viridis::viridis(n = 4, option = "cividis")
 names(trait_colors) <- levels(merged_traits$combined_trait)
+
+
+#-------------------------------------------------------------------------------
+# Plot niche volumes
+#-------------------------------------------------------------------------------
+# Load niche volumes
+volumes_df <- read.csv(file.path(results_wd, "multivariate_niche_volumes.csv")) 
+
+# Apply labels
+volumes_df$Trait_Combination <- factor(
+  volumes_df$combined_trait,
+  levels = names(trait_labels),
+  labels = trait_labels
+)
+
+# Barplot of niche volumes with same aesthetics as plot1
+plot_volumes <- ggplot(volumes_df, aes(x = Trait_Combination, y = niche_volume, fill = Trait_Combination)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(niche_volume, 1)), vjust = -0.5, size = 5) +
+  scale_fill_viridis_d(option = "cividis", name = "Trait Combination") +
+  labs(x = "",
+       y = "Niche Volume") +
+  theme_minimal() +
+  theme(
+    legend.position = c(1.00, 0.95),  # Inside top-right
+    legend.justification = c("right", "top"),
+    legend.background = element_blank(),
+    legend.title = element_text(size = 20),
+    legend.text = element_text(size = 16),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 16, angle = 45, hjust = 1, color = "black"),
+    axis.text.y = element_text(size = 16, color = "black"),
+    panel.grid = element_blank(),
+    axis.line = element_line(color = "black"),
+    axis.ticks = element_line(color = "black")
+  )
+
+print(plot_volumes)
+
+# Save to file
+ggsave(file.path(results_wd, "multivariate_niche_volumes_barplot.pdf"),
+       plot_volumes, width = 8, height = 7, dpi = 300)
+
+ggsave(file.path(results_wd, "multivariate_niche_volumes_barplot.png"),
+       plot_volumes, width = 8, height = 7, dpi = 300)
 
 #-------------------------------------------------------------------------------
 # Plot 2D PCA
@@ -553,6 +598,7 @@ combined_univariate_niches <- grid.arrange(precip_breadth, temp_breadth, ncol = 
 # Save niche breadth violin plots
 ggsave(file.path(results_wd, "niche_breadth_violins.pdf"), combined_univariate_niches, width = 10, height = 12)
 ggsave(file.path(results_wd, "niche_breadth_violins.png"), combined_univariate_niches, width = 10, height = 12)
+
 
 #-------------------------------------------------------------------------------
 # Plot PCA loading arrows

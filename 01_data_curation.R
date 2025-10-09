@@ -11,7 +11,7 @@
 #-------------------------------------------------------------------------------
 # Setup: working directory and libraries
 #-------------------------------------------------------------------------------
-# rm(list=ls())
+rm(list=ls())
 setwd("/Users/lenarh/Desktop/bee_sociality_dist")
 
 library(ape)

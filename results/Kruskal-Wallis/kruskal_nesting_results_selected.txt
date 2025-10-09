@@ -1,32 +1,62 @@
+
+> # Select variables
+> selected_vars <- c("bio_1_climate_summstats.csv", "bio_4_climate_summstats.csv", 
++                    "bio_12_climate_summstat ..." ... [TRUNCATED] 
+
+> # Rename variables
+> variable_labels <- c("bio_1_climate_summstats.csv" = "Mean annual temperature",
++                      "bio_4_climate_summstats ..." ... [TRUNCATED] 
+
+> # Initialize an empty list to store the ggplot objects
+> plot_list <- list()
+
+> # Loop through the selected climate variables
+> for(climate_index in 1:length(selected_vars)) {
++   
++   climate <- read.csv(paste0("curated_data/", .... [TRUNCATED] 
 [1] "Testing nesting type ~ bio_1"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-260.56, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 260.56, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_4"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-407.09, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 407.09, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_12"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-185.03, df = 1, p-value < 2.2e-16
+Kruskal-Wallis chi-squared = 185.03, df = 1, p-value < 2.2e-16
 
 [1] "Testing nesting type ~ bio_15"
 
 	Kruskal-Wallis rank sum test
 
 data:  one_clim_var by nests
-Kruskal-Wallis chi-squared =
-14.358, df = 1, p-value = 0.0001512
+Kruskal-Wallis chi-squared = 14.358, df = 1, p-value = 0.0001512
 
+
+> # Arrange plots
+> n_vars_selected <- length(selected_vars)
+
+> ncols <- 2
+
+> nrows <- ceiling(n_vars_selected / ncols)
+
+> # Display plots
+> quartz()
+
+> grid.arrange(grobs = plot_list, ncol = ncols, nrow = nrows)
+
+> # Save plot grid
+> ggsave(file.path(results_wd, "kruskal_nesting_boxplots_selected.pdf"),
++        plot = grid.arrange(grobs = plot_list, ncol = nco .... [TRUNCATED] 
+
+> sink()
