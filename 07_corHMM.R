@@ -56,11 +56,12 @@ dat <- dat[,c("tips","sociality_binary","nest_binary")]
 # Model selection (run or load corHMM dredge) with root fixed as solitary/ground
 #-------------------------------------------------------------------------------
 # Run model selection with corHMMDredge (if not already done)
-#dredge_sociality <- corHMM:::corHMMDredge(phy, dat, max.rate.cat=2, root.p=c(0,0,0,1))
-#save(dredge_sociality, file="corHMMdredge_results/corhmm_dredge_binary.Rsave")
+#dredge_sociality <- corHMM::corHMMDredge(phy, dat, max.rate.cat=2, root.p=c(0,0,0,1))
+#save(dredge_sociality, file="corHMMdredge_results/corhmm_dredge_binary_Oct5.Rsave")
 
 # Load saved dredge results
-load("results/corHMM/corHMMdredge_results/corhmm_dredge_binary.Rsave")
+load("results/corHMM/corHMMdredge_results/corhmm_dredge_binary.Rsave") # old
+load("corHMMdredge_results/corhmm_dredge_binary_Oct5.Rsave") # new
 
 # Save summary table to compare models with AIC values
 corhmm_tbl_sociality <- corHMM:::getModelTable(dredge_sociality)
@@ -76,7 +77,7 @@ states <- c(
 )
 
 # Extract the transition rate matrix from the 10th (best) model
-rates_mat <- dredge_sociality[[10]]$solution
+rates_mat <- dredge_sociality[[21]]$solution
 
 # Manually create transition matrix
 # Initialize an 8x8 empty matrix for states
@@ -130,6 +131,7 @@ ggraph(tg, layout = 'circle') +
   scale_color_manual(values = nodes$color) +
   theme_void() +
   ggtitle("Transition Diagram for Sociality (Model 10)\nColors by State, Lighter for R2")
+
 dev.off()
 
 #===============================================================================

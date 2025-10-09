@@ -21,13 +21,13 @@ library(phytools)
 # Load raw trait data and keep only required columns
 #-------------------------------------------------------------------------------
 # Load raw trait data
-bees <- read.csv("original_data/all_tips_bee_tree_11-25-24.csv")
+bees <- read.csv("original_data/all_tips_bee_tree_10-02-25.csv")
 
 # Extract columns we will need for the binary or 3-state scoring
 bees <- bees[, c("family", "tribe", "tips",
-                 "broad_sociality..solitary..social..kleptoparasite..social.parasite.",
-                 "nesting_broad",
-                 "parasite_nesting")]
+                 "broad_sociality",
+                 "broad_nesting",
+                 "parasite_host_nesting")]
 
 colnames(bees) <- c("family", "tribe", "tips", "sociality", "nest", "parasite_nesting")
 
@@ -45,9 +45,9 @@ nrow(bees) # 4651
 bees$sociality_binary <- NA
 
 # Create objects that describe what counts as solitary, social, or drop
-solitary <- c("solitary","solitary?","solitary/semisocial","solitary/communal","kleptoparasite")
-social   <- c("social","communal/semisocial","communal","social parasite")
-drop     <- c("unknown","polymorphic","")
+solitary <- c("solitary","kleptoparasite")
+social   <- c("social parasite", "social")
+drop     <- c("unknown","polymorphic")
 
 # Assign "solitary" to all rows of sociality_binary where
 # the sociality column matches any of the values in the solitary object
@@ -62,7 +62,7 @@ bees$sociality_binary[which(bees$sociality%in%drop)] <- "drop"
 # Check counts
 table(bees$sociality_binary)
 # drop   social solitary 
-# 113     1056     3482 
+# 121     1048     3482 
 
 #-------------------------------------------------------------------------------
 # Sociality recode: Three-state (solitary, social, parasite)
@@ -71,9 +71,9 @@ table(bees$sociality_binary)
 
 bees$sociality_three_states <- NA
 
-solitary <- c("solitary","solitary?","solitary/semisocial","solitary/communal")
-social <- c("social","communal/semisocial","communal")
-drop <- c("unknown","polymorphic","")
+solitary <- c("solitary")
+social <- c("social")
+drop <- c("unknown","polymorphic")
 parasite <- c("social parasite","kleptoparasite")
 
 bees$sociality_three_states[which(bees$sociality%in%solitary)] <- "solitary"
@@ -84,7 +84,7 @@ bees$sociality_three_states[which(bees$sociality%in%parasite)] <- "parasite"
 # Check counts
 table(bees$sociality_three_states)
 # drop  parasite   social solitary 
-# 113      504     1025     3009 
+# 121      504     1017     3009 
 
 #-------------------------------------------------------------------------------
 # Remove “drop” rows (unknowns/polymorphic)
@@ -99,9 +99,9 @@ bees <- subset(bees, bees$sociality_binary!="drop")
 
 bees$nest_three_states <- NA
 
-ground <- c("ground","ground ","ground surface")
-aboveground <- c("above-ground","above ground")
-drop <- c("unknown","possibly ground?","","above-ground or ground","variable")
+ground <- c("ground","ground ")
+aboveground <- c("above-ground")
+drop <- c("unknown","variable")
 parasite <- c("social parasite","kleptoparasite")
 
 bees$nest_three_states[which(bees$nest%in%ground)] <- "ground"
@@ -112,7 +112,7 @@ bees$nest_three_states[which(bees$nest%in%parasite)] <- "parasite"
 # Check counts
 table(bees$nest_three_states)
 # aboveground   drop      ground    parasite 
-# 1331          140        2563         504 
+# 1346          133        2547         504 
 
 #-------------------------------------------------------------------------------
 # Nesting recode: Binary (ground vs aboveground)
@@ -123,9 +123,9 @@ bees$nest[which(bees$nest=="social parasite")] <- bees$parasite_nesting[bees$nes
 
 bees$nest_binary <- NA
 
-ground <- c("ground","ground ","ground surface")
-aboveground <- c("above-ground","communal/semisocial","communal")
-drop <- c("unknown","possibly ground?","","above-ground or ground","variable")
+ground <- c("ground","ground ")
+aboveground <- c("above-ground")
+drop <- c("unknown","variable")
 
 bees$nest_binary[which(bees$nest%in%ground)] <- "ground"
 bees$nest_binary[which(bees$nest%in%aboveground)] <- "aboveground"
@@ -133,8 +133,8 @@ bees$nest_binary[which(bees$nest%in%drop)] <- "drop"
 
 # Check counts
 table(bees$nest_binary)
-#aboveground  drop      ground 
-#1346         245        2947 
+# aboveground        drop      ground 
+# 1365              233        2932 
 
 #-------------------------------------------------------------------------------
 # Remove “drop” rows (unknown/ambiguous) for nesting
@@ -145,7 +145,7 @@ bees <- subset(bees, bees$nest_three_states!="drop")
 #-------------------------------------------------------------------------------
 # Sample size after curation + drop removal
 #-------------------------------------------------------------------------------
-nrow(bees)  # expected: 4293
+nrow(bees)  # expected: 4297
 
 #-------------------------------------------------------------------------------
 # Save curated traits (keep identifiers + recoded fields only)
@@ -163,6 +163,7 @@ write.csv(bees, "curated_data/bees_traits.csv", row.names=F)
 bee_tree <- read.tree("original_data/ML_beetree.tre")
 bee_tree <- keep.tip(bee_tree, bees$tips)  # drop non-overlapping tips
 write.tree(bee_tree, "curated_data/ML_beetree_pruned.tre")
+
 
 
 #-------------------------------------------------------------------------------
