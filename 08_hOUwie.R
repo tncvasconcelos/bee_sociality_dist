@@ -8,12 +8,12 @@
 # Setup: load libraries, utility functions, and data
 #-------------------------------------------------------------------------------
 rm(list=ls())
-wd <- "/Users/lenarh/Desktop/bee_sociality_dist"
-setwd(wd)
+#wd <- "/Users/lenarh/Desktop/bee_sociality_dist"
+#setwd(wd)
 
 library(corHMM)
-library(OUwie)
 #devtools::install_github("thej022214/OUwie")
+library(OUwie)
 library(parallel)
 source("00_utility_functions.R") # source helper functions
 
