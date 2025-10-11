@@ -13,6 +13,7 @@ setwd(wd)
 
 library(corHMM)
 library(OUwie)
+#devtools::install_github("thej022214/OUwie")
 library(parallel)
 source("00_utility_functions.R") # source helper functions
 
@@ -74,7 +75,7 @@ dat <- dat[match(phy$tip.label, dat$tips),]
 
 # Keep only discrete traits and the focal continuous trait, in this case BIO15 (precipitation seasonality)
 # Change the focal continuous trait depending on which you want to analyze
-dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_15")] # precipitation seasonality
+dat <- dat[,c("tips","sociality_binary","nest_binary","mean_bio_1")] # precipitation seasonality
 
 phy <- keep.tip(phy, dat$tips)
 
@@ -82,7 +83,7 @@ phy <- keep.tip(phy, dat$tips)
 #-------------------------------------------------------------------------------
 # Load best-fitting corHMM discrete model
 #-------------------------------------------------------------------------------
-load("corHMMdredge_results/corhmm_dredge_binary.Rsave")
+load("corHMMdredge_results/corhmm_dredge_binary_Oct5.Rsave")
 corhmm_tbl <- read.csv("corHMMdredge_results/corhmm_tbl_dredge.csv")
 cid_disc_model <- dredge_sociality[[which.min(corhmm_tbl$AIC)]]$index.mat
 
